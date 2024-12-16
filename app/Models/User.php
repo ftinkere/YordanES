@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Events\User\UserLoggedIn;
+use App\Events\User\UserLoggedOut;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use Illuminate\Auth\Authenticatable;
@@ -123,5 +124,11 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
         event(new UserLoggedIn($user->ulid));
 
         return $user;
+    }
+
+    public function logout(): self
+    {
+        event(new UserLoggedOut($this->ulid));
+        return $this;
     }
 }

@@ -10,6 +10,12 @@
         <wireui:scripts />
     </head>
     <body>
-        {{ $slot }}
+        <div class="flex flex-col">
+            <livewire:components.navbar />
+
+            <div class="p-3">
+                {{ $slot }}
+            </div>
+        </div>
     </body>
 </html>
