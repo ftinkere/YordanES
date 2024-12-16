@@ -32,13 +32,12 @@ export default {
                 sans: ['Helvetica Neue', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                primary: colors.orange,
+                primary: colors.amber,
                 secondary: colors.neutral,
-                positive: colors.emerald,
-                negative: colors.red,
-                warning: colors.amber,
+                positive: colors.teal,
+                negative: colors.rose,
+                warning: colors.yellow,
                 info: colors.sky,
-                gray: colors.neutral,
 
                 'background-dark': colors.neutral["900"],
             },
