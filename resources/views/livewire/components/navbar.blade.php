@@ -1,6 +1,6 @@
-<div class="bg-neutral-300 text-lg h-12 px-2 flex flex-row items-center">
+<div class="bg-neutral-300 dark:bg-neutral-800  text-lg h-12 px-2 flex flex-row items-center">
     <div class="flex-grow inline-flex justify-start items-center">
-        <span class="text-2xl">Ëрдан</span>
+        <x-button flat wire:navigate href="/"><span class="text-2xl">Ëрдан</span></x-button>
     </div>
     <div class="flex-grow inline-flex justify-end items-center">
         @auth
