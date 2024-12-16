@@ -36,7 +36,7 @@ abstract class BaseProjection extends Model
 
     public function getKeyName()
     {
-        return '_id';
+        return 'ulid';
     }
 
     public function getKeyType()
@@ -51,16 +51,18 @@ abstract class BaseProjection extends Model
 
     public function getRouteKeyName()
     {
-        return '_id';
+        return 'ulid';
     }
 
     public function writeable(): self
     {
-        $clone = clone $this;
+        //        $clone = clone $this;
+        //        $clone->isWriteable = true;
+        //        return $clone;
 
-        $clone->isWriteable = true;
+        $this->isWriteable = true;
 
-        return $clone;
+        return $this;
     }
 
     public function refresh()

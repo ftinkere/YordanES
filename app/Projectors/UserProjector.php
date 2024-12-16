@@ -2,6 +2,7 @@
 
 namespace App\Projectors;
 
+use App\Events\User\UserLoggedIn;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use App\Models\User;

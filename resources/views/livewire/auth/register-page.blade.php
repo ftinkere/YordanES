@@ -1,15 +1,12 @@
-<div>
+<x-card title="Регистрация" rounded="3xl">
     <form wire:submit="register">
-        <label>Username</label>
-        <input type="text" wire:model="username">
-        <label>Visible Name</label>
-        <input type="text" wire:model="visible_name">
-        <label>Email</label>
-        <input type="email" wire:model="email">
-        <label>Password</label>
-        <input type="password" wire:model="password">
-        <input type="password" wire:model="password_repeat">
-
-        <button type="submit">Рега</button>
+        <x-input label="Юзернейм" placeholder="qwerty" wire:model="username" />
+        <x-input label="Отображаемое имя" placeholder="Андрей" wire:model="visible_name" />
+        <x-input label="Почта" placeholder="example@yordan.ru" wire:model="email" type="email" />
+        <x-password label="Пароль" placeholder="*****" wire:model="password" />
+        <span class="m-1"></span>
+        <x-password placeholder="*****" wire:model="password_repeat" />
+        <span class="m-1"></span>
+        <x-button type="submit">Рега</x-button>
     </form>
-</div>
+</x-card>
