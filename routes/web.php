@@ -1,6 +1,8 @@
 <?php
 
+use App\Events\User\UserLoggedOut;
 use App\Http\Controllers\MainController;
+use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -26,3 +28,14 @@ Route::get('/', [MainController::class, 'index']);
 
 // Auth
 Route::get('/register', RegisterPage::class);
+Route::get('/login', LoginPage::class);
+Route::get('/logout', function () {
+    $user = Auth::user();
+    if (! $user) {
+        return 'No auth was';
+    }
+    event(new UserLoggedOut($user->ulid));
+    Auth::logout();
+
+    return 'Logged out, bye '.$user->visible_name;
+});
