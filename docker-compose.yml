@@ -1,0 +1,140 @@
+services:
+    laravel.test:
+        build:
+            context: './docker/8.4'
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: 'sail-8.4/app'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-80}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - yordanes
+        depends_on:
+            - redis
+            - mongodb
+#            - soketi
+
+
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        environment:
+            TZ: 'Europe/Moscow'
+        volumes:
+            - 'sail-redis:/data'
+        networks:
+            - yordanes
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
+    mongodb:
+        image: 'mongodb/mongodb-atlas-local:latest'
+        environment:
+            - 'MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}'
+            - 'MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}'
+        volumes:
+            - 'sail-mongodb:/data/db'
+        ports:
+            - '${FORWARD_MONGODB_PORT:-27017}:27017'
+        networks:
+            - yordanes
+        healthcheck:
+            test:
+                - CMD
+                - mongosh
+                - 'mongodb://localhost:27017/admin'
+                - '--eval=db.runCommand({ping:1})'
+            retries: 3
+            timeout: 5s
+    mysql:
+        image: 'mysql/mysql-server:latest'
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'sail-mysql:/var/lib/mysql'
+            - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+        networks:
+            - yordanes
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - '-p${DB_PASSWORD}'
+            retries: 3
+            timeout: 5s
+#    soketi:
+#        image: 'quay.io/soketi/soketi:latest-16-alpine'
+#        environment:
+#            SOKETI_DEBUG: '${SOKETI_DEBUG:-1}'
+#            SOKETI_METRICS_SERVER_PORT: '9601'
+#            SOKETI_DEFAULT_APP_ID: '${PUSHER_APP_ID}'
+#            SOKETI_DEFAULT_APP_KEY: '${PUSHER_APP_KEY}'
+#            SOKETI_DEFAULT_APP_SECRET: '${PUSHER_APP_SECRET}'
+#        ports:
+#            - '${PUSHER_PORT:-6001}:6001'
+#            - '${PUSHER_METRICS_PORT:-9601}:9601'
+#        networks:
+#            - yordanes
+#    eventstore:
+#        image: 'eventstore/eventstore:23.10.3-alpha-arm64v8'
+#        environment:
+#            EVENTSTORE_CLUSTER_SIZE: '1'
+#            EVENTSTORE_RUN_PROJECTIONS: 'All'
+#            EVENTSTORE_START_STANDARD_PROJECTIONS: 'true'
+#            EVENTSTORE_NODE_PORT: '2113'
+#            EVENTSTORE_INSECURE: 'true'
+#            EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP: 'true'
+#        ports:
+#            - '${ESDB_PORT:-2113}:2113'
+#            - '${ESDB_PORT_2:-1113}:1113'
+#        volumes:
+#            - type: volume
+#              source: eventstore-volume-data
+#              target: /var/lib/eventstore
+#            - type: volume
+#              source: eventstore-volume-logs
+#              target: /var/log/eventstore
+#        networks:
+#            - yordanes
+
+
+
+networks:
+    yordanes:
+        driver: bridge
+volumes:
+    sail-mysql:
+        driver: local
+    sail-redis:
+        driver: local
+    sail-mongodb:
+        driver: local
+    eventstore-volume-data:
+        driver: local
+    eventstore-volume-logs:
+        driver: local
