@@ -9,7 +9,13 @@
 
         <wireui:scripts />
     </head>
-    <body>
-        {{ $slot }}
+    <body class="bg-neutral-50 dark:bg-neutral-900">
+        <div class="flex flex-col">
+            <livewire:components.navbar />
+
+            <div class="p-3 h-full">
+                {{ $slot }}
+            </div>
+        </div>
     </body>
 </html>

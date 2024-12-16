@@ -4,9 +4,11 @@ namespace App\Livewire\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+#[Title('Регистрация')]
 class RegisterPage extends Component
 {
     #[Validate('required')]
@@ -26,12 +28,15 @@ class RegisterPage extends Component
 
     public function register()
     {
-        $this->validate();
+        $this->validate(messages: [
+            'required' => 'Поле обязательно',
+            'same' => 'Пароли не совпадают',
+        ]);
 
         $user = User::register($this->username, $this->visible_name, $this->email, Hash::make($this->password));
 
         $user
-            ? $this->redirect("/message?text={$user->ulid}_{$user->username}")
+            ? $this->redirect('/')
             : $this->redirect('/message?text=Nope');
     }
 

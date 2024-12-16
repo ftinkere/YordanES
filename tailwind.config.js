@@ -1,6 +1,7 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import preset from "./vendor/wireui/wireui/tailwind.config.js"
 import forms from '@tailwindcss/forms'
+import colors from "tailwindcss/colors";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -19,10 +20,26 @@ export default {
         "./vendor/wireui/wireui/src/WireUi/**/*.php",
         "./vendor/wireui/wireui/src/Components/**/*.php",
     ],
+
+    darkMode: ['variant', [
+        '@media (prefers-color-scheme: dark) { &:not(.light *) }',
+        '&:is(.dark *)',
+    ]],
+
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Helvetica Neue', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                primary: colors.amber,
+                secondary: colors.neutral,
+                positive: colors.teal,
+                negative: colors.rose,
+                warning: colors.yellow,
+                info: colors.sky,
+
+                'background-dark': colors.neutral["900"],
             },
         },
     },
