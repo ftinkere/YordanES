@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\User\PasswordResetTokenCreated;
 use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
 use App\Events\User\UserRegistered;
@@ -17,18 +18,13 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use MongoDB\Laravel\Eloquent\DocumentModel;
+use Illuminate\Support\Str;
 use Symfony\Component\Uid\Ulid;
 
 class User extends BaseProjection implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
-    use DocumentModel;
     use HasFactory, Notifiable;
-
-    protected $keyType = 'string';
-
-    protected $primaryKey = 'ulid';
 
     /**
      * The attributes that are mass assignable.
@@ -130,5 +126,11 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
     {
         event(new UserLoggedOut($this->ulid));
         return $this;
+    }
+
+    public function createPasswordResetToken(): ?PasswordResetToken
+    {
+        event(new PasswordResetTokenCreated($this->ulid, Str::random(64), new Carbon));
+        return PasswordResetToken::where('user_ulid', $this->ulid)->first();
     }
 }

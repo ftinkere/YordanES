@@ -17,7 +17,7 @@ class RegisterPage extends Component
     #[Validate('required')]
     public string $visible_name;
 
-    #[Validate('required')]
+    #[Validate('required|email')]
     public string $email;
 
     #[Validate('required')]
@@ -31,6 +31,7 @@ class RegisterPage extends Component
         $this->validate(messages: [
             'required' => 'Поле обязательно',
             'same' => 'Пароли не совпадают',
+            'email' => 'Почта не почта',
         ]);
 
         $user = User::register($this->username, $this->visible_name, $this->email, Hash::make($this->password));
