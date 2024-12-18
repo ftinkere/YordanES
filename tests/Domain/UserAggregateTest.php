@@ -8,30 +8,12 @@ use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use App\Events\UserInvalidLoginAttempt;
 use App\Events\UserNotUniqueRegisterAttempted;
-use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserAggregateTest extends TestCase
 {
-    use RefreshDatabase;
-
-    protected function refreshTestDatabase()
-    {
-        if (! RefreshDatabaseState::$migrated) {
-            $this->artisan('migrate:refresh-both');
-
-            $this->app[Kernel::class]->setArtisan(null);
-
-            RefreshDatabaseState::$migrated = true;
-        }
-
-        $this->beginDatabaseTransaction();
-    }
-
     public function test_user_creation()
     {
         $mockedUlid = '01HXYZ123ABCDEF8901234';
