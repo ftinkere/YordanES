@@ -6,8 +6,6 @@ use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 
 class StoredEvent extends EloquentStoredEvent
 {
-    protected $connection = 'mysql';
-
     protected static function boot()
     {
         parent::boot();

@@ -16,6 +16,7 @@ abstract class BaseProjection extends Model
     protected $keyType = 'string';
 
     protected $primaryKey = 'ulid';
+    protected $connection = 'mongodb';
 
     private bool $isWriteable = false {
         get {
