@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Aggregates\UserAggregate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\Uid\Ulid;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,7 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::register('admin', 'Админ', 'admin@yordan.ru', Hash::make('password'));
-        $admin->verifyEmail();
+        $admin = new UserAggregate();
+        $admin
+            ->register('admin', 'Админ', 'admin@yordan.ru', Hash::make('password'))
+            ->verifyEmail()
+            ->persist()
+        ;
     }
 }

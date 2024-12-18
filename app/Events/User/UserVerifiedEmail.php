@@ -2,13 +2,13 @@
 
 namespace App\Events\User;
 
-use Illuminate\Support\Carbon;
+use Carbon\CarbonInterface;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class UserVerifiedEmail extends ShouldBeStored
 {
     public function __construct(
         public string $ulid,
-        public Carbon $verifiedAt,
+        public CarbonInterface $verifiedAt,
     ) {}
 }

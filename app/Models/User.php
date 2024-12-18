@@ -90,7 +90,8 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
     public static function register(string $username, string $visible_name, string $email, string $password_hash): ?self
     {
         $ulid = Ulid::generate();
-        event(new UserRegistered($ulid, $username, $visible_name, $email, $password_hash));
+        $remember_token = Str::random(60);
+        event(new UserRegistered($ulid, $username, $visible_name, $email, $password_hash, $remember_token));
 
         return self::getByUlid($ulid);
     }

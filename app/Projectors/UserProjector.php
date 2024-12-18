@@ -7,7 +7,6 @@ use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use App\Models\PasswordResetToken;
 use App\Models\User;
-use Illuminate\Support\Str;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class UserProjector extends Projector
@@ -20,10 +19,10 @@ class UserProjector extends Projector
             'visible_name' => $event->visible_name,
             'email' => $event->email,
             'password_hash' => $event->password_hash,
+            'remember_token' => $event->remember_token,
         ]);
-        // При реплае евентов будет новый токен.
-        // TODO: поправить
-        $user->setRememberToken(Str::random(60));
+        $user->created_at = $event->createdAt();
+        $user->updated_at = $event->createdAt();
         $user->writeable()->save();
     }
 
@@ -31,6 +30,7 @@ class UserProjector extends Projector
     {
         $user = User::getByUlid($event->ulid);
         $user->email_verified_at = $event->verifiedAt;
+        $user->updated_at = $event->createdAt();
         $user->writeable()->save();
     }
 
@@ -42,7 +42,7 @@ class UserProjector extends Projector
         }
         $token->user_ulid = $event->user_ulid;
         $token->reset_token = $event->reset_token;
-        $token->created_at = $event->created_at;
+        $token->created_at = $event->createdAt();
         $token->writeable()->save();
     }
 }

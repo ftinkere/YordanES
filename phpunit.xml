@@ -5,11 +5,8 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Feature">
-            <directory>tests/Feature</directory>
+        <testsuite name="Domain">
+            <directory>tests/Domain</directory>
         </testsuite>
     </testsuites>
     <source>
@@ -23,6 +20,12 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
         <env name="DB_DATABASE" value="testing"/>
+        <env name="DB_HOST" value="mysql"/>
+        <env name="DB_PORT" value="3306"/>
+        <env name="DB_USERNAME" value="sail"/>
+        <env name="DB_PASSWORD" value="password"/>
+        <env name="MONGODB_DATABASE" value="testing"/>
+        <env name="MONGODB_URI" value="mongodb://mongodb:27017"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

@@ -51,6 +51,7 @@ services:
             - 'MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}'
         volumes:
             - 'sail-mongodb:/data/db'
+            - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         ports:
             - '${FORWARD_MONGODB_PORT:-27017}:27017'
         networks:

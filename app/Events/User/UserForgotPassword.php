@@ -8,5 +8,7 @@ class UserForgotPassword extends ShouldBeStored
 {
     public function __construct(
         public string $ulid
-    ) {}
+    ) {
+        $this->setAggregateRootUuid($this->ulid);
+    }
 }
