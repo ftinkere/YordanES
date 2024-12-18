@@ -2,8 +2,7 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UserService;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -11,7 +10,7 @@ use Livewire\Component;
 #[Title('Регистрация')]
 class RegisterPage extends Component
 {
-    #[Validate('required')]
+    #[Validate('required|min:3')]
     public string $username;
 
     #[Validate('required')]
@@ -20,25 +19,21 @@ class RegisterPage extends Component
     #[Validate('required|email')]
     public string $email;
 
-    #[Validate('required')]
+    #[Validate('required|min:8')]
     public string $password;
 
     #[Validate('required|same:password')]
     public string $password_repeat;
 
-    public function register()
+    public function register(UserService $service)
     {
-        $this->validate(messages: [
-            'required' => 'Поле обязательно',
-            'same' => 'Пароли не совпадают',
-            'email' => 'Почта не почта',
-        ]);
+        $this->validate();
 
-        $user = User::register($this->username, $this->visible_name, $this->email, Hash::make($this->password));
-
-        $user
-            ? $this->redirect('/')
-            : $this->redirect('/message?text=Nope');
+        if ($service->register($this->username, $this->visible_name, $this->email, $this->password)) {
+            $this->redirect('/');
+        } else {
+            $this->redirect('/message?text=Nope');
+        }
     }
 
     public function render()

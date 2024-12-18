@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\User;
+use App\Services\UserService;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -10,21 +10,21 @@ use Livewire\Component;
 #[Title('Вход')]
 class LoginPage extends Component
 {
-    #[Validate('required')]
+    #[Validate('required|filled')]
     public string $username;
 
     #[Validate('required')]
     public string $password;
 
-    public function login()
+    public function login(UserService $service)
     {
         $this->validate();
 
-        $user = User::login($this->username, $this->password);
-
-        $user
-            ? $this->redirect('/')
-            : $this->redirect('/message?text=Nope');
+        if ($service->login($this->username, $this->password)) {
+            $this->redirect('/');
+        } else {
+            $this->redirect('/message?text=Nope');
+        }
     }
 
     public function render()

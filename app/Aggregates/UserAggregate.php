@@ -7,29 +7,32 @@ use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
-use App\Models\StoredEvent;
+use App\Events\UserInvalidLoginAttempt;
+use App\Events\UserNotUniqueRegisterAttempted;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use SensitiveParameter;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Symfony\Component\Uid\Ulid;
 
 class UserAggregate extends AggregateRoot
 {
-    protected string $ulid;
+    public string $ulid;
 
-    protected string $username;
+    public string $username;
+    public string $name;
 
-    protected string $email;
+    public string $email;
 
-    protected string $password_hash;
+    public string $password_hash;
 
-    protected string $remember_token;
+    public string $remember_token;
 
-    protected CarbonInterface $email_verified_at;
+    public CarbonInterface $email_verified_at;
 
-    protected string $reset_password_token;
+    public string $reset_password_token;
 
 
     protected $ulidGenerate;
@@ -48,15 +51,13 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
+    // Не вызывать без проверки на уникальность $username и $email
+    // Пока что проверка только по query базе
     public function register(string $username, string $visible_name, string $email, string $password_hash): ?self
     {
         $ulid = call_user_func($this->ulidGenerate);
         $this->loadUuid($ulid);
         $remember_token = call_user_func($this->tokenGenerate, 60);
-
-        if (! $this->checkUniqueUsername($username)) {
-            return null;
-        }
 
         $this->recordThat(new UserRegistered($ulid, $username, $visible_name, $email, $password_hash, $remember_token));
 
@@ -67,6 +68,7 @@ class UserAggregate extends AggregateRoot
     {
         $this->ulid = $event->ulid;
         $this->username = $event->username;
+        $this->name = $event->visible_name;
         $this->email = $event->email;
         $this->password_hash = $event->password_hash;
         $this->remember_token = $event->remember_token;
@@ -84,31 +86,27 @@ class UserAggregate extends AggregateRoot
         $this->email_verified_at = $event->verifiedAt;
     }
 
-    protected function checkPassword(string $password): bool
+    protected function checkPassword(#[SensitiveParameter] string $password): bool
     {
         return Hash::check($password, $this->password_hash);
     }
 
-    protected function checkUniqueUsername(string $username): bool
-    {
-        return true;
-        // TODO: Понять как прочесть только все нижестоящие события без события
-        return ! StoredEvent::where('id', '>', 0)
-            ->whereIn('event_class', [
-                UserRegistered::class,
-                // UserUsernameChanged::class
-            ])
-            ->where('event_properties.username', $username)
-            ->exists();
-    }
-
-    public function login(string $username, string $password): ?self
+    public function login(#[SensitiveParameter] string $password): self
     {
         if (! $this->checkPassword($password)) {
-            return null;
+            $this->invalidLoginAttempt();
+
+            return $this;
         }
 
         $this->recordThat(new UserLoggedIn($this->ulid));
+
+        return $this;
+    }
+
+    public function invalidLoginAttempt(?Carbon $datetime = null): self
+    {
+        $this->recordThat(new UserInvalidLoginAttempt($this->ulid, $datetime ?? new Carbon));
 
         return $this;
     }
@@ -120,11 +118,11 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function createPasswordResetToken(): self
+    public function createPasswordResetToken(?Carbon $datetime = null): self
     {
-        $token = Str::random(64);
+        $token = call_user_func($this->tokenGenerate, 64);
 
-        $this->recordThat(new PasswordResetTokenCreated($this->ulid, $token, new Carbon));
+        $this->recordThat(new PasswordResetTokenCreated($this->ulid, $token, $datetime ?? new Carbon));
 
         return $this;
     }
@@ -132,5 +130,12 @@ class UserAggregate extends AggregateRoot
     public function applyPasswordResetTokenCreated(PasswordResetTokenCreated $event): void
     {
         $this->reset_password_token = $event->reset_token;
+    }
+
+    public function notUniqueRegisterAttempt(string $username, string $visible_name, string $email, ?Carbon $datetime = null): self
+    {
+        $this->recordThat(new UserNotUniqueRegisterAttempted($username, $visible_name, $email, $datetime));
+
+        return $this;
     }
 }
