@@ -37,5 +37,23 @@ jobs:
       run: chmod -R 777 storage bootstrap/cache
     - name: Wait for MongoDB to be ready
       run: sleep 15
+    - name: Check MongoDB Connection
+      run: |
+       echo "Trying to connect to MongoDB..."
+       mongo --host 127.0.0.1 --eval "db.runCommand({ ping: 1 })"
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+      env:
+        APP_ENV: testing
+        APP_MAINTENANCE_DRIVER: file
+        BCRYPT_ROUNDS: 4
+        CACHE_STORE: array
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ':memory:'
+        MONGODB_DATABASE: testing
+        MONGODB_URI: mongodb://127.0.0.1:27017
+        MAIL_MAILER: array
+        PULSE_ENABLED: false
+        QUEUE_CONNECTION: sync
+        SESSION_DRIVER: array
+        TELESCOPE_ENABLED: false
       run: php artisan test
