@@ -1,4 +1,7 @@
-<x-card title="Регистрация" rounded="3xl" class="max-w-md mx-auto">
+<x-card rounded="3xl" class="max-w-md mx-auto">
+    <x-slot name="title">
+        <span class="text-2xl">Регистрация</span>
+    </x-slot>
     <form wire:submit="register">
         <div class="flex flex-col gap-0.5">
             @csrf

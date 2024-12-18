@@ -2,10 +2,6 @@
 
 namespace App\Models;
 
-use App\Events\User\UserLoggedIn;
-use App\Events\User\UserLoggedOut;
-use App\Events\User\UserRegistered;
-use App\Events\User\UserVerifiedEmail;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -15,20 +11,13 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use MongoDB\Laravel\Eloquent\DocumentModel;
-use Symfony\Component\Uid\Ulid;
+use SensitiveParameter;
 
 class User extends BaseProjection implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
-    use DocumentModel;
     use HasFactory, Notifiable;
-
-    protected $keyType = 'string';
-
-    protected $primaryKey = 'ulid';
 
     /**
      * The attributes that are mass assignable.
@@ -91,44 +80,13 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
         return self::where('ulid', $ulid)->first();
     }
 
-    public static function register(string $username, string $visible_name, string $email, string $password_hash): ?self
+    public static function checkUnique(string $username, string $email): bool
     {
-        $ulid = Ulid::generate();
-        event(new UserRegistered($ulid, $username, $visible_name, $email, $password_hash));
-
-        return self::getByUlid($ulid);
+        return ! (self::where('username', $username)->exists() || self::where('email', $email)->exists());
     }
 
-    public function verifyEmail(): self
-    {
-        event(new UserVerifiedEmail($this->ulid, new Carbon));
-
-        return $this;
-    }
-
-    public function checkPassword(string $password): bool
+    public function checkPassword(#[SensitiveParameter] string $password): bool
     {
         return Hash::check($password, $this->password_hash);
-    }
-
-    public static function login(string $username, string $password): ?self
-    {
-        $user = self::where('username', $username)->first();
-        if (! $user) {
-            return null;
-        }
-        if (! $user->checkPassword($password)) {
-            return null;
-        }
-
-        event(new UserLoggedIn($user->ulid));
-
-        return $user;
-    }
-
-    public function logout(): self
-    {
-        event(new UserLoggedOut($this->ulid));
-        return $this;
     }
 }

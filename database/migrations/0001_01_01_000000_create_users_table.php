@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = "mongodb";
     /**
      * Run the migrations.
      */
@@ -22,13 +23,11 @@ return new class extends Migration
             $table->string('preferred_theme')->default('dark');
             $table->rememberToken();
             $table->timestamps();
-
-            $table->index('username');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
+            $table->string('user_ulid')->primary();
+            $table->string('reset_token');
             $table->timestamp('created_at')->nullable();
         });
 

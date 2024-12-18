@@ -86,7 +86,7 @@ return [
     */
 
     'batching' => [
-        'database' => env('DB_CONNECTION', 'mysql'),
+        'database' => 'mysql',
         'table' => 'job_batches',
     ],
 
@@ -105,7 +105,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database'),
-        'database' => env('DB_CONNECTION', 'mysql'),
+        'database' => 'mysql',
         'table' => 'failed_jobs',
     ],
 

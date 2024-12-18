@@ -3,14 +3,21 @@
 namespace App\Models;
 
 use App\Observers\ProjectionObserver;
+use MongoDB\Laravel\Eloquent\DocumentModel;
 use MongoDB\Laravel\Eloquent\Model;
 
 /**
  * @method static static create(array $parameters = [])
- * @method static static|null find(string $uuid)
+ * @method static static|null find(string $ulid)
  */
 abstract class BaseProjection extends Model
 {
+    use DocumentModel;
+    protected $keyType = 'string';
+
+    protected $primaryKey = 'ulid';
+    protected $connection = 'mongodb';
+
     private bool $isWriteable = false {
         get {
             return $this->isWriteable;
