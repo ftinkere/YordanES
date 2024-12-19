@@ -13,7 +13,7 @@
                     @endif
                 </span>
 
-                <span class="text-gray-400">ulid: <span>{{ $user->ulid }}</span></span>
+                <span class="text-gray-400">uuid: <span>{{ $user->uuid }}</span></span>
             @endauth
             @guest
                 <span>Не авторизованы(</span>

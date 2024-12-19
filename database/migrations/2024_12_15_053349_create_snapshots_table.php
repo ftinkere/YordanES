@@ -8,18 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        try {
-            Schema::create('snapshots', function (Blueprint $table) {
-                $table->id();
-                $table->uuid('aggregate_uuid');
-                $table->unsignedBigInteger('aggregate_version');
-                $table->jsonb('state');
+        Schema::create('snapshots', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('aggregate_uuid');
+            $table->unsignedBigInteger('aggregate_version');
+            $table->jsonb('state');
 
-                $table->timestamps();
+            $table->timestamps();
 
-                $table->index('aggregate_uuid');
-            });
-        } catch (\Illuminate\Database\QueryException $e) {}
+            $table->index('aggregate_uuid');
+        });
     }
 
     public function down(): void

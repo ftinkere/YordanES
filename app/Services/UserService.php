@@ -40,7 +40,7 @@ class UserService
     public function login(string $username, #[SensitiveParameter] string $password): bool
     {
         $user = User::where('username', $username)->first();
-        $userAggregate = UserAggregate::retrieve($user->ulid);
+        $userAggregate = UserAggregate::retrieve($user->uuid);
 
         if (! $user->checkPassword($password)) {
             $userAggregate
@@ -66,7 +66,7 @@ class UserService
         }
         Auth::logout();
 
-        event(new UserLoggedOut($user->ulid));
+        event(new UserLoggedOut($user->uuid));
         return true;
     }
 }

@@ -13,11 +13,15 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use SensitiveParameter;
+use Spatie\EventSourcing\Projections\Projection;
 
-class User extends BaseProjection implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
+class User extends Projection implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
     use HasFactory, Notifiable;
+
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +29,6 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
      * @var list<string>
      */
     protected $fillable = [
-        'ulid',
         'username',
         'visible_name',
         'email',
@@ -59,14 +62,6 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
         return 'password_hash';
     }
 
-    public function setRememberToken($value)
-    {
-        if (! empty($this->getRememberTokenName())) {
-            $this->writeable();
-            $this->{$this->getRememberTokenName()} = $value;
-        }
-    }
-
     public static function admin(): self
     {
         return self::where('username', 'admin')->first();
@@ -75,9 +70,9 @@ class User extends BaseProjection implements AuthenticatableContract, Authorizab
     /*
      * A helper method to quickly retrieve an account by uuid.
      */
-    public static function getByUlid(string $ulid): ?self
+    public static function getByUuid(string $uuid): ?self
     {
-        return self::where('ulid', $ulid)->first();
+        return self::where('uuid', $uuid)->first();
     }
 
     public static function checkUnique(string $username, string $email): bool

@@ -19,7 +19,6 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="MONGODB_DATABASE" value="testing"/>
         <env name="MONGODB_URI" value="mongodb://mongodb:27017"/>

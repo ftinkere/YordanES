@@ -14,7 +14,7 @@ class UserProjector extends Projector
     public function onUserRegistered(UserRegistered $event): void
     {
         $user = new User([
-            'ulid' => $event->ulid,
+            'uuid' => $event->uuid,
             'username' => $event->username,
             'visible_name' => $event->visible_name,
             'email' => $event->email,
@@ -28,7 +28,7 @@ class UserProjector extends Projector
 
     public function onUserVerifiedEmail(UserVerifiedEmail $event): void
     {
-        $user = User::getByUlid($event->ulid);
+        $user = User::getByUuid($event->uuid);
         $user->email_verified_at = $event->verifiedAt;
         $user->updated_at = $event->createdAt();
         $user->writeable()->save();
@@ -36,11 +36,11 @@ class UserProjector extends Projector
 
     public function onPasswordResetTokenCreated(PasswordResetTokenCreated $event): void
     {
-        $token = PasswordResetToken::where('user_ulid', $event->user_ulid)->first();
+        $token = PasswordResetToken::where('user_uuid', $event->user_uuid)->first();
         if (! $token) {
             $token = new PasswordResetToken;
         }
-        $token->user_ulid = $event->user_ulid;
+        $token->user_uuid = $event->user_uuid;
         $token->reset_token = $event->reset_token;
         $token->created_at = $event->createdAt();
         $token->writeable()->save();

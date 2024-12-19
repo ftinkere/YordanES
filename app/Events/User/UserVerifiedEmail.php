@@ -8,7 +8,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 class UserVerifiedEmail extends ShouldBeStored
 {
     public function __construct(
-        public string $ulid,
+        public string $uuid,
         public CarbonInterface $verifiedAt,
     ) {}
 }
