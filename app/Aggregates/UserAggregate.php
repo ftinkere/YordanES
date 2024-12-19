@@ -6,6 +6,7 @@ use App\Events\User\PasswordResetTokenCreated;
 use App\Events\User\UserInvalidLoginAttempt;
 use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
+use App\Events\User\UserNewRememberToken;
 use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
@@ -116,11 +117,19 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function logout(): self
+    public function logout(?CarbonInterface $datetime = null): self
     {
         $this->recordThat(new UserLoggedOut($this->user_uuid));
 
+        $token = call_user_func($this->tokenGenerate, 60);
+        $this->recordThat(new UserNewRememberToken($this->user_uuid, $token, $datetime ?? new Carbon));
+
         return $this;
+    }
+
+    public function applyUserNewRememberToken(UserNewRememberToken $event): void
+    {
+        $this->remember_token = $event->token;
     }
 
     public function createPasswordResetToken(?Carbon $datetime = null): self
