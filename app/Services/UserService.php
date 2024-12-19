@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Aggregates\UserAggregate;
-use App\Events\User\UserLoggedOut;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -64,9 +63,14 @@ class UserService
         if (! $user) {
             return false;
         }
+        $userAggregate = UserAggregate::retrieve($user->uuid);
+
+        $user->remember_token = null;
         Auth::logout();
 
-        event(new UserLoggedOut($user->uuid));
+        $userAggregate
+            ->logout()
+            ->persist();
         return true;
     }
 }
