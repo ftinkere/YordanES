@@ -2,19 +2,14 @@
 
 namespace App\Livewire\Components;
 
-use Illuminate\Support\Facades\Auth;
+use App\Services\UserService;
 use Livewire\Component;
 
 class Navbar extends Component
 {
-    public function logout()
+    public function logout(UserService $service)
     {
-        $user = Auth::user();
-        if (! $user) {
-            return;
-        }
-        $user->logout();
-        $this->redirect('/');
+        $service->logout();
     }
 
     public function render()

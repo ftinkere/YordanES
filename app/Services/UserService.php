@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Aggregates\UserAggregate;
+use App\Events\User\UserLoggedOut;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -54,6 +55,18 @@ class UserService
             ->login($password)
             ->persist();
 
+        return true;
+    }
+
+    public function logout(): bool
+    {
+        $user = Auth::user();
+        if (! $user) {
+            return false;
+        }
+        Auth::logout();
+
+        event(new UserLoggedOut($user->ulid));
         return true;
     }
 }
