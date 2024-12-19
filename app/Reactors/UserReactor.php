@@ -14,11 +14,11 @@ class UserReactor extends Reactor
     public function onUserForgotPassword(UserForgotPassword $event): void
     {
 
-        $user = User::getByUlid($event->ulid);
+        $user = User::getByUuid($event->uuid);
         if (! $user) {
             return;
         }
-        $userAggregate = UserAggregate::retrieve($event->ulid);
+        $userAggregate = UserAggregate::retrieve($event->uuid);
 
         $token = $userAggregate
             ->createPasswordResetToken()
@@ -27,7 +27,7 @@ class UserReactor extends Reactor
         if (! $token) {
             abort(500, 'Ошибка создания токена');
         }
-        $link = "/reset-password/{$user->ulid}?token={$token}";
+        $link = "/reset-password/{$user->uuid}?token={$token}";
 
         SendMail::dispatch($user->email, new ForgotPasswordMail(
             $user->visible_name,

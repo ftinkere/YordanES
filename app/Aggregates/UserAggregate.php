@@ -3,23 +3,23 @@
 namespace App\Aggregates;
 
 use App\Events\User\PasswordResetTokenCreated;
+use App\Events\User\UserInvalidLoginAttempt;
 use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
+use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
-use App\Events\UserInvalidLoginAttempt;
-use App\Events\UserNotUniqueRegisterAttempted;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Ramsey\Uuid\Uuid;
 use SensitiveParameter;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use Symfony\Component\Uid\Ulid;
 
 class UserAggregate extends AggregateRoot
 {
-    public string $ulid;
+    public string $user_uuid;
 
     public string $username;
     public string $name;
@@ -35,17 +35,17 @@ class UserAggregate extends AggregateRoot
     public string $reset_password_token;
 
 
-    protected $ulidGenerate;
+    protected $uuidGenerate;
     protected $tokenGenerate;
     public function __construct()
     {
-        $this->ulidGenerate = [Ulid::class, 'generate'];
+        $this->uuidGenerate = [Uuid::class, 'uuid7'];
         $this->tokenGenerate = [Str::class, 'random'];
     }
 
-    public function withGenerators($ulidGenerate, $tokenGenerate): self
+    public function withGenerators($uuidGenerate, $tokenGenerate): self
     {
-        $this->ulidGenerate = $ulidGenerate;
+        $this->uuidGenerate = $uuidGenerate;
         $this->tokenGenerate = $tokenGenerate;
 
         return $this;
@@ -55,18 +55,23 @@ class UserAggregate extends AggregateRoot
     // Пока что проверка только по query базе
     public function register(string $username, string $visible_name, string $email, string $password_hash): ?self
     {
-        $ulid = call_user_func($this->ulidGenerate);
-        $this->loadUuid($ulid);
+        $uuid = call_user_func($this->uuidGenerate);
         $remember_token = call_user_func($this->tokenGenerate, 60);
 
-        $this->recordThat(new UserRegistered($ulid, $username, $visible_name, $email, $password_hash, $remember_token));
+        if (! is_string($uuid)) {
+            $uuid = (string)$uuid;
+        }
+
+        $this->loadUuid($uuid);
+
+        $this->recordThat(new UserRegistered($uuid, $username, $visible_name, $email, $password_hash, $remember_token));
 
         return $this;
     }
 
     public function applyUserRegistered(UserRegistered $event): void
     {
-        $this->ulid = $event->ulid;
+        $this->user_uuid = $event->uuid;
         $this->username = $event->username;
         $this->name = $event->visible_name;
         $this->email = $event->email;
@@ -76,7 +81,7 @@ class UserAggregate extends AggregateRoot
 
     public function verifyEmail(?Carbon $date = null): self
     {
-        $this->recordThat(new UserVerifiedEmail($this->ulid, $date ?? new Carbon));
+        $this->recordThat(new UserVerifiedEmail($this->user_uuid, $date ?? new Carbon));
 
         return $this;
     }
@@ -99,21 +104,21 @@ class UserAggregate extends AggregateRoot
             return $this;
         }
 
-        $this->recordThat(new UserLoggedIn($this->ulid));
+        $this->recordThat(new UserLoggedIn($this->user_uuid));
 
         return $this;
     }
 
     public function invalidLoginAttempt(?Carbon $datetime = null): self
     {
-        $this->recordThat(new UserInvalidLoginAttempt($this->ulid, $datetime ?? new Carbon));
+        $this->recordThat(new UserInvalidLoginAttempt($this->user_uuid, $datetime ?? new Carbon));
 
         return $this;
     }
 
     public function logout(): self
     {
-        $this->recordThat(new UserLoggedOut($this->ulid));
+        $this->recordThat(new UserLoggedOut($this->user_uuid));
 
         return $this;
     }
@@ -122,7 +127,7 @@ class UserAggregate extends AggregateRoot
     {
         $token = call_user_func($this->tokenGenerate, 64);
 
-        $this->recordThat(new PasswordResetTokenCreated($this->ulid, $token, $datetime ?? new Carbon));
+        $this->recordThat(new PasswordResetTokenCreated($this->user_uuid, $token, $datetime ?? new Carbon));
 
         return $this;
     }

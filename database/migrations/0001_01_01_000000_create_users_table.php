@@ -6,14 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    protected $connection = "mongodb";
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->ulid()->primary();
+            $table->uuid()->primary();
             $table->string('username')->unique();
             $table->string('visible_name');
             $table->string('email')->unique();
@@ -26,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('user_ulid')->primary();
+            $table->uuid('user_uuid')->primary();
             $table->string('reset_token');
             $table->timestamp('created_at')->nullable();
         });

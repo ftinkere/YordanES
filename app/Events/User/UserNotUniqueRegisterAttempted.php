@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\User;
 
 use Carbon\Carbon;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;

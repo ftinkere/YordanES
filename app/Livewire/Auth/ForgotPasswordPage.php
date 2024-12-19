@@ -24,7 +24,7 @@ class ForgotPasswordPage extends Component
             return;
         }
 
-        event(new UserForgotPassword($user->ulid));
+        event(new UserForgotPassword($user->uuid));
     }
 
     public function render()

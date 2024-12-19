@@ -7,6 +7,6 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 class UserLoggedOut extends ShouldBeStored
 {
     public function __construct(
-        public string $ulid
+        public string $uuid
     ) {}
 }
