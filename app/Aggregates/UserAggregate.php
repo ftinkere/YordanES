@@ -3,12 +3,12 @@
 namespace App\Aggregates;
 
 use App\Events\User\PasswordResetTokenCreated;
+use App\Events\User\UserInvalidLoginAttempt;
 use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
+use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
-use App\Events\UserInvalidLoginAttempt;
-use App\Events\UserNotUniqueRegisterAttempted;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;

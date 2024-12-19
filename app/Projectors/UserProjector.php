@@ -13,14 +13,13 @@ class UserProjector extends Projector
 {
     public function onUserRegistered(UserRegistered $event): void
     {
-        $user = new User([
-            'uuid' => $event->uuid,
-            'username' => $event->username,
-            'visible_name' => $event->visible_name,
-            'email' => $event->email,
-            'password_hash' => $event->password_hash,
-            'remember_token' => $event->remember_token,
-        ]);
+        $user = new User();
+        $user->uuid = $event->uuid;
+        $user->username = $event->username;
+        $user->visible_name = $event->visible_name;
+        $user->email = $event->email;
+        $user->password_hash = $event->password_hash;
+        $user->remember_token = $event->remember_token;
         $user->created_at = $event->createdAt();
         $user->updated_at = $event->createdAt();
         $user->writeable()->save();

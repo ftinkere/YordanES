@@ -4,10 +4,10 @@ namespace Illuminate\Tests\Domain;
 
 use App\Aggregates\UserAggregate;
 use App\Events\User\PasswordResetTokenCreated;
+use App\Events\User\UserInvalidLoginAttempt;
+use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
-use App\Events\UserInvalidLoginAttempt;
-use App\Events\UserNotUniqueRegisterAttempted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
