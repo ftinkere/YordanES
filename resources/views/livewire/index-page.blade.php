@@ -8,6 +8,7 @@
                     Почта: <span>{{ $user->email }}</span>
                     @if($user->email_verified_at)
                         <x-icon name="check" class="h-4 inline text-green-600" />
+                        <span>{{ $user->email_verified_at->format('Y-m-d H:i:s') }}</span>
                     @else
                         <x-icon name="x-mark" class="h-4 inline text-red-600" />
                         <x-button

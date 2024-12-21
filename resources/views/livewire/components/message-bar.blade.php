@@ -1,13 +1,11 @@
 <div>
     <x-alert id="flash-message" info @class([
         'from-top py-2',
-//        'from-top-opened' => session()->has('message'),
-        'from-top-opened',
+        'from-top-opened' => session()->has('message'),
         'rounded-t-none',
     ])>
         <x-slot name="title" id="flash-message-content">
-{{--            {{ session('message') }}--}}
-            Message
+            {{ session('message') }}
         </x-slot>
 
         <x-slot name="action">

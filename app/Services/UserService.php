@@ -48,6 +48,9 @@ class UserService
     public function login(string $username, #[SensitiveParameter] string $password): bool
     {
         $user = User::where('username', $username)->first();
+        if (! $user) {
+            return false;
+        }
         $userAggregate = UserAggregate::retrieve($user->uuid);
 
         if (!$user->checkPassword($password)) {
