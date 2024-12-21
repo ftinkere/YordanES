@@ -10,6 +10,14 @@
                         <x-icon name="check" class="h-4 inline text-green-600" />
                     @else
                         <x-icon name="x-mark" class="h-4 inline text-red-600" />
+                        <x-button
+                                id="resend-confirmation-btn"
+                                flat
+                                wire:click="resendEmailConfirmation()"
+                                x-data="{ show: true }"
+                                x-show="show"
+                                x-on:click="show = false"
+                        >Переотправить</x-button>
                     @endif
                 </span>
 

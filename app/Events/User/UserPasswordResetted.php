@@ -4,10 +4,10 @@ namespace App\Events\User;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class UserNewRememberToken extends ShouldBeStored
+class UserPasswordResetted extends ShouldBeStored
 {
     public function __construct(
         public string $user_uuid,
-        public string $token,
+        public string $password_hash
     ) {}
 }

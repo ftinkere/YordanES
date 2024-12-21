@@ -4,6 +4,7 @@ namespace App\Livewire\Auth;
 
 use App\Events\User\UserForgotPassword;
 use App\Models\User;
+use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -21,8 +22,13 @@ class ForgotPasswordPage extends Component
 
         $user = User::where('email', $this->email ?? null)->first();
         if (! $user) {
+            $this->dispatch('flash-message', 'Пользователя с такой почтой не найдено');
             return;
         }
+
+        $this->redirect('/login');
+        Session::flash('message', 'Вам направлено письмо со ссылкой для восстановления пароля');
+
 
         event(new UserForgotPassword($user->uuid));
     }

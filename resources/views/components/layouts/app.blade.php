@@ -12,6 +12,7 @@
     <body class="bg-neutral-50 dark:bg-neutral-900">
         <div class="flex flex-col">
             <livewire:components.navbar />
+            <livewire:components.message-bar />
 
             <div class="p-3 h-full">
                 {{ $slot }}

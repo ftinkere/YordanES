@@ -22,6 +22,7 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
 
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
