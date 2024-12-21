@@ -4,9 +4,12 @@ namespace App\Reactors;
 
 use App\Aggregates\UserAggregate;
 use App\Events\User\UserForgotPassword;
+use App\Events\User\UserRegistered;
 use App\Jobs\SendMail;
 use App\Mail\ForgotPasswordMail;
+use App\Mail\PasswordResettedMail;
 use App\Models\User;
+use App\Services\UserService;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class UserReactor extends Reactor
@@ -33,5 +36,14 @@ class UserReactor extends Reactor
             $user->visible_name,
             $link,
         ));
+    }
+
+    public function onUserRegistered(UserRegistered $event, UserService $service): void
+    {
+        $user = User::getByUuid($event->uuid);
+        if (! $user) {
+            return;
+        }
+        $service->sendConfirmationEmail($user);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Projectors;
 
 use App\Events\User\PasswordResetTokenCreated;
 use App\Events\User\UserNewRememberToken;
+use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use App\Models\PasswordResetToken;
@@ -50,6 +51,15 @@ class UserProjector extends Projector
     {
         $user = User::getByUuid($event->user_uuid);
         $user->remember_token = $event->token;
+        $user->updated_at = $event->createdAt();
+        $user->writeable()->save();
+    }
+
+    public function onUserPasswordResetted(UserPasswordResetted $event): void
+    {
+        $user = User::getByUuid($event->user_uuid);
+        $user->password_hash = $event->password_hash;
+        $user->updated_at = $event->createdAt();
         $user->writeable()->save();
     }
 }

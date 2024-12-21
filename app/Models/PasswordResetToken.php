@@ -12,7 +12,17 @@ use Spatie\EventSourcing\Projections\Projection;
  */
 class PasswordResetToken extends Projection
 {
+    public $incrementing = false;
     protected $keyType = 'string';
-
     protected $primaryKey = 'user_uuid';
+
+    public function getKeyName()
+    {
+        return $this->primaryKey;
+    }
+    public function getRouteKeyName()
+    {
+        return $this->primaryKey;
+    }
+
 }

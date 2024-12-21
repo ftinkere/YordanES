@@ -8,6 +8,8 @@ use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
 use App\Events\User\UserNewRememberToken;
 use App\Events\User\UserNotUniqueRegisterAttempted;
+use App\Events\User\UserPasswordReseted;
+use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use Carbon\CarbonInterface;
@@ -34,6 +36,7 @@ class UserAggregate extends AggregateRoot
     public CarbonInterface $email_verified_at;
 
     public string $reset_password_token;
+    public CarbonInterface $reset_password_token_created_at;
 
 
     protected $uuidGenerate;
@@ -60,7 +63,7 @@ class UserAggregate extends AggregateRoot
         $remember_token = call_user_func($this->tokenGenerate, 60);
 
         if (! is_string($uuid)) {
-            $uuid = (string)$uuid;
+            $uuid = $uuid->toString();
         }
 
         $this->loadUuid($uuid);
@@ -80,8 +83,13 @@ class UserAggregate extends AggregateRoot
         $this->remember_token = $event->remember_token;
     }
 
-    public function verifyEmail(?Carbon $date = null): self
+    public function verifyEmail(?string $token = null, ?Carbon $date = null): self
     {
+        // TODO: поменять на свой токен
+        if ($token !== null && $token !== $this->user_uuid) {
+            return $this;
+        }
+
         $this->recordThat(new UserVerifiedEmail($this->user_uuid, $date ?? new Carbon));
 
         return $this;
@@ -110,19 +118,19 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function invalidLoginAttempt(?Carbon $datetime = null): self
+    public function invalidLoginAttempt(): self
     {
-        $this->recordThat(new UserInvalidLoginAttempt($this->user_uuid, $datetime ?? new Carbon));
+        $this->recordThat(new UserInvalidLoginAttempt($this->user_uuid));
 
         return $this;
     }
 
-    public function logout(?CarbonInterface $datetime = null): self
+    public function logout(): self
     {
         $this->recordThat(new UserLoggedOut($this->user_uuid));
 
         $token = call_user_func($this->tokenGenerate, 60);
-        $this->recordThat(new UserNewRememberToken($this->user_uuid, $token, $datetime ?? new Carbon));
+        $this->recordThat(new UserNewRememberToken($this->user_uuid, $token));
 
         return $this;
     }
@@ -132,11 +140,11 @@ class UserAggregate extends AggregateRoot
         $this->remember_token = $event->token;
     }
 
-    public function createPasswordResetToken(?Carbon $datetime = null): self
+    public function createPasswordResetToken(): self
     {
         $token = call_user_func($this->tokenGenerate, 64);
 
-        $this->recordThat(new PasswordResetTokenCreated($this->user_uuid, $token, $datetime ?? new Carbon));
+        $this->recordThat(new PasswordResetTokenCreated($this->user_uuid, $token));
 
         return $this;
     }
@@ -144,12 +152,29 @@ class UserAggregate extends AggregateRoot
     public function applyPasswordResetTokenCreated(PasswordResetTokenCreated $event): void
     {
         $this->reset_password_token = $event->reset_token;
+        $this->reset_password_token_created_at = $event->createdAt();
     }
 
-    public function notUniqueRegisterAttempt(string $username, string $visible_name, string $email, ?Carbon $datetime = null): self
+    public function notUniqueRegisterAttempt(string $username, string $visible_name, string $email): self
     {
-        $this->recordThat(new UserNotUniqueRegisterAttempted($username, $visible_name, $email, $datetime));
+        $this->recordThat(new UserNotUniqueRegisterAttempted($username, $visible_name, $email));
 
         return $this;
+    }
+
+    public function resetPassword(#[\SensitiveParameter] string $password, ?string $token = null): self
+    {
+        if ($token && ($this->reset_password_token !== $token || $this->reset_password_token_created_at->isLastHour())) {
+            return $this;
+        }
+
+        $this->recordThat(new UserPasswordResetted($this->user_uuid, Hash::make($password)));
+
+        return $this;
+    }
+
+    public function applyUserPasswordResetted(UserPasswordResetted $event): void
+    {
+        $this->password_hash = $event->password_hash;
     }
 }

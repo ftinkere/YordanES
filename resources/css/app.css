@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.from-top {
+    @apply transition-transform duration-500 ease-in-out transform translate-y-[-100%] opacity-0;
+}
+
+.from-top-opened {
+    @apply translate-y-0 opacity-100 block;
+}

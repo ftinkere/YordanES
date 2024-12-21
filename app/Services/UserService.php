@@ -3,6 +3,10 @@
 namespace App\Services;
 
 use App\Aggregates\UserAggregate;
+use App\Events\User\UserPasswordResetted;
+use App\Events\User\UserVerifiedEmail;
+use App\Jobs\SendMail;
+use App\Mail\EmailConfirmationMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +16,12 @@ use SensitiveParameter;
 
 class UserService
 {
-    public function register(string $username, string $visible_name, string $email, #[SensitiveParameter] string $password): bool
+    public function register(
+        string $username,
+        string $visible_name,
+        string $email,
+        #[SensitiveParameter] string $password,
+    ): bool
     {
         $validator = Validator::make(compact('username', 'visible_name', 'email', 'password'), [
             'username' => 'required|min:3',
@@ -41,7 +50,7 @@ class UserService
         $user = User::where('username', $username)->first();
         $userAggregate = UserAggregate::retrieve($user->uuid);
 
-        if (! $user->checkPassword($password)) {
+        if (!$user->checkPassword($password)) {
             $userAggregate
                 ->invalidLoginAttempt()
                 ->persist();
@@ -72,5 +81,38 @@ class UserService
             ->logout()
             ->persist();
         return true;
+    }
+
+    public function resetPassword(User $user, #[\SensitiveParameter] string $password, ?string $token = null): bool
+    {
+        $userAggregate = UserAggregate::retrieve($user->uuid);
+        $events = $userAggregate
+            ->resetPassword($password, $token)
+            ->persist()
+            ->getAppliedEvents();
+
+        return array_any($events, fn($event) => $event instanceof UserPasswordResetted);
+    }
+
+    public function sendConfirmationEmail(User $user): bool
+    {
+        // TODO: пока очень не очень, но сойдёт
+        $link = "/confirm-email/{$user->uuid}";
+
+        SendMail::dispatch($user->email, new EmailConfirmationMail(
+            $user->visible_name,
+            $link,
+        ));
+        return true;
+    }
+
+    public function confirmEmail(User $user, ?string $token = null): bool
+    {
+        $userAggregate = UserAggregate::retrieve($user->uuid);
+        $events = $userAggregate
+            ->verifyEmail($token)
+            ->persist()
+            ->getAppliedEvents();
+        return array_any($events, fn($event) => $event instanceof UserVerifiedEmail);
     }
 }

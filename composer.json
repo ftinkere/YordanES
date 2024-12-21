@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "ftinkere/yordanes",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": [
@@ -10,17 +10,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
-        "ext-mongodb": "*",
         "antwerpes/laravel-event-store": "^1.1",
         "laravel/framework": "^11.31",
         "laravel/horizon": "^5.30",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
-        "mongodb/laravel-mongodb": "^5.1",
         "spatie/laravel-event-sourcing": "^7.10",
         "wireui/wireui": "^2.2"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.14",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
