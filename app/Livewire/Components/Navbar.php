@@ -10,6 +10,7 @@ class Navbar extends Component
     public function logout(UserService $service)
     {
         $service->logout();
+        $this->redirect('/');
     }
 
     public function render()

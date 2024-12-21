@@ -13,7 +13,6 @@ use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
 use Carbon\CarbonInterface;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
@@ -83,21 +82,21 @@ class UserAggregate extends AggregateRoot
         $this->remember_token = $event->remember_token;
     }
 
-    public function verifyEmail(?string $token = null, ?Carbon $date = null): self
+    public function verifyEmail(?string $token = null): self
     {
         // TODO: поменять на свой токен
         if ($token !== null && $token !== $this->user_uuid) {
             return $this;
         }
 
-        $this->recordThat(new UserVerifiedEmail($this->user_uuid, $date ?? new Carbon));
+        $this->recordThat(new UserVerifiedEmail($this->user_uuid));
 
         return $this;
     }
 
     public function applyUserVerifiedEmail(UserVerifiedEmail $event): void
     {
-        $this->email_verified_at = $event->verifiedAt;
+        $this->email_verified_at = $event->createdAt();
     }
 
     protected function checkPassword(#[SensitiveParameter] string $password): bool

@@ -23,7 +23,7 @@ class LoginPage extends Component
         if ($service->login($this->username, $this->password)) {
             $this->redirect('/');
         } else {
-            $this->redirect('/message?text=Nope');
+            $this->addError('password', 'Неправильынй логин или пароль');
         }
     }
 

@@ -22,16 +22,16 @@ class UserProjector extends Projector
         $user->email = $event->email;
         $user->password_hash = $event->password_hash;
         $user->remember_token = $event->remember_token;
-        $user->created_at = $event->createdAt();
-        $user->updated_at = $event->createdAt();
+        $user->created_at = $event->createdAt()->timezone(config('app.timezone'));
+        $user->updated_at = $event->createdAt()->timezone(config('app.timezone'));
         $user->writeable()->save();
     }
 
     public function onUserVerifiedEmail(UserVerifiedEmail $event): void
     {
         $user = User::getByUuid($event->uuid);
-        $user->email_verified_at = $event->verifiedAt;
-        $user->updated_at = $event->createdAt();
+        $user->email_verified_at = $event->createdAt()->timezone(config('app.timezone'));
+        $user->updated_at = $event->createdAt()->timezone(config('app.timezone'));
         $user->writeable()->save();
     }
 
@@ -43,7 +43,7 @@ class UserProjector extends Projector
         }
         $token->user_uuid = $event->user_uuid;
         $token->reset_token = $event->reset_token;
-        $token->created_at = $event->createdAt();
+        $token->created_at = $event->createdAt()->timezone(config('app.timezone'));
         $token->writeable()->save();
     }
 
@@ -51,7 +51,7 @@ class UserProjector extends Projector
     {
         $user = User::getByUuid($event->user_uuid);
         $user->remember_token = $event->token;
-        $user->updated_at = $event->createdAt();
+        $user->updated_at = $event->createdAt()->timezone(config('app.timezone'));
         $user->writeable()->save();
     }
 
@@ -59,7 +59,7 @@ class UserProjector extends Projector
     {
         $user = User::getByUuid($event->user_uuid);
         $user->password_hash = $event->password_hash;
-        $user->updated_at = $event->createdAt();
+        $user->updated_at = $event->createdAt()->timezone(config('app.timezone'));
         $user->writeable()->save();
     }
 }
