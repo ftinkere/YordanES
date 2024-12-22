@@ -10,3 +10,39 @@
 .from-top-opened {
     @apply translate-y-0 opacity-100 block;
 }
+
+.settings-table {
+    @apply mx-auto table w-full max-w-xl dark:text-neutral-300;
+}
+.settings-table tr {
+    @apply border-b dark:border-neutral-800 h-12 align-bottom;
+}
+.settings-table tr td:first-child {
+    @apply max-w-56 w-56 pr-4;
+}
+.settings-table tr td:nth-child(3) {
+    @apply text-end;
+}
+.settings-table tr td:nth-child(3) button {
+    @apply text-xs;
+}
+
+.has-tooltip {
+    @apply relative inline-block;
+}
+.has-tooltip .x-tooltip {
+    @apply pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+    px-2 py-1 rounded bg-neutral-800 text-white text-sm
+    shadow opacity-0 group-hover:opacity-100
+    transition duration-200;
+}
+
+.has-tooltip:hover .x-tooltip {
+    @apply opacity-100;
+}
+
+.x-input-lite {
+    @apply p-0 bg-transparent outline-none
+    ring-0 focus:ring-0
+    border-0 border-b border-b-amber-500 focus:border-b-amber-400 ;
+}

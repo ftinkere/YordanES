@@ -1,16 +1,19 @@
 <div>
-    <x-card title="Вы" rounded="3xl" class="border max-w-md mx-auto">
+    <x-card title="Вы"
+            class="border max-w-md mx-auto">
         <div class="flex flex-col ">
             @auth
-                <span>{{ $user->visible_name }} (<span>{{ $user->username }}</span>)</span>
+                <span>{{ $user->name }} (<span>{{ $user->username }}</span>)</span>
 
                 <span>
                     Почта: <span>{{ $user->email }}</span>
                     @if($user->email_verified_at)
-                        <x-icon name="check" class="h-4 inline text-green-600" />
+                        <x-icon name="check"
+                                class="h-4 inline text-green-600"/>
                         <span>{{ $user->email_verified_at->format('Y-m-d H:i:s') }}</span>
                     @else
-                        <x-icon name="x-mark" class="h-4 inline text-red-600" />
+                        <x-icon name="x-mark"
+                                class="h-4 inline text-red-600"/>
                         <x-button
                                 id="resend-confirmation-btn"
                                 flat

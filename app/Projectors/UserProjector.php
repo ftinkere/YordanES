@@ -3,9 +3,12 @@
 namespace App\Projectors;
 
 use App\Events\User\PasswordResetTokenCreated;
+use App\Events\User\UserEmailChanged;
+use App\Events\User\UserNameChanged;
 use App\Events\User\UserNewRememberToken;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
+use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
 use App\Models\PasswordResetToken;
 use App\Models\User;
@@ -18,7 +21,7 @@ class UserProjector extends Projector
         $user = new User();
         $user->uuid = $event->uuid;
         $user->username = $event->username;
-        $user->visible_name = $event->visible_name;
+        $user->name = $event->name;
         $user->email = $event->email;
         $user->password_hash = $event->password_hash;
         $user->remember_token = $event->remember_token;
@@ -49,7 +52,7 @@ class UserProjector extends Projector
 
     public function onUserNewRememberToken(UserNewRememberToken $event): void
     {
-        $user = User::getByUuid($event->user_uuid);
+        $user = User::getByUuid($event->uuid);
         $user->remember_token = $event->token;
         $user->updated_at = $event->createdAt()->timezone(config('app.timezone'));
         $user->writeable()->save();
@@ -57,9 +60,31 @@ class UserProjector extends Projector
 
     public function onUserPasswordResetted(UserPasswordResetted $event): void
     {
-        $user = User::getByUuid($event->user_uuid);
+        $user = User::getByUuid($event->uuid);
         $user->password_hash = $event->password_hash;
         $user->updated_at = $event->createdAt()->timezone(config('app.timezone'));
+        $user->writeable()->save();
+    }
+
+    public function onUserUsernameChanged(UserUsernameChanged $event): void
+    {
+        $user = User::getByUuid($event->uuid);
+        $user->username = $event->new_username;
+        $user->writeable()->save();
+    }
+
+    public function onUserNameChanged(UserNameChanged $event): void
+    {
+        $user = User::getByUuid($event->uuid);
+        $user->name = $event->new_name;
+        $user->writeable()->save();
+    }
+
+    public function onUserEmailChanged(UserEmailChanged $event): void
+    {
+        $user = User::getByUuid($event->uuid);
+        $user->email = $event->new_email;
+        $user->email_verified_at = null;
         $user->writeable()->save();
     }
 }

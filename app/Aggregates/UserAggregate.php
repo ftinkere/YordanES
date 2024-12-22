@@ -3,14 +3,17 @@
 namespace App\Aggregates;
 
 use App\Events\User\PasswordResetTokenCreated;
+use App\Events\User\UserEmailChanged;
 use App\Events\User\UserInvalidLoginAttempt;
 use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
+use App\Events\User\UserNameChanged;
 use App\Events\User\UserNewRememberToken;
 use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserPasswordReseted;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
+use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +35,7 @@ class UserAggregate extends AggregateRoot
 
     public string $remember_token;
 
-    public CarbonInterface $email_verified_at;
+    public ?CarbonInterface $email_verified_at;
 
     public string $reset_password_token;
     public CarbonInterface $reset_password_token_created_at;
@@ -56,7 +59,7 @@ class UserAggregate extends AggregateRoot
 
     // Не вызывать без проверки на уникальность $username и $email
     // Пока что проверка только по query базе
-    public function register(string $username, string $visible_name, string $email, string $password_hash): ?self
+    public function register(string $username, string $name, string $email, string $password_hash): ?self
     {
         $uuid = call_user_func($this->uuidGenerate);
         $remember_token = call_user_func($this->tokenGenerate, 60);
@@ -67,7 +70,7 @@ class UserAggregate extends AggregateRoot
 
         $this->loadUuid($uuid);
 
-        $this->recordThat(new UserRegistered($uuid, $username, $visible_name, $email, $password_hash, $remember_token));
+        $this->recordThat(new UserRegistered($uuid, $username, $name, $email, $password_hash, $remember_token));
 
         return $this;
     }
@@ -76,7 +79,7 @@ class UserAggregate extends AggregateRoot
     {
         $this->user_uuid = $event->uuid;
         $this->username = $event->username;
-        $this->name = $event->visible_name;
+        $this->name = $event->name;
         $this->email = $event->email;
         $this->password_hash = $event->password_hash;
         $this->remember_token = $event->remember_token;
@@ -175,5 +178,55 @@ class UserAggregate extends AggregateRoot
     public function applyUserPasswordResetted(UserPasswordResetted $event): void
     {
         $this->password_hash = $event->password_hash;
+    }
+
+    public function changeUsername(string $username): self
+    {
+        if (mb_strlen($username) < 3 || $this->username === $username) {
+            return $this;
+        }
+        $this->recordThat(new UserUsernameChanged($this->user_uuid, old_username: $this->username, new_username:  $username));
+
+        return $this;
+    }
+
+    public function applyUserUsernameChanged(UserUsernameChanged $event): void
+    {
+        $this->username = $event->new_username;
+    }
+
+    public function changeName(string $name): self
+    {
+        if ($this->name === $name) {
+            return $this;
+        }
+
+        $this->recordThat(new UserNameChanged($this->user_uuid, old_name: $this->name, new_name:  $name));
+
+        return $this;
+    }
+
+    public function applyUserNameChanged(UserNameChanged $event): void
+    {
+        $this->name = $event->new_name;
+    }
+
+    public function changeEmail(string $email): self
+    {
+        // TODO: валидацию почты
+
+        if ($this->email === $email) {
+            return $this;
+        }
+
+        $this->recordThat(new UserEmailChanged($this->user_uuid, old_email: $this->email, new_email:  $email));
+
+        return $this;
+    }
+
+    public function applyUserEmailChanged(UserEmailChanged $event): void
+    {
+        $this->email = $event->new_email;
+        $this->email_verified_at = null;
     }
 }

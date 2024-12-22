@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MainController;
+use App\Livewire\AccountSettingsPage;
 use App\Livewire\Auth\ForgotPasswordPage;
 use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
@@ -9,10 +10,6 @@ use App\Livewire\IndexPage;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/message', function () {
-    return \Illuminate\Support\Facades\Request::get('text');
-});
 
 Route::get('/', IndexPage::class);
 
@@ -37,3 +34,7 @@ Route::get('/confirm-email/{uuid}', static function ($uuid, UserService $service
     }
     return redirect('/');
 });
+
+
+Route::get('/settings', AccountSettingsPage::class);
+
