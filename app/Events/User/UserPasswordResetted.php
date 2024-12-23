@@ -7,7 +7,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 class UserPasswordResetted extends ShouldBeStored
 {
     public function __construct(
-        public string $user_uuid,
+        public string $uuid,
         public string $password_hash
     ) {}
 }

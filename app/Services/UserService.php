@@ -103,7 +103,7 @@ class UserService
         $link = "/confirm-email/{$user->uuid}";
 
         SendMail::dispatch($user->email, new EmailConfirmationMail(
-            $user->visible_name,
+            $user->name,
             $link,
         ));
         return true;

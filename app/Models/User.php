@@ -31,7 +31,7 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
      */
     protected $fillable = [
         'username',
-        'visible_name',
+        'name',
         'email',
         'password_hash',
     ];

@@ -4,10 +4,11 @@ namespace App\Events\User;
 
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class UserNewRememberToken extends ShouldBeStored
+class UserUsernameChanged extends ShouldBeStored
 {
     public function __construct(
         public string $uuid,
-        public string $token,
+        public string $old_username,
+        public string $new_username,
     ) {}
 }

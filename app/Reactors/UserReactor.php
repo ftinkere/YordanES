@@ -3,6 +3,7 @@
 namespace App\Reactors;
 
 use App\Aggregates\UserAggregate;
+use App\Events\User\UserEmailChanged;
 use App\Events\User\UserForgotPassword;
 use App\Events\User\UserRegistered;
 use App\Jobs\SendMail;
@@ -33,12 +34,21 @@ class UserReactor extends Reactor
         $link = "/reset-password/{$user->uuid}?token={$token}";
 
         SendMail::dispatch($user->email, new ForgotPasswordMail(
-            $user->visible_name,
+            $user->name,
             $link,
         ));
     }
 
     public function onUserRegistered(UserRegistered $event, UserService $service): void
+    {
+        $user = User::getByUuid($event->uuid);
+        if (! $user) {
+            return;
+        }
+        $service->sendConfirmationEmail($user);
+    }
+
+    public function onUserEmailChanged(UserEmailChanged $event, UserService $service): void
     {
         $user = User::getByUuid($event->uuid);
         if (! $user) {
