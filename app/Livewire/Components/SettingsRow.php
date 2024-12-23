@@ -14,6 +14,8 @@ class SettingsRow extends Component
     #[Locked]
     public string $attribute;
 
+    public bool $confirm = false;
+
     public function applySetting(): void
     {
         $this->dispatch('apply-setting', attribute: $this->attribute);

@@ -7,9 +7,13 @@
                 icon-size="2xl"
                 class="group-hover:filter group-hover:brightness-50"
         />
-        <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-white hidden group-hover:block cursor-pointer">
+        <span
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-white hidden group-hover:block cursor-pointer"
+            x-on:click="document.getElementById('avatar-input').click()"
+        >
             изменить
         </span>
+        <input wire:model.live="avatar" id="avatar-input" class="hidden" type="file" accept="image/*" max="10240" >
     </div>
 
     <table class="settings-table">

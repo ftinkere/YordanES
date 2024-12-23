@@ -8,6 +8,7 @@ use App\Events\User\UserNameChanged;
 use App\Events\User\UserNewRememberToken;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
+use App\Events\User\UserSettedAvatar;
 use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
 use App\Models\PasswordResetToken;
@@ -85,6 +86,14 @@ class UserProjector extends Projector
         $user = User::getByUuid($event->uuid);
         $user->email = $event->new_email;
         $user->email_verified_at = null;
+        $user->writeable()->save();
+    }
+
+    public function onUserSettedAvatar(UserSettedAvatar $event): void
+    {
+
+        $user = User::getByUuid($event->uuid);
+        $user->avatar = $event->path;
         $user->writeable()->save();
     }
 }

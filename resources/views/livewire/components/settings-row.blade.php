@@ -15,6 +15,7 @@
                 wire:dirty
                 wire:target="value"
                 wire:click="applySetting"
+                wire:confirm="Вы уверены?"
         >Применить</x-link>
         <x-link x-show="! isEdit" x-on:click="isEdit = true">Изменить</x-link>
         <x-link x-show="isEdit" x-on:click="isEdit = false" negative>Отменить</x-link>

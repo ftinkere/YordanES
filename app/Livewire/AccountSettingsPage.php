@@ -4,19 +4,31 @@ namespace App\Livewire;
 
 use App\Aggregates\UserAggregate;
 use App\Models\User;
+use App\Services\FileService;
 use App\Services\UserService;
+use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class AccountSettingsPage extends Component
 {
+    use WithFileUploads;
+
     #[Locked]
     public User $user;
 
+    #[Validate('min:3')]
     public string $username;
     public string $name;
+    #[Validate('email')]
     public string $email;
+
+    /** @var UploadedFile $avatar */
+    #[Validate('file|image|max:10240')]
+    public $avatar;
 
     public function mount()
     {
@@ -35,6 +47,8 @@ class AccountSettingsPage extends Component
     #[On('apply-setting')]
     public function changeAttribute(string $attribute)
     {
+        $this->validate(attributes: [$attribute]);
+
         $userAggregate = UserAggregate::retrieve($this->user->uuid);
         switch ($attribute) {
             case 'username':
@@ -48,6 +62,19 @@ class AccountSettingsPage extends Component
                 break;
         }
         $userAggregate->persist();
+        $this->user = auth()->user();
+    }
+
+    #[On('livewire-upload-finish')]
+    public function avatarUpload(FileService $service)
+    {
+        $this->validate(attributes: ['avatar']);
+        $path = $service->uploadAvatar($this->avatar, $this->user);
+        if ($path) {
+            UserAggregate::retrieve($this->user->uuid)
+                ->setAvatar($path)
+                ->persist();
+        }
         $this->user = auth()->user();
     }
 

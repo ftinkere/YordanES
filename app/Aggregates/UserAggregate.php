@@ -13,6 +13,7 @@ use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserPasswordReseted;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
+use App\Events\User\UserSettedAvatar;
 use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
 use Carbon\CarbonInterface;
@@ -30,6 +31,7 @@ class UserAggregate extends AggregateRoot
     public string $name;
 
     public string $email;
+    public string $avatar;
 
     public string $password_hash;
 
@@ -228,5 +230,17 @@ class UserAggregate extends AggregateRoot
     {
         $this->email = $event->new_email;
         $this->email_verified_at = null;
+    }
+
+    public function setAvatar(string $path): self
+    {
+        $this->recordThat(new UserSettedAvatar($this->user_uuid, $path));
+
+        return $this;
+    }
+
+    public function applyUserSettedAvatar(UserSettedAvatar $event): void
+    {
+        $this->avatar = $event->path;
     }
 }
