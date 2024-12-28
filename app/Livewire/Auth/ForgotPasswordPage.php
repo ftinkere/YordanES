@@ -5,9 +5,11 @@ namespace App\Livewire\Auth;
 use App\Events\User\UserForgotPassword;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+#[Title('Восстановление пароля')]
 class ForgotPasswordPage extends Component
 {
     #[Validate('required|email')]

@@ -6,9 +6,11 @@ use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Services\UserService;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+#[Title('Восстановление пароля')]
 class ResetPasswordPage extends Component
 {
     #[Locked]

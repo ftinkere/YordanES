@@ -3,7 +3,7 @@
         <div class="flex-grow inline-flex justify-start items-center">
             <x-button flat
                       wire:navigate
-                      href="/"><span class="text-2xl">Ëрдан</span></x-button>
+                      href="/"><span class="text-2xl yordan-font">Ëрдан</span></x-button>
         </div>
         <div class="flex-grow inline-flex justify-end items-center">
             @auth

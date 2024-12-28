@@ -29,7 +29,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Helvetica Neue', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Helvetica Neue', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: colors.amber,

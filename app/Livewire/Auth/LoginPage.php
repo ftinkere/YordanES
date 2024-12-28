@@ -21,9 +21,10 @@ class LoginPage extends Component
         $this->validate();
 
         if ($service->login($this->username, $this->password)) {
+            session()->regenerate();
             $this->redirect('/');
         } else {
-            $this->addError('password', 'Неправильынй логин или пароль');
+            $this->addError('password', 'Неправильный логин или пароль');
         }
     }
 

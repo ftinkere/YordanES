@@ -7,6 +7,8 @@ use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
 use App\Livewire\Auth\ResetPasswordPage;
 use App\Livewire\IndexPage;
+use App\Livewire\Languages\LanguagesCreatePage;
+use App\Livewire\Languages\LanguagesPage;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +22,7 @@ Route::get('/forgot-password', ForgotPasswordPage::class);
 Route::get('/reset-password/{uuid}', ResetPasswordPage::class);
 Route::get('/logout', static function (UserService $service) {
     if ($service->logout()) {
+        session()->invalidate();
         return redirect('/');
     }
     return redirect('/login');
@@ -38,3 +41,10 @@ Route::get('/confirm-email/{uuid}', static function ($uuid, UserService $service
 
 Route::get('/settings', AccountSettingsPage::class);
 
+Route::prefix('/languages')->group(function () {
+    Route::get('/', LanguagesPage::class);
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/create', LanguagesCreatePage::class);
+    });
+});
