@@ -3,6 +3,7 @@
 namespace App\Aggregates;
 
 use App\Events\Language\LanguageCreated;
+use App\Events\LanguageAutonameSetted;
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
@@ -10,6 +11,8 @@ class LanguageAggregate extends AggregateRoot
 {
     public string $uuid;
     public string $name;
+    public string $autoname;
+    public string $autoname_transcription;
 
     public $uuidGenerate;
 
@@ -24,7 +27,7 @@ class LanguageAggregate extends AggregateRoot
         $this->uuidGenerate = $uuidGenerator;
     }
 
-    public function create(string $name, string $user_uuid)
+    public function create(string $name, string $user_uuid): self
     {
         $uuid = call_user_func($this->uuidGenerate);
         if (! is_string($uuid)) {
@@ -37,9 +40,23 @@ class LanguageAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyLanguageCreated(LanguageCreated $event)
+    public function applyLanguageCreated(LanguageCreated $event): void
     {
         $this->uuid = $event->uuid;
         $this->name = $event->name;
     }
+
+    public function setAutoname(string $autoname, string $autoname_transcription): self
+    {
+        $this->recordThat(new LanguageAutonameSetted($this->uuid, $autoname, $autoname_transcription));
+
+        return $this;
+    }
+
+    public function applyLanguageAutonameSetted(LanguageAutonameSetted $event): void
+    {
+        $this->autoname = $event->autoname;
+        $this->autoname_transcription = $event->autoname_transcription;
+    }
+
 }

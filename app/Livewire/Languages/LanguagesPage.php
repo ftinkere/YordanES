@@ -20,6 +20,6 @@ class LanguagesPage extends Component
 
     public function render()
     {
-        return view('livewire.languages-page');
+        return view('livewire.languages.index-page');
     }
 }

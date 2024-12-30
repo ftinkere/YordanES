@@ -1,9 +1,19 @@
-<div class="bg-neutral-300 dark:bg-neutral-800  text-lg h-12 px-2 z-10">
+<div class="bg-neutral-300 dark:bg-neutral-800  text-lg h-fit px-2 z-10">
     <div class="container mx-auto flex flex-row items-center">
         <div class="flex-grow inline-flex justify-start items-center">
             <x-button flat
                       wire:navigate
-                      href="/"><span class="text-2xl yordan-font">Ëрдан</span></x-button>
+                      href="/"
+            >
+                <span class="text-2xl yordan-font">Ëрдан</span>
+            </x-button>
+
+            <x-button flat secondary
+                      wire:navigate
+                      href="/languages"
+            >
+                Все языки
+            </x-button>
         </div>
         <div class="flex-grow inline-flex justify-end items-center">
             @auth
@@ -16,21 +26,26 @@
                         />
                     </x-slot>
 
-                    <x-dropdown.item label="Настройки"
-                                     wire:navigate
-                                     href="/settings"/>
-                    <x-dropdown.item label="Выйти"
-                                     wire:click="logout"
-                                     separator/>
+                    <x-dropdown.item
+                            label="Настройки"
+                            wire:navigate
+                            href="/settings"
+                    />
+                    <x-dropdown.item
+                            label="Выйти"
+                            wire:click="logout"
+                            separator
+                    />
                 </x-dropdown>
 
             @endauth
             @guest
-                <x-button flat
-                          secondary
-                          label="Войти"
-                          wire:navigate
-                          href="/login"/>
+                <x-button
+                        flat secondary
+                        label="Войти"
+                        wire:navigate
+                        href="/login"
+                />
             @endguest
         </div>
     </div>
