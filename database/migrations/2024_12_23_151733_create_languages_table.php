@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('languages', function (Blueprint $table) {
             $table->uuid()->primary();
 
+            $table->foreignUuid('creator_uuid')->references('uuid')->on('users');
+
             $table->string('name');
             $table->string('autoname')->nullable();
             $table->string('autoname_transcription')->nullable();
             $table->string('flag')->nullable();
 
-            $table->foreignUuid('creator_uuid')->references('uuid')->on('users');
+            $table->boolean('published')->default(false);
 
             $table->softDeletes();
             $table->timestamps();

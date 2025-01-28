@@ -8,7 +8,7 @@ use App\Models\User;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-class LanguagesCreatePage extends Component
+class CreatePage extends Component
 {
     #[Validate('required|filled')]
     public $name;

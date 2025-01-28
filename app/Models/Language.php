@@ -22,4 +22,22 @@ class Language extends Projection
             'uuid' => 'string',
         ];
     }
+
+    public function isAuthor(?User $user): bool
+    {
+        return $this->creator_uuid === $user?->uuid;
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'creator_uuid', 'uuid');
+    }
+
+    public function description(string $title): string
+    {
+        return $this->hasOne(Description::class, 'language_uuid', 'uuid')
+            ->where('title', $title)
+            ->first()
+            ?->description ?? '';
+    }
 }

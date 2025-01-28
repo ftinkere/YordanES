@@ -3,22 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\MustVerifyEmail;
-use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use SensitiveParameter;
 use Spatie\EventSourcing\Projections\Projection;
 
-class User extends Projection implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
+class User extends Projection implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
-    use HasFactory, Notifiable;
+    use Authenticatable, Authorizable;
 
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';
@@ -34,6 +28,8 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
         'name',
         'email',
         'password_hash',
+        'avatar',
+        'preferred_theme'
     ];
 
     /**
@@ -62,6 +58,17 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
     {
         return 'password_hash';
     }
+
+    public function isVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->username === 'admin';
+    }
+
 
     public static function admin(): self
     {

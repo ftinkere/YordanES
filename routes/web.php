@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\MainController;
 use App\Livewire\AccountSettingsPage;
 use App\Livewire\Auth\ForgotPasswordPage;
 use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
 use App\Livewire\Auth\ResetPasswordPage;
 use App\Livewire\IndexPage;
-use App\Livewire\Languages\LanguagesCreatePage;
-use App\Livewire\Languages\LanguagesPage;
+use App\Livewire\Languages\CreatePage as LanguagesCreatePage;
+use App\Livewire\Languages\Dictionary\ViewPage as DictionaryViewPage;
+use App\Livewire\Languages\IndexPage as LanguagesIndexPage;
+use App\Livewire\Languages\UpdatePage as LanguagesUpdatePage;
+use App\Livewire\Languages\ViewPage as LanguagesViewPage;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Route;
@@ -42,9 +44,18 @@ Route::get('/confirm-email/{uuid}', static function ($uuid, UserService $service
 Route::get('/settings', AccountSettingsPage::class);
 
 Route::prefix('/languages')->group(function () {
-    Route::get('/', LanguagesPage::class);
+    Route::get('/', LanguagesIndexPage::class);
+    Route::get('/create', LanguagesCreatePage::class)
+        ->middleware('auth')
+        ->middleware('can:create,App\Models\Language');
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/create', LanguagesCreatePage::class);
-    });
+    Route::prefix('/{language}')
+        ->middleware('can:view,language')
+        ->group(function () {
+            Route::get('/', LanguagesViewPage::class);
+            Route::get('/edit', LanguagesUpdatePage::class)
+                ->middleware('can:update,language');
+            Route::get('/dictionary', DictionaryViewPage::class);
+        });
+
 });

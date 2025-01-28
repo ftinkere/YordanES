@@ -6,7 +6,7 @@ use App\Models\Language;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class LanguagesPage extends Component
+class IndexPage extends Component
 {
     #[Locked]
     public $languages;

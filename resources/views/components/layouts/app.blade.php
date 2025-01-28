@@ -1,3 +1,7 @@
+@props([
+    'rightNavbar',
+])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -15,7 +19,13 @@
     </head>
     <body class="bg-neutral-50 dark:bg-neutral-900">
         <div class="flex flex-col">
-            <livewire:components.navbar />
+            <x-navbar>
+                @if(isset($rightNavbar))
+                    <x-slot:right>
+                        {{ $rightNavbar }}
+                    </x-slot:right>
+                @endif
+            </x-navbar>
             <livewire:components.message-bar />
 
             <div class="p-3 container mx-auto h-full">
