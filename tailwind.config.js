@@ -20,27 +20,40 @@ export default {
         "./vendor/wireui/wireui/ts/**/*.ts",
         "./vendor/wireui/wireui/src/WireUi/**/*.php",
         "./vendor/wireui/wireui/src/Components/**/*.php",
+
+        "./vendor/livewire/flux-pro/stubs/**/*.blade.php",
+        "./vendor/livewire/flux/stubs/**/*.blade.php",
     ],
 
-    darkMode: ['variant', [
-        '@media (prefers-color-scheme: dark) { &:not(.light *) }',
-        '&:is(.dark *)',
-    ]],
+    // darkMode: ['variant', [
+    //     '@media (prefers-color-scheme: dark) { &:not(.light *) }',
+    //     '&:is(.dark *)',
+    // ]],
+
+    darkMode: 'selector',
 
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', 'Helvetica Neue', ...defaultTheme.fontFamily.sans],
+                sans: ['InterVariable', 'Inter', 'Helvetica Neue', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: colors.amber,
-                secondary: colors.neutral,
+                secondary: colors.zinc,
                 positive: colors.teal,
                 negative: colors.rose,
                 warning: colors.yellow,
                 info: colors.sky,
 
                 'background-dark': colors.neutral["900"],
+
+                // zinc: colors.neutral,
+
+                accent: {
+                    DEFAULT: 'var(--color-accent)',
+                    content: 'var(--color-accent-content)',
+                    foreground: 'var(--color-accent-foreground)',
+                },
             },
         },
     },

@@ -9,13 +9,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         @vite('resources/css/app.css')
 
-        <link rel="preconnect" href="https://rsms.me/">
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
+
 
         <title>{{ isset($title) ? $title . ' - Ëрдан' : 'Ëрдан' }}</title>
 
         @vite('resources/js/app.js')
         <wireui:scripts />
+        @fluxStyles
     </head>
     <body class="bg-neutral-50 dark:bg-neutral-900">
         <div class="flex flex-col">
@@ -32,5 +34,7 @@
                 {{ $slot }}
             </div>
         </div>
+
+        @fluxScripts
     </body>
 </html>

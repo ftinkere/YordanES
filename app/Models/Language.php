@@ -33,6 +33,16 @@ class Language extends Projection
         return $this->belongsTo(User::class, 'creator_uuid', 'uuid');
     }
 
+    public function grammaticCategories()
+    {
+        return $this->hasMany(GrammaticCategory::class, 'language_uuid', 'uuid');
+    }
+
+    public function lexemeBlocksScheme()
+    {
+        return $this->hasMany(LexemeBlocksScheme::class, 'language_uuid', 'uuid');
+    }
+
     public function description(string $title): string
     {
         return $this->hasOne(Description::class, 'language_uuid', 'uuid')
