@@ -16,9 +16,9 @@ use Illuminate\Validation\Factory;
 use Illuminate\Validation\ValidationException;
 use SensitiveParameter;
 
-class UserService
+readonly class UserService
 {
-    public function __construct(private readonly Factory $validationFactory, private readonly Hasher $hasher, private readonly AuthManager $authManager)
+    public function __construct(private Factory $validationFactory, private Hasher $hasher, private AuthManager $authManager)
     {
     }
     public function register(
@@ -78,6 +78,7 @@ class UserService
 
     public function logout(): bool
     {
+        /** @var User $user */
         $user = $this->authManager->user();
         if (! $user) {
             return false;

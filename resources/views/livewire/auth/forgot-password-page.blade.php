@@ -1,8 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
-?>
+<?php declare(strict_types=1); ?>
 <div>
     <x-card title="Восстановить пароль" class="max-w-md mx-auto">
         <form wire:submit="sendRecoveryLink">
@@ -13,4 +9,3 @@ declare(strict_types=1);
         </form>
     </x-card>
 </div>
-<?php 

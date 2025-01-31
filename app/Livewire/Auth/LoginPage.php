@@ -1,14 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Livewire\Auth;
 
 use App\Services\UserService;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
-use Illuminate\Session\SessionManager;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -21,24 +15,21 @@ class LoginPage extends Component
 
     #[Validate('required')]
     public string $password;
-    public function __construct(private readonly SessionManager $sessionManager, private readonly Factory $viewFactory)
-    {
-    }
 
-    public function login(UserService $userService): void
+    public function login(UserService $service): void
     {
         $this->validate();
 
-        if ($userService->login($this->username, $this->password)) {
-            $this->sessionManager->regenerate();
+        if ($service->login($this->username, $this->password)) {
+            session()->regenerate();
             $this->redirect('/');
         } else {
             $this->addError('password', 'Неправильный логин или пароль');
         }
     }
 
-    public function render(): Factory|Application|View|\Illuminate\View\View
+    public function render()
     {
-        return $this->viewFactory->make('livewire.auth.login-page');
+        return view('livewire.auth.login-page');
     }
 }

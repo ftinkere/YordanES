@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 
+/*noinspection CssUnresolvedCustomProperty,CssUnusedSymbol*/
 @layer base {
     :root {
         --color-accent: var(--color-amber-500);

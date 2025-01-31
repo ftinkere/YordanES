@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EventSourcing\Projections\Projection;
 
@@ -30,17 +32,17 @@ class Language extends Projection
         return $this->creator_uuid === $user?->uuid;
     }
 
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_uuid', 'uuid');
     }
 
-    public function grammaticCategories()
+    public function grammaticCategories(): HasMany
     {
         return $this->hasMany(GrammaticCategory::class, 'language_uuid', 'uuid');
     }
 
-    public function lexemeBlocksScheme()
+    public function lexemeBlocksScheme(): HasMany
     {
         return $this->hasMany(LexemeBlocksScheme::class, 'language_uuid', 'uuid');
     }

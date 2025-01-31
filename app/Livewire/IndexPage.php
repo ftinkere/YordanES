@@ -1,30 +1,24 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Livewire;
 
 use App\Models\User;
-use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class IndexPage extends Component
 {
     #[Locked]
-    public ?User $user = null;
-    public function __construct(private readonly AuthManager $authManager, private readonly Factory $viewFactory)
-    {
-    }
+    public ?User $user;
 
     public function mount(): void
     {
-        $this->user = $this->authManager->user();
+        $this->user = Auth::user();
     }
 
     public function render()
     {
-        return $this->viewFactory->make('livewire.index-page');
+        return view('livewire.index-page');
     }
 }

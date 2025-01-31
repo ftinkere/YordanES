@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,7 +43,7 @@ class GrammaticCategory extends Model
         return [ 'language_uuid' ];
     }
 
-    public static function defaultCategories()
+    public static function defaultCategories(): Collection
     {
         return self::scoped(['language_uuid' => null])->withDepth()->get();
     }

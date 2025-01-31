@@ -18,7 +18,7 @@ use App\Events\User\UserSettedAvatar;
 use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
 use Carbon\CarbonInterface;
-use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use SensitiveParameter;
@@ -51,7 +51,7 @@ class UserAggregate extends AggregateRoot
 
     protected mixed $tokenGenerate = [Str::class, 'random'];
 
-    public function __construct(private readonly Hasher $hasher)
+    public function __construct()
     {
     }
 
@@ -110,7 +110,7 @@ class UserAggregate extends AggregateRoot
 
     protected function checkPassword(#[SensitiveParameter] string $password): bool
     {
-        return $this->hasher->check($password, $this->password_hash);
+        return Hash::check($password, $this->password_hash);
     }
 
     public function login(#[SensitiveParameter] string $password): self
@@ -176,7 +176,7 @@ class UserAggregate extends AggregateRoot
             return $this;
         }
 
-        $this->recordThat(new UserPasswordResetted($this->user_uuid, $this->hasher->make($password)));
+        $this->recordThat(new UserPasswordResetted($this->user_uuid, Hash::make($password)));
 
         return $this;
     }

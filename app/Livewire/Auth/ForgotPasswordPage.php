@@ -1,16 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Livewire\Auth;
 
 use App\Events\User\UserForgotPassword;
 use App\Models\User;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Foundation\Application;
-use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -20,9 +14,6 @@ class ForgotPasswordPage extends Component
 {
     #[Validate('required|email')]
     public string $email;
-    public function __construct(private readonly SessionManager $sessionManager, private readonly Dispatcher $dispatcher, private readonly Factory $viewFactory)
-    {
-    }
 
     public function sendRecoveryLink(): void
     {
@@ -38,14 +29,14 @@ class ForgotPasswordPage extends Component
         }
 
         $this->redirect('/login');
-        $this->sessionManager->flash('message', 'Вам направлено письмо со ссылкой для восстановления пароля');
+        Session::flash('message', 'Вам направлено письмо со ссылкой для восстановления пароля');
 
 
-        $this->dispatcher->dispatch(new UserForgotPassword($user->uuid));
+        event(new UserForgotPassword($user->uuid));
     }
 
-    public function render(): Factory|Application|View|\Illuminate\View\View
+    public function render()
     {
-        return $this->viewFactory->make('livewire.auth.forgot-password-page');
+        return view('livewire.auth.forgot-password-page');
     }
 }

@@ -1,15 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Livewire;
 
 use App\Aggregates\UserAggregate;
 use App\Models\User;
 use App\Services\FileService;
 use App\Services\UserService;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -26,12 +22,7 @@ class AccountSettingsPage extends Component
 
     #[Validate('min:3')]
     public string $username;
-    public function __construct(private readonly Guard $guard, private readonly Factory $viewFactory)
-    {
-    }
-
     public string $name;
-
     #[Validate('email')]
     public string $email;
 
@@ -41,12 +32,11 @@ class AccountSettingsPage extends Component
 
     public function mount(): void
     {
-        $user = $this->guard->user();
+        $user = auth()->user();
         if (! $user) {
             $this->redirect('/login');
             return;
         }
-
         $this->user = $user;
 
         $this->username = $user->username;
@@ -71,32 +61,30 @@ class AccountSettingsPage extends Component
                 $userAggregate->changeEmail($this->email);
                 break;
         }
-
         $userAggregate->persist();
-        $this->user = $this->guard->user();
+        $this->user = auth()->user();
     }
 
     #[On('livewire-upload-finish')]
-    public function avatarUpload(FileService $fileService): void
+    public function avatarUpload(FileService $service): void
     {
         $this->validate(attributes: ['avatar']);
-        $path = $fileService->uploadAvatar($this->avatar, $this->user);
+        $path = $service->uploadAvatar($this->avatar, $this->user);
         if ($path) {
             UserAggregate::retrieve($this->user->uuid)
                 ->setAvatar($path)
                 ->persist();
         }
-
-        $this->user = $this->guard->user();
+        $this->user = auth()->user();
     }
 
-    public function resendEmailConfirmation(UserService $userService): void
+    public function resendEmailConfirmation(UserService $service): void
     {
-        $userService->sendConfirmationEmail($this->user);
+        $service->sendConfirmationEmail($this->user);
     }
 
     public function render()
     {
-        return $this->viewFactory->make('livewire.account-settings-page');
+        return view('livewire.account-settings-page');
     }
 }

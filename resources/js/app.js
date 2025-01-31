@@ -3,6 +3,7 @@ import { x2i } from "./x2i.js";
 
 // Flux setting
 
+// noinspection JSUnresolvedReference
 $flux.appearance = 'system'
 
 // functions

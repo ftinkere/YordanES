@@ -9,7 +9,7 @@ use App\Models\User;
 
 class LanguagePolicy
 {
-    public function before(?User $user, $ability): ?bool
+    public function before(?User $user): ?bool
     {
         if ($user->isAdmin()) {
             return true;

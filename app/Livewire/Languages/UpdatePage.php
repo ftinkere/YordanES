@@ -1,12 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Livewire\Languages;
 
 use App\Aggregates\LanguageAggregate;
 use App\Models\Language;
-use Illuminate\Contracts\View\Factory;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -18,13 +15,8 @@ class UpdatePage extends Component
 
     #[Validate('required|filled')]
     public string $name;
-    public function __construct(private readonly Factory $viewFactory)
-    {
-    }
-
     #[Validate('required|filled')]
     public string $autoname;
-
     #[Validate('required|filled')]
     public string $autoname_transcription;
 
@@ -46,7 +38,6 @@ class UpdatePage extends Component
         if ($this->name !== $language->name) {
             $language->setName($this->name);
         }
-
         if ($this->autoname !== $language->autoname || $this->autoname_transcription !== $language->autoname_transcription) {
             $language->setAutoname($this->autoname, $this->autoname_transcription);
         }
@@ -64,7 +55,7 @@ class UpdatePage extends Component
 
     public function render()
     {
-        return $this->viewFactory->make('livewire.languages.update-page')
+        return view('livewire.languages.update-page')
             ->layout('components.layouts.language', ['language' => $this->language, 'editable' => true]);
     }
 }

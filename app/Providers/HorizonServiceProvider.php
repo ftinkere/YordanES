@@ -11,8 +11,11 @@ use Override;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
-    public function __construct(private readonly Gate $gate)
+    private Gate $gate;
+    public function __construct(protected $app)
     {
+        parent::__construct($app);
+        $this->gate = $this->app->make(Gate::class);
     }
     /**
      * Bootstrap any application services.

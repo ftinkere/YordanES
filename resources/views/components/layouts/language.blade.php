@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1); ?>
 
-declare(strict_types=1);
+@props([
+    'editable' => false,
+    'language',
+])
 
-?>
 @php
     use App\Models\Language;
 
@@ -14,11 +16,6 @@ declare(strict_types=1);
     $isEdit = Str::endsWith(url()->current(), '/edit');
     $editable = $editable && auth()->user()?->can('update', $language);
 @endphp
-
-@props([
-    'editable' => false,
-    'language',
-])
 
 <x-layouts.app>
     @if ($editable)

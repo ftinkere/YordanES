@@ -7,8 +7,8 @@ namespace App\Models;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Support\Facades\Hash;
 use SensitiveParameter;
 use Spatie\EventSourcing\Projections\Projection;
 
@@ -17,9 +17,6 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
     use Authenticatable;
     use Authorizable;
     protected $primaryKey = 'uuid';
-    public function __construct(private readonly Hasher $hasher)
-    {
-    }
 
     protected $keyType = 'string';
 
@@ -61,7 +58,7 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
         ];
     }
 
-    public function getAuthPasswordName()
+    public function getAuthPasswordName(): string
     {
         return 'password_hash';
     }
@@ -97,6 +94,6 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
 
     public function checkPassword(#[SensitiveParameter] string $password): bool
     {
-        return $this->hasher->check($password, $this->password_hash);
+        return Hash::check($password, $this->password_hash);
     }
 }

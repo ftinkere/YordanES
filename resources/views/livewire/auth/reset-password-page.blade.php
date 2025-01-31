@@ -1,8 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
-?>
+<?php declare(strict_types=1); ?>
 <x-card rounded="3xl" class="max-w-md mx-auto">
     <x-slot name="title">
         <span class="text-2xl">Восстановление пароля</span>
@@ -17,4 +13,4 @@ declare(strict_types=1);
             <x-button type="submit">Восстановить</x-button>
         </div>
     </form>
-</x-card><?php 
+</x-card>

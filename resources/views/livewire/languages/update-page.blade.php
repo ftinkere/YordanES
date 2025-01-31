@@ -1,8 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
-?>
+<?php declare(strict_types=1); ?>
 <div>
     <div class="mb-6 grid grid-cols-2 gap-x-2 gap-y-4 max-w-xl mx-auto">
         <x-input label="Название" wire:model="name" class="col-span-2" />
@@ -20,4 +16,3 @@ declare(strict_types=1);
         <x-textarea label="Описание о языке" rows="10" wire:model="about" />
     </div>
 </div>
-<?php 
