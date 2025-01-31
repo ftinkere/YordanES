@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <div class="container mx-auto px-4 w-full flex flex-col gap-2">
     <div class="group relative mx-auto">
         <x-avatar
@@ -56,3 +61,4 @@
         </tr>
     </table>
 </div>
+<?php 

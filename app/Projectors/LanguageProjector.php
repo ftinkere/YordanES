@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Projectors;
 
 use App\Events\Language\LanguageCreated;
@@ -12,50 +14,51 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class LanguageProjector extends Projector
 {
-    public function onLanguageCreated(LanguageCreated $event)
+    public function onLanguageCreated(LanguageCreated $languageCreated): void
     {
         $language = new Language();
-        $language->uuid = $event->uuid;
-        $language->name = $event->name;
-        $language->creator_uuid = $event->creator_uuid;
-        $language->created_at = $event->createdAt();
+        $language->uuid = $languageCreated->uuid;
+        $language->name = $languageCreated->name;
+        $language->creator_uuid = $languageCreated->creator_uuid;
+        $language->created_at = $languageCreated->createdAt();
         $language->writeable()->save();
     }
 
-    public function onLanguageNameSetted(LanguageNameSetted $event)
+    public function onLanguageNameSetted(LanguageNameSetted $languageNameSetted): void
     {
-        $language = Language::findOrFail($event->uuid);
-        $language->name = $event->name;
-        $language->updated_at = $event->createdAt();
+        $language = Language::findOrFail($languageNameSetted->uuid);
+        $language->name = $languageNameSetted->name;
+        $language->updated_at = $languageNameSetted->createdAt();
         $language->writeable()->save();
     }
 
-    public function onLanguageAutonameSetted(LanguageAutonameSetted $event)
+    public function onLanguageAutonameSetted(LanguageAutonameSetted $languageAutonameSetted): void
     {
-        $language = Language::findOrFail($event->uuid);
-        $language->autoname = $event->autoname;
-        $language->autoname_transcription = $event->autoname_transcription;
-        $language->updated_at = $event->createdAt();
+        $language = Language::findOrFail($languageAutonameSetted->uuid);
+        $language->autoname = $languageAutonameSetted->autoname;
+        $language->autoname_transcription = $languageAutonameSetted->autoname_transcription;
+        $language->updated_at = $languageAutonameSetted->createdAt();
         $language->writeable()->save();
     }
 
-    public function onLanguageDescriptionSetted(LanguageDescriptionSetted $event)
+    public function onLanguageDescriptionSetted(LanguageDescriptionSetted $languageDescriptionSetted): void
     {
-        $language = Language::findOrFail($event->uuid);
+        $language = Language::findOrFail($languageDescriptionSetted->uuid);
         $description = Description::where([
-            'language_uuid' => $event->uuid,
-            'title' => $event->title,
+            'language_uuid' => $languageDescriptionSetted->uuid,
+            'title' => $languageDescriptionSetted->title,
         ])->firstOrCreate();
 
-        $description->language_uuid = $event->uuid;
-        $description->title = $event->title;
-        $description->description = $event->description;
+        $description->language_uuid = $languageDescriptionSetted->uuid;
+        $description->title = $languageDescriptionSetted->title;
+        $description->description = $languageDescriptionSetted->description;
         if ($description->wasRecentlyCreated) {
-            $description->created_at = $event->createdAt();
+            $description->created_at = $languageDescriptionSetted->createdAt();
         }
-        $description->updated_at = $event->createdAt();
+
+        $description->updated_at = $languageDescriptionSetted->createdAt();
         $description->save();
 
-        $language->updated_at = $event->createdAt();
+        $language->updated_at = $languageDescriptionSetted->createdAt();
     }
 }

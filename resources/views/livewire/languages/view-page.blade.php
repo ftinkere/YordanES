@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 @php
     use App\Helpers\CommonHelper;
 @endphp
@@ -28,3 +33,4 @@
         {!! Str::of($language->description('about'))->markdown() !!}
     </article>
 </div>
+<?php 

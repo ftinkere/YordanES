@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Aggregates\UserAggregate;
@@ -8,14 +10,17 @@ use App\Events\User\UserVerifiedEmail;
 use App\Jobs\SendMail;
 use App\Mail\EmailConfirmationMail;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\AuthManager;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Validation\Factory;
 use Illuminate\Validation\ValidationException;
 use SensitiveParameter;
 
 class UserService
 {
+    public function __construct(private readonly Factory $validationFactory, private readonly Hasher $hasher, private readonly AuthManager $authManager)
+    {
+    }
     public function register(
         string $username,
         string $visible_name,
@@ -23,7 +28,7 @@ class UserService
         #[SensitiveParameter] string $password,
     ): bool
     {
-        $validator = Validator::make(compact('username', 'visible_name', 'email', 'password'), [
+        $validator = $this->validationFactory->make(['username' => $username, 'visible_name' => $visible_name, 'email' => $email, 'password' => $password], [
             'username' => 'required|min:3',
             'visible_name' => 'required|filled',
             'email' => 'required|email',
@@ -32,14 +37,15 @@ class UserService
             throw new ValidationException($validator, message: 'Невалидная регистрация');
         }
 
-        $user = new UserAggregate;
+        $userAggregate = new UserAggregate;
         if (User::checkUnique($username, $email)) {
-            $user
-                ->register($username, $visible_name, $email, Hash::make($password))
+            $userAggregate
+                ->register($username, $visible_name, $email, $this->hasher->make($password))
                 ->persist();
             return true;
         }
-        $user
+
+        $userAggregate
             ->notUniqueRegisterAttempt($username, $visible_name, $email)
             ->persist();
         return false;
@@ -51,6 +57,7 @@ class UserService
         if (! $user) {
             return false;
         }
+
         $userAggregate = UserAggregate::retrieve($user->uuid);
 
         if (!$user->checkPassword($password)) {
@@ -60,7 +67,7 @@ class UserService
             return false;
         }
 
-        Auth::login($user, true);
+        $this->authManager->login($user, true);
 
         $userAggregate
             ->login($password)
@@ -71,14 +78,15 @@ class UserService
 
     public function logout(): bool
     {
-        $user = Auth::user();
+        $user = $this->authManager->user();
         if (! $user) {
             return false;
         }
+
         $userAggregate = UserAggregate::retrieve($user->uuid);
 
         $user->remember_token = null;
-        Auth::logout();
+        $this->authManager->logout();
 
         $userAggregate
             ->logout()
@@ -86,7 +94,7 @@ class UserService
         return true;
     }
 
-    public function resetPassword(User $user, #[\SensitiveParameter] string $password, ?string $token = null): bool
+    public function resetPassword(User $user, #[SensitiveParameter] string $password, ?string $token = null): bool
     {
         $userAggregate = UserAggregate::retrieve($user->uuid);
         $events = $userAggregate
@@ -94,13 +102,13 @@ class UserService
             ->persist()
             ->getAppliedEvents();
 
-        return array_any($events, fn($event) => $event instanceof UserPasswordResetted);
+        return array_any($events, fn($event): bool => $event instanceof UserPasswordResetted);
     }
 
     public function sendConfirmationEmail(User $user): bool
     {
         // TODO: пока очень не очень, но сойдёт
-        $link = "/confirm-email/{$user->uuid}";
+        $link = '/confirm-email/' . $user->uuid;
 
         SendMail::dispatch($user->email, new EmailConfirmationMail(
             $user->name,
@@ -116,6 +124,6 @@ class UserService
             ->verifyEmail($token)
             ->persist()
             ->getAppliedEvents();
-        return array_any($events, fn($event) => $event instanceof UserVerifiedEmail);
+        return array_any($events, fn($event): bool => $event instanceof UserVerifiedEmail);
     }
 }

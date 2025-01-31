@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <x-card rounded="3xl" class="max-w-md mx-auto">
     <x-slot name="title">
         <span class="text-2xl">Регистрация</span>
@@ -16,3 +21,4 @@
         </div>
     </form>
 </x-card>
+<?php 

@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 @php use App\Models\Language; @endphp
 
 <div class="flex flex-col gap-2">
@@ -19,3 +24,4 @@
         @endforeach
     </div>
 </div>
+<?php 

@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <div class="flex flex-col gap-4">
     <x-card>
         Название должно быть понятным без знания вашего языка другим людям.
@@ -31,4 +36,4 @@
 
         <x-button class="col-span-2" wire:click="createLanguage">Создать</x-button>
     </div>
-</div>
+</div><?php 

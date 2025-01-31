@@ -1,27 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Models\Language;
 use App\Policies\LanguagePolicy;
 use App\Services\FileService;
 use App\Services\UserService;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Support\ServiceProvider;
+use Override;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function __construct(private readonly Gate $gate)
+    {
+    }
     /**
      * Register any application services.
      */
+    #[Override]
     public function register(): void
     {
-        $this->app->singleton(UserService::class, static function ($app) {
-            return new UserService;
-        });
-        $this->app->singleton(FileService::class, static function ($app) {
-            return new FileService();
-        });
+        $this->app->singleton(UserService::class, static fn($app): UserService => new UserService);
+        $this->app->singleton(FileService::class, static fn($app): FileService => new FileService());
     }
 
     /**
@@ -29,6 +32,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::policy(Language::class, LanguagePolicy::class);
+        $this->gate->policy(Language::class, LanguagePolicy::class);
     }
 }

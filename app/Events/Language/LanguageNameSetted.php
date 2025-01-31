@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events\Language;
 
-class LanguageNameSetted extends \Spatie\EventSourcing\StoredEvents\ShouldBeStored
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
+
+class LanguageNameSetted extends ShouldBeStored
 {
     public function __construct(
         public string $uuid,

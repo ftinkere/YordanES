@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\Language;
@@ -7,11 +9,12 @@ use App\Models\User;
 
 class LanguagePolicy
 {
-    public function before(?User $user, $ability)
+    public function before(?User $user, $ability): ?bool
     {
         if ($user->isAdmin()) {
             return true;
         }
+
         return null;
     }
 

@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 @props([
     'rightNavbar',
 ])
@@ -19,15 +24,16 @@
         <wireui:scripts />
         @fluxStyles
     </head>
-    <body class="bg-neutral-50 dark:bg-neutral-900">
+    <body class="bg-zinc-50 dark:bg-zinc-900">
         <div class="flex flex-col">
-            <x-navbar>
+            <x-header>
                 @if(isset($rightNavbar))
                     <x-slot:right>
                         {{ $rightNavbar }}
                     </x-slot:right>
                 @endif
-            </x-navbar>
+            </x-header>
+
             <livewire:components.message-bar />
 
             <div class="p-3 container mx-auto h-full">
@@ -38,3 +44,4 @@
         @fluxScripts
     </body>
 </html>
+<?php 

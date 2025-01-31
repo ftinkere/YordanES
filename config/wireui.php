@@ -1,7 +1,10 @@
 <?php
 
-use WireUi\Components;
-use WireUi\Enum\Packs;
+declare(strict_types=1);
+
+use WireUi\Enum\Packs\Color;
+use WireUi\Enum\Packs\Rounded;
+use WireUi\Enum\Packs\Shadow;
 use WireUi\WireUiConfig as Config;
 
 return [
@@ -30,9 +33,9 @@ return [
      */
 
     'style' => [
-        'shadow' => Packs\Shadow::BASE,
-        'rounded' => Packs\Rounded::LG,
-        'color' => Packs\Color::PRIMARY,
+        'shadow' => Shadow::BASE,
+        'rounded' => Rounded::LG,
+        'color' => Color::PRIMARY,
     ],
 
     /*

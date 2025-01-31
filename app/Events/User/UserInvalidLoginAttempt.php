@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Events\User;
 
-class UserInvalidLoginAttempt extends \Spatie\EventSourcing\StoredEvents\ShouldBeStored
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
+
+class UserInvalidLoginAttempt extends ShouldBeStored
 {
     public function __construct(
         public string $uuid,

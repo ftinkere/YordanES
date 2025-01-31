@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <div>
     <x-card title="Вы"
             class="border max-w-md mx-auto">
@@ -33,3 +38,4 @@
         </div>
     </x-card>
 </div>
+<?php 

@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Aggregates\UserAggregate;
 use App\Models\User;
 use App\Services\FileService;
 use App\Services\UserService;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -22,21 +26,27 @@ class AccountSettingsPage extends Component
 
     #[Validate('min:3')]
     public string $username;
+    public function __construct(private readonly Guard $guard, private readonly Factory $viewFactory)
+    {
+    }
+
     public string $name;
+
     #[Validate('email')]
     public string $email;
 
     /** @var UploadedFile $avatar */
     #[Validate('file|image|max:10240')]
-    public $avatar;
+    public mixed $avatar;
 
-    public function mount()
+    public function mount(): void
     {
-        $user = auth()->user();
+        $user = $this->guard->user();
         if (! $user) {
             $this->redirect('/login');
             return;
         }
+
         $this->user = $user;
 
         $this->username = $user->username;
@@ -45,7 +55,7 @@ class AccountSettingsPage extends Component
     }
 
     #[On('apply-setting')]
-    public function changeAttribute(string $attribute)
+    public function changeAttribute(string $attribute): void
     {
         $this->validate(attributes: [$attribute]);
 
@@ -61,30 +71,32 @@ class AccountSettingsPage extends Component
                 $userAggregate->changeEmail($this->email);
                 break;
         }
+
         $userAggregate->persist();
-        $this->user = auth()->user();
+        $this->user = $this->guard->user();
     }
 
     #[On('livewire-upload-finish')]
-    public function avatarUpload(FileService $service)
+    public function avatarUpload(FileService $fileService): void
     {
         $this->validate(attributes: ['avatar']);
-        $path = $service->uploadAvatar($this->avatar, $this->user);
+        $path = $fileService->uploadAvatar($this->avatar, $this->user);
         if ($path) {
             UserAggregate::retrieve($this->user->uuid)
                 ->setAvatar($path)
                 ->persist();
         }
-        $this->user = auth()->user();
+
+        $this->user = $this->guard->user();
     }
 
-    public function resendEmailConfirmation(UserService $service): void
+    public function resendEmailConfirmation(UserService $userService): void
     {
-        $service->sendConfirmationEmail($this->user);
+        $userService->sendConfirmationEmail($this->user);
     }
 
     public function render()
     {
-        return view('livewire.account-settings-page');
+        return $this->viewFactory->make('livewire.account-settings-page');
     }
 }

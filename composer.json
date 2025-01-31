@@ -19,10 +19,12 @@
         "livewire/flux-pro": "^1.1",
         "livewire/livewire": "^3.5",
         "spatie/laravel-event-sourcing": "^7.10",
-        "wireui/wireui": "^2.2"
+        "wireui/wireui": "^2.2",
+      "ext-pdo": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",
+        "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
@@ -30,7 +32,9 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "pestphp/pest": "^3.7",
-        "pestphp/pest-plugin-laravel": "^3.0"
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phpstan/phpstan": "^2.1",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {

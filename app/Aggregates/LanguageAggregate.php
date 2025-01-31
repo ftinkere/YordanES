@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Aggregates;
 
 use App\Events\Language\LanguageCreated;
@@ -12,23 +14,28 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class LanguageAggregate extends AggregateRoot
 {
     public string $uuid;
+
     public string $name;
+
     public string $autoname;
+
     public string $autoname_transcription;
+
     /** @var string[] $descriptions */
     public array $descriptions;
 
-    public $uuidGenerate;
+    public mixed $uuidGenerate = [Uuid::class, 'uuid7'];
 
 
     public function __construct()
     {
-        $this->uuidGenerate = [Uuid::class, 'uuid7'];
     }
 
-    public function withGenerators($uuidGenerator)
+    public function withGenerators(mixed $uuidGenerator): self
     {
         $this->uuidGenerate = $uuidGenerator;
+
+        return $this;
     }
 
     public function create(string $name, string $user_uuid): self
@@ -37,6 +44,7 @@ class LanguageAggregate extends AggregateRoot
         if (! is_string($uuid)) {
             $uuid = (string)$uuid;
         }
+
         $this->loadUuid($uuid);
 
         $this->recordThat(new LanguageCreated($uuid, $name, $user_uuid));
@@ -44,10 +52,10 @@ class LanguageAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyLanguageCreated(LanguageCreated $event): void
+    public function applyLanguageCreated(LanguageCreated $languageCreated): void
     {
-        $this->uuid = $event->uuid;
-        $this->name = $event->name;
+        $this->uuid = $languageCreated->uuid;
+        $this->name = $languageCreated->name;
     }
 
     public function setName(string $name): self
@@ -57,9 +65,9 @@ class LanguageAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyLanguageNameSetted(LanguageNameSetted $event): void
+    public function applyLanguageNameSetted(LanguageNameSetted $languageNameSetted): void
     {
-        $this->name = $event->name;
+        $this->name = $languageNameSetted->name;
     }
 
     public function setAutoname(string $autoname, string $autoname_transcription): self
@@ -69,10 +77,10 @@ class LanguageAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyLanguageAutonameSetted(LanguageAutonameSetted $event): void
+    public function applyLanguageAutonameSetted(LanguageAutonameSetted $languageAutonameSetted): void
     {
-        $this->autoname = $event->autoname;
-        $this->autoname_transcription = $event->autoname_transcription;
+        $this->autoname = $languageAutonameSetted->autoname;
+        $this->autoname_transcription = $languageAutonameSetted->autoname_transcription;
     }
 
     public function setDescription(string $title, string $description): self
@@ -82,8 +90,8 @@ class LanguageAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyLanguageDescriptionSetted(LanguageDescriptionSetted $event): void
+    public function applyLanguageDescriptionSetted(LanguageDescriptionSetted $languageDescriptionSetted): void
     {
-        $this->descriptions[$event->title] = $event->description;
+        $this->descriptions[$languageDescriptionSetted->title] = $languageDescriptionSetted->description;
     }
 }

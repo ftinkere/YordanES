@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\Carbon;
+use Override;
 use Spatie\EventSourcing\Projections\Projection;
 
 /**
@@ -13,13 +16,18 @@ use Spatie\EventSourcing\Projections\Projection;
 class PasswordResetToken extends Projection
 {
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $primaryKey = 'user_uuid';
 
+    #[Override]
     public function getKeyName()
     {
         return $this->primaryKey;
     }
+
+    #[Override]
     public function getRouteKeyName()
     {
         return $this->primaryKey;

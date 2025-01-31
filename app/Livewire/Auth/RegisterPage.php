@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Auth;
 
 use App\Services\UserService;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -24,20 +29,23 @@ class RegisterPage extends Component
 
     #[Validate('required|same:password')]
     public string $password_repeat;
+    public function __construct(private readonly Factory $viewFactory)
+    {
+    }
 
-    public function register(UserService $service)
+    public function register(UserService $userService): void
     {
         $this->validate();
 
-        if ($service->register($this->username, $this->visible_name, $this->email, $this->password)) {
+        if ($userService->register($this->username, $this->visible_name, $this->email, $this->password)) {
             $this->redirect('/');
         } else {
             $this->redirect('/message?text=Nope');
         }
     }
 
-    public function render()
+    public function render(): Factory|Application|View|\Illuminate\View\View
     {
-        return view('livewire.auth.register-page');
+        return $this->viewFactory->make('livewire.auth.register-page');
     }
 }

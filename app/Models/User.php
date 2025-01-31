@@ -1,21 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Support\Facades\Hash;
 use SensitiveParameter;
 use Spatie\EventSourcing\Projections\Projection;
 
 class User extends Projection implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable;
-
+    use Authenticatable;
+    use Authorizable;
     protected $primaryKey = 'uuid';
+    public function __construct(private readonly Hasher $hasher)
+    {
+    }
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**
@@ -85,11 +92,11 @@ class User extends Projection implements AuthenticatableContract, AuthorizableCo
 
     public static function checkUnique(string $username, string $email): bool
     {
-        return ! (self::where('username', $username)->exists() || self::where('email', $email)->exists());
+        return !self::where('username', $username)->exists() && !self::where('email', $email)->exists();
     }
 
     public function checkPassword(#[SensitiveParameter] string $password): bool
     {
-        return Hash::check($password, $this->password_hash);
+        return $this->hasher->check($password, $this->password_hash);
     }
 }

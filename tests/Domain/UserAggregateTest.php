@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Illuminate\Tests\Domain;
 
 use App\Aggregates\UserAggregate;
@@ -9,16 +11,19 @@ use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserVerifiedEmail;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
-class UserAggregateTest extends TestCase
+final class UserAggregateTest extends TestCase
 {
     use RefreshDatabase;
+    public function __construct(private readonly Hasher $hasher)
+    {
+    }
 
-    public function test_user_creation()
+    public function test_user_creation(): void
     {
         $mockedUuid = '0193df2c-fbb5-700a-894e-cab034252cf0';
         $mockedToken = 'test_random_token_12345';
@@ -26,13 +31,13 @@ class UserAggregateTest extends TestCase
         $username = 'test';
         $name = 'Test';
         $email = 'test@yordan.ru';
-        $hash = Hash::make('password');
+        $hash = $this->hasher->make('password');
 
         UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash) {
+            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash): void {
                 $userAggregate->withGenerators(
-                    uuidGenerate: fn() => $mockedUuid,
-                    tokenGenerate: fn() => $mockedToken,
+                    uuidGenerate: fn(): string => $mockedUuid,
+                    tokenGenerate: fn(): string => $mockedToken,
                 )
                     ->register($username, $name, $email, $hash)
                 ;
@@ -46,10 +51,10 @@ class UserAggregateTest extends TestCase
         $date = new Carbon;
 
         UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($mockedUuid, $mockedToken, $username, $name, $email, $hash, $date) {
+            ->when(function (UserAggregate $userAggregate) use ($mockedUuid, $mockedToken, $username, $name, $email, $hash, $date): UserAggregate {
                 $userAggregate->withGenerators(
-                    uuidGenerate: fn() => $mockedUuid,
-                    tokenGenerate: fn() => $mockedToken,
+                    uuidGenerate: fn(): string => $mockedUuid,
+                    tokenGenerate: fn(): string => $mockedToken,
                 )
                     ->register($username, $name, $email, $hash)
                     ->verifyEmail()
@@ -61,7 +66,7 @@ class UserAggregateTest extends TestCase
                 new UserRegistered($mockedUuid, $username, $name, $email, $hash, $mockedToken),
                 new UserVerifiedEmail($mockedUuid)
             ])
-            ->then(function ($userAggregate) use ($mockedUuid, $mockedToken, $username, $name, $email, $hash) {
+            ->then(function ($userAggregate) use ($mockedUuid, $mockedToken, $username, $name, $email, $hash): void {
                 /** @var UserAggregate $userAggregate */
                 $this->assertEquals($mockedUuid, $userAggregate->user_uuid);
                 $this->assertEquals($username, $userAggregate->username);
@@ -73,10 +78,10 @@ class UserAggregateTest extends TestCase
         ;
 
         UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($mockedUuid, $mockedToken, $username, $name, $email) {
+            ->when(function (UserAggregate $userAggregate) use ($mockedUuid, $mockedToken, $username, $name, $email): UserAggregate {
                 $userAggregate->withGenerators(
-                    uuidGenerate: fn() => $mockedUuid,
-                    tokenGenerate: fn() => $mockedToken,
+                    uuidGenerate: fn(): string => $mockedUuid,
+                    tokenGenerate: fn(): string => $mockedToken,
                 )
                     ->notUniqueRegisterAttempt($username, $name, $email)
                 ;
@@ -86,7 +91,7 @@ class UserAggregateTest extends TestCase
             ->assertRecorded([
                 new UserNotUniqueRegisterAttempted($username, $name, $email),
             ])
-            ->then(function ($userAggregate) {
+            ->then(function ($userAggregate): void {
                 /** @var UserAggregate $userAggregate */
                 $this->assertFalse(isset($userAggregate->user_uuid));
                 $this->assertFalse(isset($userAggregate->username));
@@ -98,10 +103,10 @@ class UserAggregateTest extends TestCase
         ;
 
         UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash) {
+            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash): UserAggregate {
                 $userAggregate->withGenerators(
-                    uuidGenerate: fn() => $mockedUuid,
-                    tokenGenerate: fn() => $mockedToken,
+                    uuidGenerate: fn(): string => $mockedUuid,
+                    tokenGenerate: fn(): string => $mockedToken,
                 )
                     ->register($username, $name, $email, $hash)
                     ->invalidLoginAttempt()
@@ -115,17 +120,17 @@ class UserAggregateTest extends TestCase
                 new UserInvalidLoginAttempt($mockedUuid),
                 new PasswordResetTokenCreated($mockedUuid, $mockedToken),
             ])
-            ->then(function ($userAggregate) use ($mockedToken) {
+            ->then(function ($userAggregate) use ($mockedToken): void {
                 /** @var UserAggregate $userAggregate */
                 $this->assertEquals($mockedToken, $userAggregate->reset_password_token);
             })
         ;
 
         UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash) {
+            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash): UserAggregate {
                 $userAggregate->withGenerators(
-                    uuidGenerate: fn() => $mockedUuid,
-                    tokenGenerate: fn() => $mockedToken,
+                    uuidGenerate: fn(): string => $mockedUuid,
+                    tokenGenerate: fn(): string => $mockedToken,
                 )
                     ->register($username, $name, $email, $hash)
                     ->createPasswordResetToken()
@@ -138,7 +143,7 @@ class UserAggregateTest extends TestCase
                 new UserRegistered($mockedUuid, $username, $name, $email, $hash, $mockedToken),
                 new PasswordResetTokenCreated($mockedUuid, $mockedToken),
             ])
-            ->then(function ($userAggregate) use ($mockedToken) {
+            ->then(function ($userAggregate) use ($mockedToken): void {
                 /** @var UserAggregate $userAggregate */
                 $this->assertEquals($mockedToken, $userAggregate->reset_password_token);
             })
@@ -148,10 +153,10 @@ class UserAggregateTest extends TestCase
         ;
 
         UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash) {
+            ->when(function (UserAggregate $userAggregate) use ($mockedToken, $mockedUuid, $name, $username, $email, $hash): UserAggregate {
                 $userAggregate->withGenerators(
-                    uuidGenerate: fn() => $mockedUuid,
-                    tokenGenerate: fn() => $mockedToken,
+                    uuidGenerate: fn(): string => $mockedUuid,
+                    tokenGenerate: fn(): string => $mockedToken,
                 )
                     ->register($username, $name, $email, $hash)
                     ->verifyEmail('invalid_token')

@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <tr x-data="{ isEdit: false }">
     <td>
         {{ $name }}:
@@ -20,4 +25,4 @@
         <x-link x-show="! isEdit" x-on:click="isEdit = true">Изменить</x-link>
         <x-link x-show="isEdit" x-on:click="isEdit = false" negative>Отменить</x-link>
     </td>
-</tr>
+</tr><?php 

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Components;
 
+use Illuminate\Contracts\View\Factory;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Modelable;
 use Livewire\Component;
@@ -9,8 +12,13 @@ use Livewire\Component;
 class SettingsRow extends Component
 {
     public string $name;
+    public function __construct(private readonly Factory $viewFactory)
+    {
+    }
+
     #[Modelable]
     public string $value;
+
     #[Locked]
     public string $attribute;
 
@@ -23,6 +31,6 @@ class SettingsRow extends Component
 
     public function render()
     {
-        return view('livewire.components.settings-row');
+        return $this->viewFactory->make('livewire.components.settings-row');
     }
 }

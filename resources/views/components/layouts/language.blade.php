@@ -1,16 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+?>
+@php
+    use App\Models\Language;
+
+    /**
+     * @var Language $language
+     * @var bool $editable
+     */
+
+    $isEdit = Str::endsWith(url()->current(), '/edit');
+    $editable = $editable && auth()->user()?->can('update', $language);
+@endphp
+
 @props([
     'editable' => false,
     'language',
 ])
-@php
-/**
- * @var \App\Models\Language $language
- * @var bool $editable
- */
-
-$isEdit = Str::endsWith(url()->current(), '/edit');
-$editable = $editable && auth()->user()?->can('update', $language);
-@endphp
 
 <x-layouts.app>
     @if ($editable)
@@ -48,4 +56,4 @@ $editable = $editable && auth()->user()?->can('update', $language);
 
         {{ $slot }}
     </div>
-</x-layouts.app>
+</x-layouts.app><?php 

@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Languages;
 
 use App\Models\Language;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class IndexPage extends Component
 {
     #[Locked]
-    public $languages;
+    public Collection $languages;
+    public function __construct(private readonly Factory $viewFactory)
+    {
+    }
 
-    public function mount()
+    public function mount(): void
     {
         $this->languages = Language::limit(10)
             ->orderBy('created_at', 'desc')
@@ -20,6 +27,6 @@ class IndexPage extends Component
 
     public function render()
     {
-        return view('livewire.languages.index-page');
+        return $this->viewFactory->make('livewire.languages.index-page');
     }
 }

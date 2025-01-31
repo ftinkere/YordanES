@@ -45,7 +45,7 @@ export default {
                 warning: colors.yellow,
                 info: colors.sky,
 
-                'background-dark': colors.neutral["900"],
+                'background-dark': colors.zinc["900"],
 
                 // zinc: colors.neutral,
 

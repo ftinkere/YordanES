@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Aggregates;
 
 use App\Events\User\PasswordResetTokenCreated;
@@ -10,14 +12,13 @@ use App\Events\User\UserLoggedOut;
 use App\Events\User\UserNameChanged;
 use App\Events\User\UserNewRememberToken;
 use App\Events\User\UserNotUniqueRegisterAttempted;
-use App\Events\User\UserPasswordReseted;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserSettedAvatar;
 use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
 use Carbon\CarbonInterface;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use SensitiveParameter;
@@ -28,30 +29,33 @@ class UserAggregate extends AggregateRoot
     public string $user_uuid;
 
     public string $username;
+
     public string $name;
 
     public string $email;
+
     public string $avatar;
 
     public string $password_hash;
 
     public string $remember_token;
 
-    public ?CarbonInterface $email_verified_at;
+    public ?CarbonInterface $email_verified_at = null;
 
     public string $reset_password_token;
+
     public CarbonInterface $reset_password_token_created_at;
 
 
-    protected $uuidGenerate;
-    protected $tokenGenerate;
-    public function __construct()
+    protected mixed $uuidGenerate = [Uuid::class, 'uuid7'];
+
+    protected mixed $tokenGenerate = [Str::class, 'random'];
+
+    public function __construct(private readonly Hasher $hasher)
     {
-        $this->uuidGenerate = [Uuid::class, 'uuid7'];
-        $this->tokenGenerate = [Str::class, 'random'];
     }
 
-    public function withGenerators($uuidGenerate, $tokenGenerate): self
+    public function withGenerators(mixed $uuidGenerate, mixed $tokenGenerate): self
     {
         $this->uuidGenerate = $uuidGenerate;
         $this->tokenGenerate = $tokenGenerate;
@@ -77,14 +81,14 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyUserRegistered(UserRegistered $event): void
+    public function applyUserRegistered(UserRegistered $userRegistered): void
     {
-        $this->user_uuid = $event->uuid;
-        $this->username = $event->username;
-        $this->name = $event->name;
-        $this->email = $event->email;
-        $this->password_hash = $event->password_hash;
-        $this->remember_token = $event->remember_token;
+        $this->user_uuid = $userRegistered->uuid;
+        $this->username = $userRegistered->username;
+        $this->name = $userRegistered->name;
+        $this->email = $userRegistered->email;
+        $this->password_hash = $userRegistered->password_hash;
+        $this->remember_token = $userRegistered->remember_token;
     }
 
     public function verifyEmail(?string $token = null): self
@@ -99,14 +103,14 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyUserVerifiedEmail(UserVerifiedEmail $event): void
+    public function applyUserVerifiedEmail(UserVerifiedEmail $userVerifiedEmail): void
     {
-        $this->email_verified_at = $event->createdAt();
+        $this->email_verified_at = $userVerifiedEmail->createdAt();
     }
 
     protected function checkPassword(#[SensitiveParameter] string $password): bool
     {
-        return Hash::check($password, $this->password_hash);
+        return $this->hasher->check($password, $this->password_hash);
     }
 
     public function login(#[SensitiveParameter] string $password): self
@@ -139,9 +143,9 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyUserNewRememberToken(UserNewRememberToken $event): void
+    public function applyUserNewRememberToken(UserNewRememberToken $userNewRememberToken): void
     {
-        $this->remember_token = $event->token;
+        $this->remember_token = $userNewRememberToken->token;
     }
 
     public function createPasswordResetToken(): self
@@ -153,10 +157,10 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyPasswordResetTokenCreated(PasswordResetTokenCreated $event): void
+    public function applyPasswordResetTokenCreated(PasswordResetTokenCreated $passwordResetTokenCreated): void
     {
-        $this->reset_password_token = $event->reset_token;
-        $this->reset_password_token_created_at = $event->createdAt();
+        $this->reset_password_token = $passwordResetTokenCreated->reset_token;
+        $this->reset_password_token_created_at = $passwordResetTokenCreated->createdAt();
     }
 
     public function notUniqueRegisterAttempt(string $username, string $visible_name, string $email): self
@@ -166,20 +170,20 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function resetPassword(#[\SensitiveParameter] string $password, ?string $token = null): self
+    public function resetPassword(#[SensitiveParameter] string $password, ?string $token = null): self
     {
         if ($token && ($this->reset_password_token !== $token || $this->reset_password_token_created_at->isLastHour())) {
             return $this;
         }
 
-        $this->recordThat(new UserPasswordResetted($this->user_uuid, Hash::make($password)));
+        $this->recordThat(new UserPasswordResetted($this->user_uuid, $this->hasher->make($password)));
 
         return $this;
     }
 
-    public function applyUserPasswordResetted(UserPasswordResetted $event): void
+    public function applyUserPasswordResetted(UserPasswordResetted $userPasswordResetted): void
     {
-        $this->password_hash = $event->password_hash;
+        $this->password_hash = $userPasswordResetted->password_hash;
     }
 
     public function changeUsername(string $username): self
@@ -187,14 +191,15 @@ class UserAggregate extends AggregateRoot
         if (mb_strlen($username) < 3 || $this->username === $username) {
             return $this;
         }
+
         $this->recordThat(new UserUsernameChanged($this->user_uuid, old_username: $this->username, new_username:  $username));
 
         return $this;
     }
 
-    public function applyUserUsernameChanged(UserUsernameChanged $event): void
+    public function applyUserUsernameChanged(UserUsernameChanged $userUsernameChanged): void
     {
-        $this->username = $event->new_username;
+        $this->username = $userUsernameChanged->new_username;
     }
 
     public function changeName(string $name): self
@@ -208,9 +213,9 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyUserNameChanged(UserNameChanged $event): void
+    public function applyUserNameChanged(UserNameChanged $userNameChanged): void
     {
-        $this->name = $event->new_name;
+        $this->name = $userNameChanged->new_name;
     }
 
     public function changeEmail(string $email): self
@@ -226,9 +231,9 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyUserEmailChanged(UserEmailChanged $event): void
+    public function applyUserEmailChanged(UserEmailChanged $userEmailChanged): void
     {
-        $this->email = $event->new_email;
+        $this->email = $userEmailChanged->new_email;
         $this->email_verified_at = null;
     }
 
@@ -239,8 +244,8 @@ class UserAggregate extends AggregateRoot
         return $this;
     }
 
-    public function applyUserSettedAvatar(UserSettedAvatar $event): void
+    public function applyUserSettedAvatar(UserSettedAvatar $userSettedAvatar): void
     {
-        $this->avatar = $event->path;
+        $this->avatar = $userSettedAvatar->path;
     }
 }

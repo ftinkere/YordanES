@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <div class="w-full p-2">
     <x-alert id="flash-message" info @class([
         'from-top py-2',
@@ -36,4 +41,4 @@
     }, 15000)
 
 </script>
-@endscript
+@endscript<?php 
