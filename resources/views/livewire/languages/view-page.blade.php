@@ -20,17 +20,14 @@ declare(strict_types=1);
 
             <div class="ps-3 flex flex-row gap-2 items-center rounded-full hover:dark:bg-neutral-700 cursor-pointer">
                 <span>{{ $language->author->name }}</span>
-                <x-avatar :label="$language->author->avatar ? null : mb_substr($language->author->name ?? 'А', 0, 1)"
-                          :src="$language->author->avatar"
-                          xs
-                />
+                <x-user-avatar :user="$language->author" height="2rem" />
             </div>
         </div>
     </div>
 
     <article class="mx-auto prose prose-neutral dark:prose-invert">
         {{-- TODO: Purify --}}
-        {!! Str::of($language->description('about'))->markdown() !!}
+        {!! $language->description('about') !!}
     </article>
 </div>
 <?php 

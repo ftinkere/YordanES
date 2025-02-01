@@ -80,4 +80,8 @@
         ring-0 focus:ring-0
         border-0 border-b border-b-amber-500 focus:border-b-amber-400 ;
     }
+
+    [data-flux-control] {
+        @apply focus:ring-1 focus:ring-accent focus:border-accent;
+    }
 }

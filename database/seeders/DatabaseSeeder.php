@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         if (! User::where('username', 'admin')->exists()) {
-            $admin = new UserAggregate;
+            $admin = app(UserAggregate::class);
             $admin
                 ->register('admin', 'Админ', 'admin@yordan.ru', Hash::make('password'))
                 ->verifyEmail()

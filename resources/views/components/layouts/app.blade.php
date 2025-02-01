@@ -20,8 +20,6 @@ declare(strict_types=1);
 
         <title>{{ isset($title) ? $title . ' - Ëрдан' : 'Ëрдан' }}</title>
 
-        @vite('resources/js/app.js')
-        <wireui:scripts />
         @fluxStyles
     </head>
     <body class="bg-zinc-50 dark:bg-zinc-900">
@@ -42,6 +40,8 @@ declare(strict_types=1);
         </div>
 
         @fluxScripts
+        @vite('resources/js/app.js')
+        <wireui:scripts />
     </body>
 </html>
 <?php 

@@ -40,17 +40,21 @@
         </x-slot:rightNavbar>
     @endif
 
-    <div>
-        <x-link underline href="/languages/{{ $language->uuid }}/" wire:navigate>О языке</x-link>
-        <x-link underline href="/languages/{{ $language->uuid }}/dictionary" wire:navigate>Словарь</x-link>
-    </div>
+    <div class="flex max-md:flex-col items-start gap-4 h-full">
+        <div class="w-full md:w-[220px] pb-4 mr-10">
+            <flux:navlist>
+                <flux:navlist.item icon="information-circle" href="/languages/{{ $language->uuid }}" wire:navigate>О языке</flux:navlist.item>
+                <flux:navlist.item icon="queue-list" href="/languages/{{ $language->uuid }}/dictionary" wire:navigate>Словарь</flux:navlist.item>
+            </flux:navlist>
+        </div>
 
-    <div class="flex flex-col gap-2 text-black dark:text-neutral-300">
-        <h1 class="mx-auto text-2xl">
-            {{ $language->autoname ? "{$language->autoname} /$language->autoname_transcription/ - " : '' }}
-            {{ $language->name }}
-        </h1>
+        <div class="flex flex-col gap-2 text-black dark:text-neutral-300 w-full">
+            <flux:heading size="xl" class="mx-auto text-2xl">
+                {{ $language->autoname ? "{$language->autoname} /$language->autoname_transcription/ - " : '' }}
+                {{ $language->name }}
+            </flux:heading>
 
-        {{ $slot }}
+            {{ $slot }}
+        </div>
     </div>
-</x-layouts.app><?php 
+</x-layouts.app><?php

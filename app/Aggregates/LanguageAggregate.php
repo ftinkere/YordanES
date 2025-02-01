@@ -8,7 +8,7 @@ use App\Events\Language\LanguageCreated;
 use App\Events\Language\LanguageDescriptionSetted;
 use App\Events\Language\LanguageNameSetted;
 use App\Events\LanguageAutonameSetted;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidFactoryInterface;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class LanguageAggregate extends AggregateRoot
@@ -24,23 +24,13 @@ class LanguageAggregate extends AggregateRoot
     /** @var string[] $descriptions */
     public array $descriptions;
 
-    public mixed $uuidGenerate = [Uuid::class, 'uuid7'];
-
-
-    public function __construct()
-    {
-    }
-
-    public function withGenerators(mixed $uuidGenerator): self
-    {
-        $this->uuidGenerate = $uuidGenerator;
-
-        return $this;
-    }
+    public function __construct(
+        protected UuidFactoryInterface $uuidFactory,
+    ) {}
 
     public function create(string $name, string $user_uuid): self
     {
-        $uuid = call_user_func($this->uuidGenerate);
+        $uuid = $this->uuidFactory->uuid7();
         if (! is_string($uuid)) {
             $uuid = (string)$uuid;
         }
@@ -93,5 +83,10 @@ class LanguageAggregate extends AggregateRoot
     public function applyLanguageDescriptionSetted(LanguageDescriptionSetted $languageDescriptionSetted): void
     {
         $this->descriptions[$languageDescriptionSetted->title] = $languageDescriptionSetted->description;
+    }
+
+    public function dictionary(): DictionaryAggregate
+    {
+        return DictionaryAggregate::retrieve($this->uuid);
     }
 }

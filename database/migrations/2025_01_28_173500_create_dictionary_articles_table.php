@@ -18,7 +18,7 @@ return new class extends Migration
                 ->references('uuid')
                 ->on('languages');
 
-
+            $table->boolean('is_published')->default(false);
 
             $table->timestamps();
         });

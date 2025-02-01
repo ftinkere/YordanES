@@ -1,18 +1,24 @@
 <?php declare(strict_types=1); ?>
 <div>
     <div class="mb-6 grid grid-cols-2 gap-x-2 gap-y-4 max-w-xl mx-auto">
-        <x-input label="Название" wire:model="name" class="col-span-2" />
-        <x-input label="Аутоним" wire:model="autoname" />
-        <x-input label="Произношение" wire:model="autoname_transcription">
-            <x-slot:corner>
-                <x-x2i name="autoname_transcription" />
-            </x-slot:corner>
-        </x-input>
+        <div class="col-span-2">
+            <flux:input icon="pencil" label="Название" wire:model="name" />
+        </div>
+        <flux:input icon="user" label="Аутоним" wire:model="autoname" />
+        <flux:input icon="speaker-wave" label="Произношение" wire:model="autoname_transcription">
+            <x-slot name="iconTrailing">
+                <flux:button size="sm" variant="subtle" icon="arrow-path" class="-mr-1" x-on:click="x2i_input('autoname_transcription')" />
+            </x-slot>
+        </flux:input>
 
         <x-button positive label="Сохранить" class="col-span-2" wire:click="updateLanguage" />
     </div>
 
     <div class="mx-auto max-w-xl">
-        <x-textarea label="Описание о языке" rows="10" wire:model="about" />
+        <flux:editor
+                label="Описание о языке"
+                wire:model="about"
+                toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
+        />
     </div>
 </div>

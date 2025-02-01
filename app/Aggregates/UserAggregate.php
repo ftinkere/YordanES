@@ -17,10 +17,13 @@ use App\Events\User\UserRegistered;
 use App\Events\User\UserSettedAvatar;
 use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
+use App\Services\contracts\RandomInterface;
 use Carbon\CarbonInterface;
+use DomainException;
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidFactoryInterface;
 use SensitiveParameter;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
@@ -47,39 +50,10 @@ class UserAggregate extends AggregateRoot
     public CarbonInterface $reset_password_token_created_at;
 
 
-    protected mixed $uuidGenerate = [Uuid::class, 'uuid7'];
-
-    protected mixed $tokenGenerate = [Str::class, 'random'];
-
-    public function __construct()
-    {
-    }
-
-    public function withGenerators(mixed $uuidGenerate, mixed $tokenGenerate): self
-    {
-        $this->uuidGenerate = $uuidGenerate;
-        $this->tokenGenerate = $tokenGenerate;
-
-        return $this;
-    }
-
-    // Не вызывать без проверки на уникальность $username и $email
-    // Пока что проверка только по query базе
-    public function register(string $username, string $name, string $email, string $password_hash): ?self
-    {
-        $uuid = call_user_func($this->uuidGenerate);
-        $remember_token = call_user_func($this->tokenGenerate, 60);
-
-        if (! is_string($uuid)) {
-            $uuid = $uuid->toString();
-        }
-
-        $this->loadUuid($uuid);
-
-        $this->recordThat(new UserRegistered($uuid, $username, $name, $email, $password_hash, $remember_token));
-
-        return $this;
-    }
+    public function __construct(
+        protected UuidFactoryInterface $uuidFactory,
+        protected RandomInterface $random,
+    ) {}
 
     public function applyUserRegistered(UserRegistered $userRegistered): void
     {
@@ -137,7 +111,7 @@ class UserAggregate extends AggregateRoot
     {
         $this->recordThat(new UserLoggedOut($this->user_uuid));
 
-        $token = call_user_func($this->tokenGenerate, 60);
+        $token = $this->random->randomString(60);
         $this->recordThat(new UserNewRememberToken($this->user_uuid, $token));
 
         return $this;
@@ -150,7 +124,7 @@ class UserAggregate extends AggregateRoot
 
     public function createPasswordResetToken(): self
     {
-        $token = call_user_func($this->tokenGenerate, 64);
+        $token = $this->random->randomString(64);
 
         $this->recordThat(new PasswordResetTokenCreated($this->user_uuid, $token));
 
@@ -191,6 +165,7 @@ class UserAggregate extends AggregateRoot
         if (mb_strlen($username) < 3 || $this->username === $username) {
             return $this;
         }
+        // TODO: проверка на уникальность ?
 
         $this->recordThat(new UserUsernameChanged($this->user_uuid, old_username: $this->username, new_username:  $username));
 
@@ -220,7 +195,10 @@ class UserAggregate extends AggregateRoot
 
     public function changeEmail(string $email): self
     {
-        // TODO: валидацию почты
+        $validator = new EmailValidator();
+        if (! $validator->isValid($email, new RFCValidation)) {
+            throw new DomainException($validator->getError()->description());
+        }
 
         if ($this->email === $email) {
             return $this;

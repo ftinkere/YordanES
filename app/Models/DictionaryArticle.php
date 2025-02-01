@@ -6,7 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class DictionaryArticle extends Model
 {
@@ -22,9 +22,9 @@ class DictionaryArticle extends Model
         return $this->belongsTo(Language::class, 'language_uuid');
     }
 
-    public function vocables(): HasMany
+    public function vocabula(): HasOne
     {
-        return $this->hasMany(Vocabula::class, 'article_uuid', 'uuid');
+        return $this->hasOne(Vocabula::class, 'article_uuid', 'uuid');
     }
 
     protected function casts(): array

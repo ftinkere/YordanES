@@ -37,7 +37,7 @@ readonly class UserService
             throw new ValidationException($validator, message: 'Невалидная регистрация');
         }
 
-        $userAggregate = new UserAggregate;
+        $userAggregate = app(UserAggregate::class);
         if (User::checkUnique($username, $email)) {
             $userAggregate
                 ->register($username, $visible_name, $email, $this->hasher->make($password))
