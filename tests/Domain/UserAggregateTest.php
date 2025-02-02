@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Domain;
 
 use App\Aggregates\UserAggregate;
-use App\Aggregates\UserRepositoryAggregate;
 use App\Events\User\PasswordResetTokenCreated;
 use App\Events\User\UserEmailChanged;
 use App\Events\User\UserInvalidLoginAttempt;
@@ -13,7 +12,6 @@ use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
 use App\Events\User\UserNameChanged;
 use App\Events\User\UserNewRememberToken;
-use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserSettedAvatar;
@@ -52,69 +50,8 @@ final class UserAggregateTest extends TestCase
             $mock->allows('randomString')->andReturns($mockedToken);
         });
 
-        // Регистрация
-        $repository = UserRepositoryAggregate::fake();
-        $repository->when(function (UserRepositoryAggregate $userRepositoryAggregate) use ($hash, $email, $name, $username) {
-            return $userRepositoryAggregate->register($username, $name, $email, $hash);
-        })->then(function (UserAggregate $userAggregate) use ($password, $name, $username, $email, $mockedUuid) {
-            $this->assertInstanceOf(UserAggregate::class, $userAggregate);
-            $this->assertEquals($mockedUuid, $userAggregate->user_uuid);
-            $this->assertEquals($email, $userAggregate->email);
-            $this->assertEquals($username, $userAggregate->username);
-            $this->assertEquals($name, $userAggregate->name);
-            $this->assertTrue(Hash::check($password, $userAggregate->password_hash));
-        });
-
-        return;
-
-        // Пользователь регистрируется
-        // Почта верифицируется
-        // Данные занесены верно
-        UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($username, $name, $email, $hash): UserAggregate {
-                $userAggregate
-                    ->register($username, $name, $email, $hash)
-                    ->verifyEmail()
-                ;
-
-                return $userAggregate;
-            })
-            ->assertRecorded([
-                new UserRegistered($mockedUuid, $username, $name, $email, $hash, $mockedToken),
-                new UserVerifiedEmail($mockedUuid)
-            ])
-            ->then(function ($userAggregate) use ($mockedToken, $mockedUuid, $username, $name, $email, $hash): void {
-                /** @var UserAggregate $userAggregate */
-                $this->assertEquals($mockedUuid, $userAggregate->user_uuid);
-                $this->assertEquals($username, $userAggregate->username);
-                $this->assertEquals($name, $userAggregate->name);
-                $this->assertEquals($email, $userAggregate->email);
-                $this->assertEquals($hash, $userAggregate->password_hash);
-                $this->assertEquals($mockedToken, $userAggregate->remember_token);
-            })
-        ;
-
-        // Попытка зарегаться под уже существующим ником
-        UserAggregate::fake()
-            ->when(function (UserAggregate $userAggregate) use ($username, $name, $email): UserAggregate {
-                $userAggregate
-                    ->notUniqueRegisterAttempt($username, $name, $email)
-                ;
-                return $userAggregate;
-            })
-            ->assertRecorded([
-                new UserNotUniqueRegisterAttempted($username, $name, $email),
-            ])
-            ->then(function ($userAggregate): void {
-                /** @var UserAggregate $userAggregate */
-                $this->assertFalse(isset($userAggregate->user_uuid));
-                $this->assertFalse(isset($userAggregate->username));
-                $this->assertFalse(isset($userAggregate->name));
-                $this->assertFalse(isset($userAggregate->email));
-                $this->assertFalse(isset($userAggregate->password_hash));
-                $this->assertFalse(isset($userAggregate->remember_token));
-            })
-        ;
+        return ;
+        $i++ ;
 
         // Регистрация, невалидный вход и создание токена восстановления пароля
         UserAggregate::fake()

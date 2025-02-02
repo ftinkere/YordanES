@@ -11,7 +11,6 @@ use App\Events\User\UserLoggedIn;
 use App\Events\User\UserLoggedOut;
 use App\Events\User\UserNameChanged;
 use App\Events\User\UserNewRememberToken;
-use App\Events\User\UserNotUniqueRegisterAttempted;
 use App\Events\User\UserPasswordResetted;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserSettedAvatar;
@@ -137,13 +136,6 @@ class UserAggregate extends AggregateRoot
         $this->reset_password_token_created_at = $passwordResetTokenCreated->createdAt();
     }
 
-    public function notUniqueRegisterAttempt(string $username, string $visible_name, string $email): self
-    {
-        $this->recordThat(new UserNotUniqueRegisterAttempted($username, $visible_name, $email));
-
-        return $this;
-    }
-
     public function resetPassword(#[SensitiveParameter] string $password, ?string $token = null): self
     {
         if ($token && ($this->reset_password_token !== $token || $this->reset_password_token_created_at->isLastHour())) {
@@ -158,18 +150,6 @@ class UserAggregate extends AggregateRoot
     public function applyUserPasswordResetted(UserPasswordResetted $userPasswordResetted): void
     {
         $this->password_hash = $userPasswordResetted->password_hash;
-    }
-
-    public function changeUsername(string $username): self
-    {
-        if (mb_strlen($username) < 3 || $this->username === $username) {
-            return $this;
-        }
-        // TODO: проверка на уникальность ?
-
-        $this->recordThat(new UserUsernameChanged($this->user_uuid, old_username: $this->username, new_username:  $username));
-
-        return $this;
     }
 
     public function applyUserUsernameChanged(UserUsernameChanged $userUsernameChanged): void
