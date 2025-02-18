@@ -10,6 +10,7 @@ use DomainException;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\UuidFactoryInterface;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use stdClass;
@@ -18,19 +19,27 @@ use function is_string;
 
 class UserRepositoryAggregate extends AggregateRoot
 {
+    public const string UUID = '0194e417-2489-7f2c-b824-9bed59a51ce4';
     public array $users = [];
 
     public function __construct(
         protected UuidFactoryInterface $uuidFactory,
         protected RandomInterface $random,
-    ) {}
+    ) {
+        $this->loadUuid(self::UUID);
+    }
+
+    public static function retrieve(string $uuid = self::UUID): static
+    {
+        return parent::retrieve(self::UUID);
+    }
 
     public function register(string $username, string $name, string $email, string $password_hash): UserAggregate
     {
         // Чек почты на валидность
         $validator = new EmailValidator();
         if (! $validator->isValid($email, new RFCValidation)) {
-            throw new DomainException($validator->getError()->description());
+            throw new ValidationException($validator);
         }
 
         // Чек почты и ника на уникальность
@@ -39,7 +48,7 @@ class UserRepositoryAggregate extends AggregateRoot
         });
 
         if ($exist) {
-            $this->notUniqueRegisterAttempt($username, $name, $email); // To persist or not to persist
+            $this->notUniqueRegisterAttempt($username, $name, $email)->persist();
             throw new DomainException('Пользователь с таким никнеймом или почтой уже существует.');
         }
 
@@ -53,8 +62,9 @@ class UserRepositoryAggregate extends AggregateRoot
         $user = app(UserAggregate::class);
         $user->loadUuid($uuid);
         $event = new UserRegistered($uuid, $username, $name, $email, $password_hash, $remember_token);
-        $this->apply($event);
+        $this->recordThat($event)->persist();
         $user->recordThat($event);
+        $this->snapshot();
         return $user;
     }
 
@@ -89,7 +99,7 @@ class UserRepositoryAggregate extends AggregateRoot
         }
 
         $exist = Arr::where($this->users, function ($value, $key) use ($username) {
-            return $value->username === $username;
+            return $value['username'] === $username;
         });
 
         if ($exist) {
@@ -97,18 +107,18 @@ class UserRepositoryAggregate extends AggregateRoot
         }
 
         $event = new UserUsernameChanged($userAggregate->user_uuid, old_username: $userAggregate->username, new_username:  $username);
-        $this->apply($event);
-        $userAggregate->recordThat($event);
+        $this->recordThat($event);
+        $userAggregate->recordThat($event)->persist();
+        $this->snapshot();
         return $this;
     }
 
     public function applyUserUsernameChanged(UserUsernameChanged $userUsernameChanged): void
     {
-        $exist = Arr::where($this->users, function ($value, $key) use ($userUsernameChanged) {
-            return $value->username === $userUsernameChanged->old_username;
-        });
-        if ($exist) {
-            $exist[$userUsernameChanged->uuid]->username = $userUsernameChanged->new_username;
+        foreach ($this->users as &$user) {
+            if ($user['username'] === $userUsernameChanged->old_username && $user['uuid'] === $userUsernameChanged->uuid) {
+                $user['username'] = $userUsernameChanged->new_username;
+            }
         }
     }
 

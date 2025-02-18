@@ -1,8 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
-?>
+@php declare(strict_types=1); @endphp
 @props([
     'rightNavbar',
 ])
@@ -23,7 +19,7 @@ declare(strict_types=1);
         @fluxStyles
     </head>
     <body class="bg-zinc-50 dark:bg-zinc-900">
-        <div class="flex flex-col">
+        <div class="relative flex flex-col">
             <x-header>
                 @if(isset($rightNavbar))
                     <x-slot:right>
@@ -34,8 +30,17 @@ declare(strict_types=1);
 
             <livewire:components.message-bar />
 
-            <div class="p-3 container mx-auto h-full">
-                {{ $slot }}
+            <div class="flex flex-col md:flex-row gap-1">
+                @if (isset($sidebar))
+                    <div class="md:w-64 pb-4 ml-4 mr-4 md:mr-10">
+                        <div class="absolute р-14 top-0 -left-4 md:w-64 min-h-screen h-full w-full bg-zinc-200 dark:bg-zinc-800 -z-10 drop-shadow-lg"></div>
+                        {{ $sidebar }}
+                    </div>
+                @endif
+
+                <div class="p-3 container mx-auto h-full">
+                    {{ $slot }}
+                </div>
             </div>
         </div>
 
@@ -44,4 +49,3 @@ declare(strict_types=1);
         <wireui:scripts />
     </body>
 </html>
-<?php 

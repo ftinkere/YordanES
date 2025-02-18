@@ -16,6 +16,7 @@ use App\Services\FileService;
 use App\Services\RandomService;
 use App\Services\UserService;
 use Illuminate\Auth\AuthManager;
+use Illuminate\Auth\AuthServiceProvider;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Hashing\Hasher;
@@ -35,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
     public function __construct(protected $app)
     {
         parent::__construct($app);
+
+        $this->app->register(AuthServiceProvider::class);
+
         $this->gate = $this->app->make(Gate::class);
     }
     /**
@@ -47,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->make(Factory::class),
             $this->app->make(Hasher::class),
             $this->app->make(AuthManager::class),
+            $this->app->make(UserRepositoryAggregate::class),
         ));
         $this->app->singleton(FileService::class, static fn($app): FileService => new FileService);
         $this->app->singleton(RandomInterface::class, static fn($app): RandomService => new RandomService);
@@ -69,8 +74,8 @@ class AppServiceProvider extends ServiceProvider
             $app->make(UuidFactoryInterface::class),
         ));
 
-        $this->app->bind(DictionaryAggregate::class, static fn($app): DictionaryAggregate => new DictionaryAggregate(
-            $app->make(UuidFactoryInterface::class),
+        $this->app->bind(DictionaryAggregate::class, static fn ($app): DictionaryAggregate => new DictionaryAggregate(
+                $app->make(UuidFactoryInterface::class)
         ));
 
         $this->app->bind(ArticleAggregate::class, static fn($app): ArticleAggregate => new ArticleAggregate(

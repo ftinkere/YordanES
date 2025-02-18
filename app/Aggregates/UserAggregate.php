@@ -16,12 +16,14 @@ use App\Events\User\UserRegistered;
 use App\Events\User\UserSettedAvatar;
 use App\Events\User\UserUsernameChanged;
 use App\Events\User\UserVerifiedEmail;
+use App\Models\User;
 use App\Services\contracts\RandomInterface;
 use Carbon\CarbonInterface;
 use DomainException;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
 use Illuminate\Support\Facades\Hash;
+use Psr\Log\InvalidArgumentException;
 use Ramsey\Uuid\UuidFactoryInterface;
 use SensitiveParameter;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
@@ -40,7 +42,7 @@ class UserAggregate extends AggregateRoot
 
     public string $password_hash;
 
-    public string $remember_token;
+    public ?string $remember_token;
 
     public ?CarbonInterface $email_verified_at = null;
 
@@ -68,7 +70,7 @@ class UserAggregate extends AggregateRoot
     {
         // TODO: поменять на свой токен
         if ($token !== null && $token !== $this->user_uuid) {
-            return $this;
+            throw new InvalidArgumentException('Неправильный токен для подтверждения почты');
         }
 
         $this->recordThat(new UserVerifiedEmail($this->user_uuid));
@@ -89,11 +91,13 @@ class UserAggregate extends AggregateRoot
     public function login(#[SensitiveParameter] string $password): self
     {
         if (! $this->checkPassword($password)) {
-            $this->invalidLoginAttempt();
+            $this->invalidLoginAttempt()->persist();
 
-            return $this;
+            throw new InvalidArgumentException('Неправильный логин или пароль');
         }
 
+        $token = $this->random->randomString(60);
+        $this->recordThat(new UserNewRememberToken($this->user_uuid, $token));
         $this->recordThat(new UserLoggedIn($this->user_uuid));
 
         return $this;
@@ -110,7 +114,8 @@ class UserAggregate extends AggregateRoot
     {
         $this->recordThat(new UserLoggedOut($this->user_uuid));
 
-        $token = $this->random->randomString(60);
+//        $token = $this->random->randomString(60);
+        $token = null;
         $this->recordThat(new UserNewRememberToken($this->user_uuid, $token));
 
         return $this;
@@ -138,8 +143,11 @@ class UserAggregate extends AggregateRoot
 
     public function resetPassword(#[SensitiveParameter] string $password, ?string $token = null): self
     {
-        if ($token && ($this->reset_password_token !== $token || $this->reset_password_token_created_at->isLastHour())) {
-            return $this;
+        if (
+            $token &&
+            ($this->reset_password_token !== $token || ! $this->reset_password_token_created_at->isLastHour())
+        ) {
+            throw new InvalidArgumentException('Неправильный токен для восстановления пароля');
         }
 
         $this->recordThat(new UserPasswordResetted($this->user_uuid, Hash::make($password)));
@@ -205,5 +213,10 @@ class UserAggregate extends AggregateRoot
     public function applyUserSettedAvatar(UserSettedAvatar $userSettedAvatar): void
     {
         $this->avatar = $userSettedAvatar->path;
+    }
+
+    public function model(): ?User
+    {
+        return User::firstWhere('username', $this->username);
     }
 }

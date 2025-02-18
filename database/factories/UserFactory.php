@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    protected $model = User::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -26,7 +28,7 @@ class UserFactory extends Factory
     {
         return [
             'username' => fake()->userName(),
-            'visible_name' => fake()->firstName(),
+            'name' => fake()->firstName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),

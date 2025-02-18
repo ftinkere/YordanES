@@ -6,14 +6,20 @@ declare(strict_types=1);
 @php use App\Models\User; @endphp
 @props([
     'user' => null,
-    'height' => '5rem',
+    'size' => '10',
+    'iconSize' => '2xl',
 ])
 @php
 /**
 * @var User $user
 */
 @endphp
-<div {{ $attributes }}>
-    <img class="rounded-full aspect-square shadow-lg border border-zinc-500/10" src="{{ $user?->avatar }}" style="height: {{ $height }}; width: {{ $height }};" alt="аватар">
-</div>
+<x-avatar
+        :label="$user->avatar ? null : mb_substr($user->name ?? 'А', 0, 1)"
+        :src="$user->avatar"
+        size="w-{{ $size }}  h-{{ $size }}"
+        icon-size="{{ $iconSize }}"
+        class="group-hover:filter group-hover:brightness-50"
+        {{ $attributes }}
+/>
 <?php 

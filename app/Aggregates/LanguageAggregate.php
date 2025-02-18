@@ -17,9 +17,9 @@ class LanguageAggregate extends AggregateRoot
 
     public string $name;
 
-    public string $autoname;
+    public ?string $autoname = null;
 
-    public string $autoname_transcription;
+    public ?string $autoname_transcription = null;
 
     /** @var string[] $descriptions */
     public array $descriptions;
@@ -87,6 +87,6 @@ class LanguageAggregate extends AggregateRoot
 
     public function dictionary(): DictionaryAggregate
     {
-        return DictionaryAggregate::retrieve($this->uuid);
+        return DictionaryAggregate::retrieve($this->uuid)->loadUuid($this->uuid);
     }
 }

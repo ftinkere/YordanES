@@ -1,4 +1,11 @@
-<?php declare(strict_types=1); ?>
+@php declare(strict_types=1); @endphp
+
+<x-slot name="rightNavbar">
+    <x-button negative light
+        href="/languages/{{ $language->uuid }}" wire:navigate
+    >Отменить</x-button>
+</x-slot>
+
 <div>
     <div class="mb-6 grid grid-cols-2 gap-x-2 gap-y-4 max-w-xl mx-auto">
         <div class="col-span-2">

@@ -9,13 +9,20 @@ use App\Livewire\Auth\RegisterPage;
 use App\Livewire\Auth\ResetPasswordPage;
 use App\Livewire\IndexPage;
 use App\Livewire\Languages\CreatePage as LanguagesCreatePage;
-use App\Livewire\Languages\Dictionary\ViewPage as DictionaryViewPage;
+use App\Livewire\Languages\Dictionary\CreatePage as DictionaryCreatePage;
+use App\Livewire\Languages\Dictionary\IndexPage as DictionaryIndexPage;
 use App\Livewire\Languages\IndexPage as LanguagesIndexPage;
 use App\Livewire\Languages\UpdatePage as LanguagesUpdatePage;
 use App\Livewire\Languages\ViewPage as LanguagesViewPage;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Route;
+
+///
+Route::get('/info', function () {
+    return phpinfo();
+});
+///
 
 Route::get('/', IndexPage::class);
 
@@ -59,7 +66,10 @@ Route::prefix('/languages')->group(function (): void {
             Route::get('/', LanguagesViewPage::class);
             Route::get('/edit', LanguagesUpdatePage::class)
                 ->middleware('can:update,language');
-            Route::get('/dictionary', DictionaryViewPage::class);
+            Route::prefix('/dictionary')->group(function (): void {
+                Route::get('/', DictionaryIndexPage::class);
+                Route::get('/create', DictionaryCreatePage::class);
+            });
         });
 
 });

@@ -1,20 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\EventSourcing\Projections\Projection;
 
-class DictionaryArticle extends Model
+class DictionaryArticle extends Projection
 {
-    protected $table = 'dictionary_article';
-
     protected $fillable = [
         'uuid',
         'language_uuid',
+        'short',
+        'full',
+        'vocabula',
+        'adaptation',
+        'transcription',
+        'is_published',
     ];
 
     public function language(): BelongsTo
@@ -22,15 +23,16 @@ class DictionaryArticle extends Model
         return $this->belongsTo(Language::class, 'language_uuid');
     }
 
-    public function vocabula(): HasOne
-    {
-        return $this->hasOne(Vocabula::class, 'article_uuid', 'uuid');
-    }
-
     protected function casts(): array
     {
         return [
             'uuid' => 'string',
+            'is_published' => 'boolean',
         ];
+    }
+
+    public function lexemes()
+    {
+        return$this->hasMany(Lexeme::class, 'article_uuid');
     }
 }

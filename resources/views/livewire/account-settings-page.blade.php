@@ -1,8 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
-?>
+@php declare(strict_types=1) @endphp
 <div class="container mx-auto px-4 w-full flex flex-col gap-2">
     <div class="group relative mx-auto">
         <x-avatar
@@ -20,25 +16,57 @@ declare(strict_types=1);
         </span>
         <input wire:model.live="avatar" id="avatar-input" class="hidden" type="file" accept="image/*" max="10240" >
     </div>
+    @error('avatar')
+        <p class="flex flex-row gap-2">
+            <flux:icon.exclamation-triangle />
+            {{ $message }}
+        </p>
+    @enderror
 
     <table class="settings-table">
-        <livewire:components.settings-row
-                name="Имя пользователя"
-                attribute="username"
-                wire:model="username"
-        />
+        @php
+            $rows = [
+                ['label' => 'Имя пользователя', 'attribute' => 'username'],
+                ['label' => 'Отображаемое имя', 'attribute' => 'name'],
+                ['label' => 'Почта', 'attribute' => 'email'], // нужна последней пока что
+            ];
+        @endphp
+        @foreach($rows as ['label' => $label, 'attribute' => $attribute])
+            <tr x-data="{ isEdit: false }">
+                <td>
+                    {{ $label }}:
+                </td>
+                <td>
+                    <span x-show="! isEdit">{{ $$attribute }}</span>
+                    <span x-show="isEdit">
+                        <input class="x-input-lite" wire:model="{{ $attribute }}"/>
+                    </span>
+                </td>
+                <td>
+                    <x-link positive
+                            x-show="isEdit"
+                            x-on:click="isEdit = ! isEdit"
+                            wire:dirty
+                            wire:target="{{ $attribute }}"
+                            wire:confirm="Вы уверены?"
+                            wire:click="$refresh"
+                    >Применить</x-link>
+                    <x-link x-show="! isEdit" x-on:click="isEdit = true">Изменить</x-link>
+                    <x-link x-show="isEdit" x-on:click="isEdit = false" negative>Отменить</x-link>
+                </td>
+            </tr>
+            @error($attribute)
+            <tr class="!h-8">
+                <td colspan="3" class="text-negative-600">
+                    <p class="flex flex-row gap-2">
+                        <flux:icon.exclamation-triangle />
+                        {{ $message }}
+                    </p>
+                </td>
+            </tr>
+            @enderror
 
-        <livewire:components.settings-row
-                name="Отображаемое имя"
-                attribute="name"
-                wire:model="name"
-        />
-
-        <livewire:components.settings-row
-                name="Почта"
-                attribute="email"
-                wire:model="email"
-        />
+        @endforeach
 
         <tr class="!h-8">
             <td>
@@ -54,8 +82,7 @@ declare(strict_types=1);
                             x-data="{ show: true }"
                             x-show="show"
                             x-on:click="show = false"
-                    >Подтвердить
-                    </x-link>
+                    >Подтвердить</x-link>
                 @endif
             </td>
         </tr>

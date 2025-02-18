@@ -84,4 +84,12 @@
     [data-flux-control] {
         @apply focus:ring-1 focus:ring-accent focus:border-accent;
     }
+
+    .newable .newable-color {
+        @apply bg-positive-900/80 hover:bg-positive-900/60;
+    }
+
+    .disabled {
+        @apply opacity-50 pointer-events-none;
+    }
 }

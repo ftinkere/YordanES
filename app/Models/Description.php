@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\EventSourcing\Projections\Projection;
 
-class Description extends Model
+class Description extends Projection
 {
     protected $primaryKey = 'uuid';
 

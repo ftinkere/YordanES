@@ -18,6 +18,13 @@ return new class extends Migration
                 ->references('uuid')
                 ->on('languages');
 
+            $table->text('short');
+            $table->text('full');
+
+            $table->text('vocabula');
+            $table->text('adaptation')->nullable();
+            $table->text('transcription')->nullable();
+
             $table->boolean('is_published')->default(false);
 
             $table->timestamps();

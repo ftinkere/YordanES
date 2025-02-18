@@ -3,6 +3,7 @@
 @props([
     'editable' => false,
     'language',
+    'rightNavbar' => null,
 ])
 
 @php
@@ -18,35 +19,38 @@
 @endphp
 
 <x-layouts.app>
-    @if ($editable)
+    @if ($rightNavbar)
         <x-slot:rightNavbar>
-            @if($isEdit)
-                <x-button
-                    negative light
-                    wire:navigate
-                    href="{{ Str::replaceLast('/edit', '', url()->current()) }}"
-                >
-                    Отменить
-                </x-button>
-            @else
-                <x-button
-                    primary light
-                    wire:navigate
-                    href="{{ url()->current() . '/edit' }}"
-                >
-                    Изменить
-                </x-button>
-            @endif
+            {{ $rightNavbar }}
         </x-slot:rightNavbar>
     @endif
 
+    <x-slot name="sidebar">
+        <flux:navlist class="sticky top-4 z-10">
+            <flux:navlist.item icon="information-circle"
+                               href="/languages/{{ $language->uuid }}" wire:navigate
+            >О языке</flux:navlist.item>
+            <flux:navlist.item icon="queue-list"
+                               href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
+                               :current="request()->is('*/dictionary*')"
+            >Словарь</flux:navlist.item>
+        </flux:navlist>
+    </x-slot>
+
     <div class="flex max-md:flex-col items-start gap-4 h-full">
-        <div class="w-full md:w-[220px] pb-4 mr-10">
-            <flux:navlist>
-                <flux:navlist.item icon="information-circle" href="/languages/{{ $language->uuid }}" wire:navigate>О языке</flux:navlist.item>
-                <flux:navlist.item icon="queue-list" href="/languages/{{ $language->uuid }}/dictionary" wire:navigate>Словарь</flux:navlist.item>
-            </flux:navlist>
-        </div>
+        {{-- <div class="relative w-full md:w-[220px] pb-4 mr-10"> --}}
+        {{--     <div class="absolute top-[-8.5rem] р-14 -right-4 -left-36 h-screen bg-zinc-200 dark:bg-zinc-800 -z-10 drop-shadow-lg"></div> --}}
+
+        {{--     <flux:navlist class="z-10"> --}}
+        {{--         <flux:navlist.item icon="information-circle" --}}
+        {{--                            href="/languages/{{ $language->uuid }}" wire:navigate --}}
+        {{--         >О языке</flux:navlist.item> --}}
+        {{--         <flux:navlist.item icon="queue-list" --}}
+        {{--                            href="/languages/{{ $language->uuid }}/dictionary" wire:navigate --}}
+        {{--                            :current="request()->is('*/dictionary*')" --}}
+        {{--         >Словарь</flux:navlist.item> --}}
+        {{--     </flux:navlist> --}}
+        {{-- </div> --}}
 
         <div class="flex flex-col gap-2 text-black dark:text-neutral-300 w-full">
             <flux:heading size="xl" class="mx-auto text-2xl">

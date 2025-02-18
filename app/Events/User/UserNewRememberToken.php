@@ -10,6 +10,6 @@ class UserNewRememberToken extends ShouldBeStored
 {
     public function __construct(
         public string $uuid,
-        public string $token,
+        public ?string $token,
     ) {}
 }

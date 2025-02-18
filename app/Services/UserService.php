@@ -5,20 +5,26 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Aggregates\UserAggregate;
-use App\Events\User\UserPasswordResetted;
-use App\Events\User\UserVerifiedEmail;
+use App\Aggregates\UserRepositoryAggregate;
 use App\Jobs\SendMail;
 use App\Mail\EmailConfirmationMail;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Validation\Factory;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use SensitiveParameter;
 
 readonly class UserService
 {
-    public function __construct(private Factory $validationFactory, private Hasher $hasher, private AuthManager $authManager)
+    public function __construct(
+        private Factory $validationFactory,
+        private Hasher $hasher,
+        private AuthManager $authManager,
+        private UserRepositoryAggregate $userRepository,
+    )
     {
     }
     public function register(
@@ -34,21 +40,22 @@ readonly class UserService
             'email' => 'required|email',
         ]);
         if ($validator->fails()) {
-            throw new ValidationException($validator, message: 'Невалидная регистрация');
+            throw new ValidationException($validator);
         }
 
-        $userAggregate = app(UserAggregate::class);
-        if (User::checkUnique($username, $email)) {
-            $userAggregate
+        if (User::where(['username' => $username])->exists()) {
+            $validator->errors()->add('username', 'Такой никнейм уже существует');
+            throw new ValidationException($validator);
+        }
+
+        try {
+            $this->userRepository
                 ->register($username, $visible_name, $email, $this->hasher->make($password))
                 ->persist();
             return true;
+        } catch (Exception $e) {
+            return false;
         }
-
-        $userAggregate
-            ->notUniqueRegisterAttempt($username, $visible_name, $email)
-            ->persist();
-        return false;
     }
 
     public function login(string $username, #[SensitiveParameter] string $password): bool
@@ -58,22 +65,19 @@ readonly class UserService
             return false;
         }
 
-        $userAggregate = UserAggregate::retrieve($user->uuid);
+        $userAggregate = $this->userRepository->user($user->uuid);
 
-        if (!$user->checkPassword($password)) {
+        try {
             $userAggregate
-                ->invalidLoginAttempt()
+                ->login($password)
                 ->persist();
+
+            $this->authManager->login($userAggregate->model(), true);
+
+            return true;
+        } catch (InvalidArgumentException $e) {
             return false;
         }
-
-        $this->authManager->login($user, true);
-
-        $userAggregate
-            ->login($password)
-            ->persist();
-
-        return true;
     }
 
     public function logout(): bool
@@ -84,26 +88,29 @@ readonly class UserService
             return false;
         }
 
-        $userAggregate = UserAggregate::retrieve($user->uuid);
-
-        $user->remember_token = null;
-        $this->authManager->logout();
+        $userAggregate = $this->userRepository->user($user->uuid);
 
         $userAggregate
             ->logout()
             ->persist();
+        $user->remember_token = null;
+        $this->authManager->logout();
+
         return true;
     }
 
     public function resetPassword(User $user, #[SensitiveParameter] string $password, ?string $token = null): bool
     {
-        $userAggregate = UserAggregate::retrieve($user->uuid);
-        $events = $userAggregate
-            ->resetPassword($password, $token)
-            ->persist()
-            ->getAppliedEvents();
+        try {
+            $this->userRepository
+                ->user($user->uuid)
+                ->resetPassword($password, $token)
+                ->persist();
 
-        return array_any($events, fn($event): bool => $event instanceof UserPasswordResetted);
+            return true;
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
     }
 
     public function sendConfirmationEmail(User $user): bool
@@ -120,11 +127,13 @@ readonly class UserService
 
     public function confirmEmail(User $user, ?string $token = null): bool
     {
-        $userAggregate = UserAggregate::retrieve($user->uuid);
-        $events = $userAggregate
-            ->verifyEmail($token)
-            ->persist()
-            ->getAppliedEvents();
-        return array_any($events, fn($event): bool => $event instanceof UserVerifiedEmail);
+        try {
+            UserAggregate::retrieve($user->uuid)
+                ->verifyEmail($token)
+                ->persist();
+            return true;
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
     }
 }

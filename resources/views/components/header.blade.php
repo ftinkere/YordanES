@@ -1,12 +1,7 @@
-<?php
-
-declare(strict_types=1);
-
-?>
-@php
-    $user = \Illuminate\Support\Facades\Auth::user();
+@php declare(strict_types=1);
+    $user = Auth::user();
 @endphp
-<flux:header class="bg-zinc-300 dark:bg-zinc-800 shadow-lg flex flex-row items-center">
+<flux:header class="bg-zinc-300 dark:bg-zinc-800 shadow-lg flex flex-row items-center z-50">
     <flux:sidebar.toggle class="sm:hidden" icon="bars-2" inset="left" />
 
     <flux:button variant="ghost" class="my-auto py-4 !h-full !text-primary-600 !text-[2rem] yordan-font" href="/" wire:navigate>
@@ -25,11 +20,23 @@ declare(strict_types=1);
 
         @auth
         <flux:dropdown>
-            <flux:profile :avatar="$user->avatar" :chevron="false" class="*:first:rounded-full *:first:!size-10" />
+            {{-- <flux:profile :avatar="$user->avatar" :chevron="false" class="*:first:rounded-full *:first:!size-10" /> --}}
+            <x-button flat xs>
+                <x-avatar
+                    :label="$user->avatar ? null : mb_substr($user->name ?? 'А', 0, 1)"
+                    :src="$user->avatar"
+                    class="mt-1"
+                />
+            </x-button>
 
             <flux:menu>
                 <div class="mb-4 flex flex-col items-center text-black dark:text-neutral-400">
-                    <x-user-avatar :user="$user" />
+                    <x-avatar
+                        :label="$user->avatar ? null : mb_substr($user->name ?? 'А', 0, 1)"
+                        :src="$user->avatar"
+                        size="h-32 w-32"
+                        class="mt-1"
+                    />
 
                     <span class="text-md">{{ $user->name }}</span>
                     <span class="text-sm">{{ $user->username }}</span>

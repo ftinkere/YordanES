@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kalnoy\Nestedset\NodeTrait;
+use Spatie\EventSourcing\Projections\Projection;
 
-class GrammaticCategory extends Model
+class GrammaticCategory extends Projection
 {
     use NodeTrait;
 

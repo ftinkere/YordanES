@@ -3,15 +3,19 @@
 namespace App\Livewire;
 
 use App\Aggregates\UserAggregate;
+use App\Aggregates\UserRepositoryAggregate;
 use App\Models\User;
 use App\Services\FileService;
 use App\Services\UserService;
+use DomainException;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+
+use function auth;
 
 class AccountSettingsPage extends Component
 {
@@ -44,25 +48,38 @@ class AccountSettingsPage extends Component
         $this->email = $user->email;
     }
 
-    #[On('apply-setting')]
-    public function changeAttribute(string $attribute): void
+    public function updated($property): void
     {
-        $this->validate(attributes: [$attribute]);
+        try {
+            $this->validateOnly($property);
 
-        $userAggregate = UserAggregate::retrieve($this->user->uuid);
-        switch ($attribute) {
-            case 'username':
-                $userAggregate->changeUsername($this->username);
-                break;
-            case 'name':
-                $userAggregate->changeName($this->name);
-                break;
-            case 'email':
-                $userAggregate->changeEmail($this->email);
-                break;
+            $userRepository = app(UserRepositoryAggregate::class);
+            $userAggregate = $userRepository->user($this->user->uuid);
+            switch ($property) {
+                case 'username':
+                    try {
+                        $userRepository->changeUsername($userAggregate, $this->username);
+
+                    } catch (DomainException $e) {
+                        $this->addError('username', $e->getMessage());
+                    }
+                    break;
+                case 'name':
+                    $userAggregate->changeName($this->name);
+                    break;
+                case 'email':
+                    $userAggregate->changeEmail($this->email);
+                    break;
+            }
+            $userAggregate->persist();
+        } finally {
+            $user = auth()->user();
+
+            $this->username = $user->username;
+            $this->name = $user->name;
+            $this->email = $user->email;
+            $this->user = auth()->user();
         }
-        $userAggregate->persist();
-        $this->user = auth()->user();
     }
 
     #[On('livewire-upload-finish')]

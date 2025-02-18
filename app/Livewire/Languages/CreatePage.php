@@ -21,12 +21,12 @@ class CreatePage extends Component
         /** @var User $user */
         $user = auth()->user();
 
-        new LanguageAggregate()
+        $language = app(LanguageAggregate::class)
             ->create($this->name, $user->uuid)
             ->setAutoname($this->autoname, $this->autoname_transcription)
             ->persist();
 
-        $this->redirect('/languages');
+        $this->redirect('/languages/' . $language->uuid);
     }
 
     public function render()

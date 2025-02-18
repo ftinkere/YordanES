@@ -16,9 +16,9 @@ class UpdatePage extends Component
     #[Validate('required|filled')]
     public string $name;
     #[Validate('required|filled')]
-    public string $autoname;
+    public ?string $autoname;
     #[Validate('required|filled')]
-    public string $autoname_transcription;
+    public ?string $autoname_transcription;
 
     public string $about;
 
@@ -48,7 +48,7 @@ class UpdatePage extends Component
 
         $language->persist();
 
-        $this->language = Language::findOrFail($language->uuid);
+        $this->mount(Language::findOrFail($language->uuid));
 
         $this->redirect('/languages/' . $language->uuid);
     }

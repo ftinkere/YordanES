@@ -18,16 +18,17 @@ return new class extends Migration
                 ->references('uuid')
                 ->on('languages');
 
-            $table->foreignUuid('vocabula_uuid')
+            $table->foreignUuid('article_uuid')
                 ->index()
                 ->references('uuid')
-                ->on('vocables');
+                ->on('dictionary_articles');
 
             $table->integer('group')->default(1);
             $table->integer('order')->default(1);
             $table->integer('suborder')->default(1);
 
             $table->text('short');
+            $table->text('full');
 
             $table->timestamps();
         });

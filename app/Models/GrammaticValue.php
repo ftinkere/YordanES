@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\EventSourcing\Projections\Projection;
 
-class GrammaticValue extends Model
+class GrammaticValue extends Projection
 {
     protected $fillable = [
         'uuid',

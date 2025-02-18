@@ -6,7 +6,7 @@ use App\Models\Language;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class ViewPage extends Component
+class IndexPage extends Component
 {
     #[Locked]
     public Language $language;
@@ -18,7 +18,7 @@ class ViewPage extends Component
 
     public function render()
     {
-        return view('livewire.languages.dictionary.view-page')
+        return view('livewire.languages.dictionary.index-page')
             ->layout('components.layouts.language', ['language' => $this->language]);
     }
 }

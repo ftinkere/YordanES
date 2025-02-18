@@ -54,4 +54,10 @@ class Language extends Projection
             ->first()
             ?->description ?? '';
     }
+
+    public function dictionary(): HasMany
+    {
+        return $this->hasMany(DictionaryArticle::class, 'language_uuid', 'uuid')
+            ->with('vocabula');
+    }
 }

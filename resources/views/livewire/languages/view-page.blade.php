@@ -1,11 +1,13 @@
-<?php
-
-declare(strict_types=1);
-
-?>
-@php
+@php declare(strict_types=1);
     use App\Helpers\CommonHelper;
 @endphp
+
+<x-slot name="rightNavbar">
+    <x-button primary light
+        href="{{ url()->current() . '/edit' }}" wire:navigate
+    >Изменить</x-button>
+</x-slot>
+
 <div>
     {{-- Row --}}
     <div class="flex flex-row justify-between">
@@ -20,7 +22,7 @@ declare(strict_types=1);
 
             <div class="ps-3 flex flex-row gap-2 items-center rounded-full hover:dark:bg-neutral-700 cursor-pointer">
                 <span>{{ $language->author->name }}</span>
-                <x-user-avatar :user="$language->author" height="2rem" />
+                <x-user-avatar :user="$language->author" size="8" icon-size="lg" />
             </div>
         </div>
     </div>
@@ -30,4 +32,3 @@ declare(strict_types=1);
         {!! $language->description('about') !!}
     </article>
 </div>
-<?php 

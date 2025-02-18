@@ -1,27 +1,23 @@
-<?php
+@php declare(strict_types=1);
+    use App\Models\Language;
+@endphp
 
-declare(strict_types=1);
+<x-slot name="rightNavbar">
+    <x-button light positive
+        href="/languages/create" wire:navigate
+    >Создать язык</x-button>
+</x-slot>
 
-?>
-@php use App\Models\Language; @endphp
-
-<div class="flex flex-col gap-2">
-    <div class="w-fit">
-        <x-button wire:navigate href="/languages/create">Создать язык</x-button>
-    </div>
-
-    <div class="flex flex-col gap-2 items-start">
-        @foreach($languages as $language)
-        @php /** @var Language $language */ @endphp
-            <x-link
-                wire:key="{{ $language->uuid }}"
-                class="dark:text-white"
-                wire:navigate
-                href="/languages/{{ $language->uuid }}"
-            >
-                {{ $language->name }}
-            </x-link>
-        @endforeach
-    </div>
+<div class="flex flex-col gap-2 items-start">
+    @foreach($languages as $language)
+    @php /** @var Language $language */ @endphp
+        <x-link
+            wire:key="{{ $language->uuid }}"
+            class="dark:text-white"
+            wire:navigate
+            href="/languages/{{ $language->uuid }}"
+        >
+            {{ $language->name }}
+        </x-link>
+    @endforeach
 </div>
-<?php 
