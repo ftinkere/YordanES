@@ -26,11 +26,11 @@
     @endif
 
     <div class="flex flex-col">
-        <x-button icon="chevron-up" size="xs" flat zinc x-on:click="increment()" class="newable-color" />
+        <flux:button icon="chevron-up" size="xs" x-on:click="increment()" class="h-4! newable-color rounded-b-none" />
         @if ($incrementShow)
-            <x-button icon="chevron-down" size="xs" flat zinc x-on:click="decrement()" x-bind:class="{ disabled: count == 0 }" />
+            <flux:button icon="chevron-down" size="xs" class="h-4! rounded-t-none" x-on:click="decrement()" x-bind:class="{ disabled: count == 0 }" />
         @else
-            <x-button icon="chevron-down" size="xs" flat zinc x-on:click="decrement()" x-bind:class="{ disabled: count == 1 }" />
+            <flux:button icon="chevron-down" size="xs" class="h-4! rounded-t-none" x-on:click="decrement()" x-bind:class="{ disabled: count == 1 }" />
         @endif
     </div>
 </div>

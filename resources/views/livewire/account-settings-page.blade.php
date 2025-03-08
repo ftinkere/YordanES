@@ -2,11 +2,11 @@
 <div class="container mx-auto px-4 w-full flex flex-col gap-2">
     <div class="group relative mx-auto">
         <x-avatar
-                :label="$user->avatar ? null : mb_substr($user->name ?? 'А', 0, 1)"
-                :src="$user->avatar"
-                size="w-32 h-32"
-                icon-size="2xl"
-                class="group-hover:filter group-hover:brightness-50"
+                :avatar="$user->avatar"
+                :name="$user->name"
+                size="12rem"
+                textSize="5rem"
+                class="group-hover:brightness-50 ease-in-out duration-200"
         />
         <span
             class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-white hidden group-hover:block cursor-pointer"
@@ -32,7 +32,7 @@
             ];
         @endphp
         @foreach($rows as ['label' => $label, 'attribute' => $attribute])
-            <tr x-data="{ isEdit: false }">
+            <tr x-data="{ isEdit: false }" class="h-16">
                 <td>
                     {{ $label }}:
                 </td>
@@ -43,20 +43,21 @@
                     </span>
                 </td>
                 <td>
-                    <x-link positive
+                    <flux:link class="text-positive-500! cursor-pointer"
+                            variant="ghost"
                             x-show="isEdit"
                             x-on:click="isEdit = ! isEdit"
                             wire:dirty
                             wire:target="{{ $attribute }}"
                             wire:confirm="Вы уверены?"
                             wire:click="$refresh"
-                    >Применить</x-link>
-                    <x-link x-show="! isEdit" x-on:click="isEdit = true">Изменить</x-link>
-                    <x-link x-show="isEdit" x-on:click="isEdit = false" negative>Отменить</x-link>
+                    >Применить</flux:link>
+                    <flux:link variant="ghost" class="cursor-pointer" x-show="! isEdit" x-on:click="isEdit = true">Изменить</flux:link>
+                    <flux:link variant="ghost" class="text-negative-500! cursor-pointer" x-show="isEdit" x-on:click="isEdit = false">Отменить</flux:link>
                 </td>
             </tr>
             @error($attribute)
-            <tr class="!h-8">
+            <tr class="h-8!">
                 <td colspan="3" class="text-negative-600">
                     <p class="flex flex-row gap-2">
                         <flux:icon.exclamation-triangle />
@@ -68,21 +69,20 @@
 
         @endforeach
 
-        <tr class="!h-8">
+        <tr class="h-8!">
             <td>
                 @if($user->email_verified_at)
                     <div>
-                        <x-icon name="check" class="h-4 inline text-green-600"/>
+                        <flux:icon.check class="h-4 inline text-positive-600"/>
                         <span>Подтверждена</span>
                     </div>
                 @else
-                    <x-link
-                            class="text-sm"
+                    <flux:link class="text-positive-500! cursor-pointer text-sm"
                             wire:click="resendEmailConfirmation"
                             x-data="{ show: true }"
                             x-show="show"
                             x-on:click="show = false"
-                    >Подтвердить</x-link>
+                    >Подтвердить</flux:link>
                 @endif
             </td>
         </tr>

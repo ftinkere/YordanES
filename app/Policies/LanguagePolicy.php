@@ -6,12 +6,15 @@ namespace App\Policies;
 
 use App\Models\Language;
 use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LanguagePolicy
 {
+    use HandlesAuthorization;
+
     public function before(?User $user): ?bool
     {
-        if ($user->isAdmin()) {
+        if ($user?->isAdmin()) {
             return true;
         }
 
@@ -23,7 +26,7 @@ class LanguagePolicy
      */
     public function view(?User $user, Language $language): bool
     {
-        return $language->published || $language->isAuthor($user);
+        return $language->is_published || $language->isAuthor($user);
     }
 
     /**

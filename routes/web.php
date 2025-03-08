@@ -11,11 +11,11 @@ use App\Livewire\IndexPage;
 use App\Livewire\Languages\CreatePage as LanguagesCreatePage;
 use App\Livewire\Languages\Dictionary\CreatePage as DictionaryCreatePage;
 use App\Livewire\Languages\Dictionary\IndexPage as DictionaryIndexPage;
+use App\Livewire\Languages\Dictionary\ViewPage as DictionaryViewPage;
 use App\Livewire\Languages\IndexPage as LanguagesIndexPage;
 use App\Livewire\Languages\UpdatePage as LanguagesUpdatePage;
 use App\Livewire\Languages\ViewPage as LanguagesViewPage;
 use App\Models\User;
-use App\Services\UserService;
 use Illuminate\Support\Facades\Route;
 
 ///
@@ -31,18 +31,20 @@ Route::get('/register', RegisterPage::class);
 Route::get('/login', LoginPage::class);
 Route::get('/forgot-password', ForgotPasswordPage::class);
 Route::get('/reset-password/{uuid}', ResetPasswordPage::class);
-Route::get('/logout', static function (UserService $userService) {
-    if ($userService->logout()) {
-        session()->invalidate();
-        return redirect('/');
+Route::get('/logout', static function () {
+    if (auth()->guest()) {
+        return redirect('/login');
     }
-
-    return redirect('/login');
+    auth()->logout();
+    session()->invalidate();
+    return redirect('/');
 });
-Route::get('/confirm-email/{uuid}', static function ($uuid, UserService $userService) {
+Route::get('/confirm-email/{uuid}', static function ($uuid) {
     $user = User::getByUuid($uuid);
 
-    if ($user instanceof User && $userService->confirmEmail($user, $uuid)) {
+    $token = request()->get('token');
+
+    if ($user instanceof User && $user->verifyEmail($token)) {
         session()->flash('message', 'Почта подтверждена');
     } else {
         session()->flash('message', 'Ошибка подтверждения почты');
@@ -68,8 +70,14 @@ Route::prefix('/languages')->group(function (): void {
                 ->middleware('can:update,language');
             Route::prefix('/dictionary')->group(function (): void {
                 Route::get('/', DictionaryIndexPage::class);
-                Route::get('/create', DictionaryCreatePage::class);
+                Route::get('/create', DictionaryCreatePage::class)
+                    ->middleware('can:update,language')
+                    ->middleware('can:create,App\Models\DictionaryArticle');
             });
         });
 
 });
+
+Route::prefix('/dictionary')->group(function () {
+    Route::get('/{article}', DictionaryViewPage::class);
+})->middleware('can:view,article');

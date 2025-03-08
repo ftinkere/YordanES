@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Auth;
 
-use App\Services\UserService;
+use App\Models\User;
+use Exception;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -25,14 +26,20 @@ class RegisterPage extends Component
     #[Validate('required|same:password')]
     public string $password_repeat;
 
-    public function register(UserService $service): void
+    /**
+     * @throws Exception
+     */
+    public function register(): void
     {
         $this->validate();
 
-        if ($service->register($this->username, $this->visible_name, $this->email, $this->password)) {
+        try {
+            $user = User::register($this->username, $this->visible_name, $this->email, $this->password);
+            $user->save();
+            auth()->login($user);
             $this->redirect('/');
-        } else {
-            $this->redirect('/message?text=Nope');
+        } catch (Exception $e) {
+            $this->addError('username', $e->getMessage());
         }
     }
 

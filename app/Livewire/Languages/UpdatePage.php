@@ -29,26 +29,26 @@ class UpdatePage extends Component
         $this->name = $this->language->name;
         $this->autoname = $this->language->autoname;
         $this->autoname_transcription = $this->language->autoname_transcription;
-        $this->about = $this->language->description('about');
+        $this->about = $this->language->description('about')?->description ?? '';
     }
 
     public function updateLanguage(): void
     {
-        $language = LanguageAggregate::retrieve($this->language->uuid);
+        $language = Language::findOrFail($this->language->uuid);
         if ($this->name !== $language->name) {
-            $language->setName($this->name);
+            $language->name = $this->name;
         }
         if ($this->autoname !== $language->autoname || $this->autoname_transcription !== $language->autoname_transcription) {
             $language->setAutoname($this->autoname, $this->autoname_transcription);
         }
 
-        if ($this->language->description('about') !== $this->about) {
+        if ($this->language->description('about')?->description ?? '' !== $this->about) {
             $language->setDescription('about', $this->about);
         }
 
-        $language->persist();
+        $language->save();
 
-        $this->mount(Language::findOrFail($language->uuid));
+        $this->mount($language);
 
         $this->redirect('/languages/' . $language->uuid);
     }
@@ -56,6 +56,6 @@ class UpdatePage extends Component
     public function render()
     {
         return view('livewire.languages.update-page')
-            ->layout('components.layouts.language', ['language' => $this->language, 'editable' => true]);
+            ->layout('components.layouts.language', ['language' => $this->language]);
     }
 }

@@ -1,9 +1,9 @@
 @php declare(strict_types=1); @endphp
 
 <x-slot name="rightNavbar">
-    <x-button negative light
+    <x-light-button variant="negative"
         href="/languages/{{ $language->uuid }}" wire:navigate
-    >Отменить</x-button>
+    >Отменить</x-light-button>
 </x-slot>
 
 <div>
@@ -18,7 +18,9 @@
             </x-slot>
         </flux:input>
 
-        <x-button positive label="Сохранить" class="col-span-2" wire:click="updateLanguage" />
+        <x-light-button variant="positive" class="col-span-2" wire:click="updateLanguage">
+            Сохранить
+        </x-light-button>
     </div>
 
     <div class="mx-auto max-w-xl">

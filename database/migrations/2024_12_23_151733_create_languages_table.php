@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('autoname_transcription')->nullable();
             $table->string('flag')->nullable();
 
-            $table->boolean('published')->default(false);
+            $table->boolean('is_published')->default(false);
 
             $table->softDeletes();
             $table->timestamps();

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Auth;
 
-use App\Events\User\UserForgotPassword;
+use App\Events\UserForgotPassword;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Title;
@@ -12,25 +12,23 @@ use Livewire\Component;
 #[Title('Восстановление пароля')]
 class ForgotPasswordPage extends Component
 {
-    #[Validate('required|email')]
-    public string $email;
+    #[Validate('required')]
+    public string $username;
 
     public function sendRecoveryLink(): void
     {
         $this->validate(messages: [
             'required' => 'Поле обязательно',
-            'email' => 'Почта не почта',
         ]);
 
-        $user = User::where('email', $this->email ?? null)->first();
+        $user = User::where('username', $this->username ?? null)->first();
         if (! $user) {
-            $this->dispatch('flash-message', 'Пользователя с такой почтой не найдено');
+            $this->dispatch('flash-message', 'Пользователя с таким никнеймом не найдено');
             return;
         }
 
         $this->redirect('/login');
         Session::flash('message', 'Вам направлено письмо со ссылкой для восстановления пароля');
-
 
         event(new UserForgotPassword($user->uuid));
     }

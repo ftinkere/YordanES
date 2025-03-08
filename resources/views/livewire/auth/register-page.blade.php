@@ -1,19 +1,40 @@
 <?php declare(strict_types=1); ?>
-<x-card rounded="3xl" class="max-w-md mx-auto">
-    <x-slot name="title">
-        <span class="text-2xl">Регистрация</span>
-    </x-slot>
-    <form wire:submit="register">
-        <div class="flex flex-col gap-0.5">
-            @csrf
-            <x-input label="Юзернейм" placeholder="qwerty" wire:model="username" />
-            <x-input label="Отображаемое имя" placeholder="Андрей" wire:model="visible_name" />
-            <x-input label="Почта" placeholder="example@yordan.ru" wire:model="email" type="email" />
-            <x-password label="Пароль" placeholder="*****" wire:model="password" />
-            <span class="m-1"></span>
-            <x-password placeholder="*****" wire:model="password_repeat" />
-            <span class="m-1"></span>
-            <x-button type="submit">Регистрация</x-button>
+
+<flux:card class="space-y-6 max-w-md mx-auto">
+    <div>
+        <flux:heading size="lg">Регистрация</flux:heading>
+    </div>
+
+    <form class="space-y-6" wire:submit="register">
+        <div class="space-y-6">
+            <flux:field>
+                <flux:input label="Никнейм" placeholder="Ваш никнейм" wire:model="username" />
+                <flux:error name="username" />
+            </flux:field>
+
+            <flux:field>
+                <flux:input label="Отображаемое имя" placeholder="Ваше Имя" wire:model="visible_name" />
+                <flux:error name="visible_name" />
+            </flux:field>
+
+            <flux:field>
+                <flux:input label="Почта" type="email" placeholder="Ваша почта" wire:model="email" />
+                <flux:error name="email" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Пароль</flux:label>
+                <flux:input type="password" placeholder="Ваш пароль" wire:model="password" />
+                <flux:error name="password" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Повторение Пароля</flux:label>
+                <flux:input type="password" placeholder="Ваш пароль" wire:model="password_repeat" />
+                <flux:error name="password_repeat" />
+            </flux:field>
         </div>
+
+        <flux:button type="submit" variant="primary" class="w-full mb-4">Зарегистрироваться</flux:button>
     </form>
-</x-card>
+</flux:card>

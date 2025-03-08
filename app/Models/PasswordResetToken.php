@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Traits\PrimaryUuid;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Override;
-use Spatie\EventSourcing\Projections\Projection;
 
 /**
  * @property string $user_uuid
  * @property string $reset_token
  * @property Carbon $created_at
  */
-class PasswordResetToken extends Projection
+class PasswordResetToken extends Model
 {
-    public $incrementing = false;
-
+    protected $primaryKey = 'uuid';
     protected $keyType = 'string';
-
-    protected $primaryKey = 'user_uuid';
+    public $incrementing = false;
 
     #[Override]
     public function getKeyName()

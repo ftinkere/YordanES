@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\EventSourcing\Projections\Projection;
 
-class DictionaryArticle extends Projection
+class DictionaryArticle extends Model
 {
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
         'uuid',
         'language_uuid',
-        'short',
-        'full',
+        'article',
         'vocabula',
         'adaptation',
         'transcription',
@@ -34,5 +37,12 @@ class DictionaryArticle extends Projection
     public function lexemes()
     {
         return$this->hasMany(Lexeme::class, 'article_uuid');
+    }
+
+    public function lexemesGrouped()
+    {
+        return $this->hasMany(Lexeme::class, 'article_uuid')
+            ->get()
+            ->groupBy('group');
     }
 }

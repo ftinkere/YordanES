@@ -14,6 +14,7 @@ class IndexPage extends Component
     public function mount(): void
     {
         $this->languages = Language::limit(10)
+            ->where('is_published', true)
             ->orderBy('created_at', 'desc')
             ->get();
     }

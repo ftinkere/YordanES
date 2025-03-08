@@ -22,12 +22,12 @@ class ResetPasswordPage extends Component
     #[Validate('required|min:8|same:password')]
     public string $password_repeat;
 
-    public function resetPassword(UserService $service): void
+    public function resetPassword(): void
     {
         $this->validate();
 
         $user = User::getByUuid($this->uuid);
-        if (! $user || ! $service->resetPassword($user, $this->password, $this->token)) {
+        if (! $user?->resetPassword($this->password, $this->token)) {
             session()->flash('message', 'Ошибка восстановления пароля');
         }
         $this->redirect('/login');

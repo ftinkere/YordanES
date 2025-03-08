@@ -7,6 +7,7 @@ use App\Models\Language;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Throwable;
 
 class CreatePage extends Component
 {
@@ -18,11 +19,9 @@ class CreatePage extends Component
     public string $transcription;
     public string $adaptation;
 
-    #[Validate('required')]
-    public string $short;
-    public string $full;
+    public string $article;
 
-    public array $lexemes = []; // [*order* => [*suborder* => [lexeme] ] ]
+    public array $lexemes = [[ ['group' => 1, 'short' => '', 'full' => ''] ]]; // [*order* => [*suborder* => [lexeme] ] ]
 
 
     public function mount(Language $language): void
@@ -30,12 +29,15 @@ class CreatePage extends Component
         $this->language = $language;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function createArticle()
     {
-        $articleAggregate = LanguageAggregate::retrieve($this->language->uuid)
-            ->dictionary()
-            ->createArticleFull($this->vocabula, $this->transcription ?? '', $this->adaptation, $this->short, $this->full ?? '', $this->lexemes)
-            ->persist();
+        $this->validate();
+
+        $articleAggregate = Language::findOrFail($this->language->uuid)
+            ->createArticle($this->vocabula, $this->transcription ?? '', $this->adaptation ?? '', $this->article ?? '', $this->lexemes);
 
         $this->redirect("/languages/{$this->language->uuid}/dictionary/{$articleAggregate->uuid}");
     }

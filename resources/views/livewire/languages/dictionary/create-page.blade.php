@@ -3,14 +3,15 @@
 @endphp
 
 <x-slot name="rightNavbar">
-    <x-button light negative
-              :href='url()->previous("/languages/$language->uuid/dictionary")'
-    >Отмена</x-button>
+    <x-light-button variant="negative"
+              :href='url()->previous() == url()->current() ? "/languages/$language->uuid/dictionary" : url()->previous("/languages/$language->uuid/dictionary")' wire:navigate
+    >Отмена</x-light-button>
 </x-slot>
 
 <div>
-    <form x-on:submit="$wire.set('lexemes', lexemes)" wire:submit="createArticle"
-          x-data="{ selectedOrder: 0, selectedSuborder: 0, lexemes: [[{ short: '', full: '', group: 1}]],
+    <form wire:submit="createArticle"
+          x-data="{ selectedOrder: 0, selectedSuborder: 0,
+          lexemes: $wire.entangle('lexemes'),
             create() {
                 let newGroup = this.lexemes[this.lexemes.length - 1][this.lexemes[this.lexemes.length - 1].length - 1].group;
                 let newLexeme = { short: '', full: '', group: newGroup };
@@ -60,22 +61,21 @@
           }">
         <div class="flex flex-col gap-y-2 gap-x-4 max-w-xl mx-auto">
             <div class="grid grid-cols-2 gap-y-2 gap-x-4">
-                <flux:input icon="language" label="Написание" wire:model="vocabula" />
-                <flux:input icon="speaker-wave" label="Произношение" wire:model="transcription">
-                    <x-slot name="iconTrailing">
-                        <flux:button size="sm" variant="subtle" icon="arrow-path" class="-mr-1" x-on:click="x2i_input('transcription')" />
-                    </x-slot>
-                </flux:input>
+                <div>
+                    <flux:input icon="language" label="Написание" wire:model="vocabula" />
+                </div>
+                <div>
+                    <flux:input icon="speaker-wave" label="Произношение" wire:model="transcription">
+                        <x-slot name="iconTrailing">
+                            <flux:button size="sm" variant="subtle" icon="arrow-path" class="-mr-1" x-on:click="x2i_input('transcription')" />
+                        </x-slot>
+                    </flux:input>
+                </div>
             </div>
 
             <flux:input icon="pencil" label="Адаптация" wire:model="adaptation" />
 
-            <flux:editor label="Краткая статья" wire:model="short"
-                 toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
-                 class="[&_[data-slot=content]]:min-h-[2rem]"
-            />
-
-            <flux:editor label="Полная статья" wire:model="full"
+            <flux:editor label="Основная словарная статья" wire:model="full"
                  toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
             />
 
@@ -107,8 +107,9 @@
                     <flux:editor label="Краткая статья лексемы"
                                  x-model="lexemes[selectedOrder][selectedSuborder].short"
                                  toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
-                                 class="[&_[data-slot=content]]:min-h-[2rem]"
+                                 class="**:data-[slot=content]:min-h-[3rem]!"
                     />
+                    <br />
                     <flux:editor label="Полная статья лексемы"
                                  x-model="lexemes[selectedOrder][selectedSuborder].full"
                                  toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
@@ -116,7 +117,10 @@
                 </div>
             </div>
 
-            <x-button class="mt-6" type="submit">Создать</x-button>
+             {{-- <flux:accent color="teal"> --}}
+             {{--     <flux:button variant="primary" class="w-full cursor-pointer" type="submit">Создать статью</flux:button> --}}
+             {{-- </flux:accent> --}}
+              <x-light-button variant="positive" class="mt-6" type="submit">Создать</x-light-button>
         </div>
     </form>
 </div>

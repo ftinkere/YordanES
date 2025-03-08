@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Languages;
 
-use App\Aggregates\LanguageAggregate;
+use App\Models\Language;
 use App\Models\User;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -21,10 +21,9 @@ class CreatePage extends Component
         /** @var User $user */
         $user = auth()->user();
 
-        $language = app(LanguageAggregate::class)
-            ->create($this->name, $user->uuid)
-            ->setAutoname($this->autoname, $this->autoname_transcription)
-            ->persist();
+        $language = Language::create($user, $this->name)
+            ->setAutoname($this->autoname, $this->autoname_transcription);
+        $language->save();
 
         $this->redirect('/languages/' . $language->uuid);
     }

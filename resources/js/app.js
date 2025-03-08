@@ -47,3 +47,7 @@ function romanize(num) {
     return Array(+digits.join("") + 1).join("M") + roman;
 }
 window.romanize = romanize;
+
+document.addEventListener('scrollTop', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});

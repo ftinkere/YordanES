@@ -3,21 +3,19 @@
 @endphp
 
 <x-slot name="rightNavbar">
-    <x-button light positive
+    <x-light-button variant="positive"
         href="/languages/create" wire:navigate
-    >Создать язык</x-button>
+    >Создать язык</x-light-button>
 </x-slot>
 
-<div class="flex flex-col gap-2 items-start">
+<div class="grid grid-cols-1 px-32 gap-2 items-start">
     @foreach($languages as $language)
     @php /** @var Language $language */ @endphp
-        <x-link
-            wire:key="{{ $language->uuid }}"
-            class="dark:text-white"
-            wire:navigate
-            href="/languages/{{ $language->uuid }}"
-        >
-            {{ $language->name }}
-        </x-link>
+    <flux:card class="cursor-pointer" href="/languages/{{ $language->uuid }}" wire:navigate>
+        <flux:heading class="mx-auto w-fit" size="lg">
+            {{ $language->autoname }} /{{ $language->autoname_transcription }}/
+            <flux:subheading>{{ $language->name }}</flux:subheading>
+        </flux:heading>
+    </flux:card>
     @endforeach
 </div>

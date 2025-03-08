@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kalnoy\Nestedset\NodeTrait;
-use Spatie\EventSourcing\Projections\Projection;
 
-class GrammaticCategory extends Projection
+class GrammaticCategory extends Model
 {
     use NodeTrait;
+
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'uuid',

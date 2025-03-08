@@ -1,12 +1,12 @@
 <?php declare(strict_types=1); ?>
 <div class="flex flex-col gap-4">
-    <x-card>
+    <flux:card>
         Название должно быть понятным без знания вашего языка другим людям.
         <br>
         Аутоним уже то как вы передаёте компьютерным способом самоназвание вашего языка.
         Можете использовать любые компьютеризированные письменности UTF.
         Но напишите произношение вашего аутонима.
-    </x-card>
+    </flux:card>
 
     <div class="grid grid-cols-2 gap-y-2 gap-x-4 max-w-xl mx-auto">
 
@@ -20,6 +20,6 @@
             </x-slot>
         </flux:input>
 
-        <x-button class="col-span-2" wire:click="createLanguage">Создать</x-button>
+        <x-light-button variant="positive" class="col-span-2" wire:click="createLanguage">Создать</x-light-button>
     </div>
 </div>

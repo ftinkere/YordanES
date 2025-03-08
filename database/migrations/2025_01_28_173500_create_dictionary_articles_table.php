@@ -18,8 +18,7 @@ return new class extends Migration
                 ->references('uuid')
                 ->on('languages');
 
-            $table->text('short');
-            $table->text('full');
+            $table->text('article');
 
             $table->text('vocabula');
             $table->text('adaptation')->nullable();

@@ -69,6 +69,12 @@ return [
         'password' => 'пароль',
         'password_repeat' => 'подтверждение пароля',
         'avatar' => 'аватар',
+
+        'vocabula' => 'написание',
+        'adaptation' => 'адаптация',
+        'transcription' => 'транскрипция',
+        'short' => 'краткая статья',
+        'full' => 'полная статья',
     ],
 
 ];
