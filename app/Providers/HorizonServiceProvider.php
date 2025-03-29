@@ -1,17 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
-use Laravel\Horizon\Horizon;
+use Illuminate\Contracts\Auth\Access\Gate;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
+use Override;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
+    private Gate $gate;
+    public function __construct(protected $app)
+    {
+        parent::__construct($app);
+        $this->gate = $this->app->make(Gate::class);
+    }
     /**
      * Bootstrap any application services.
      */
+    #[Override]
     public function boot(): void
     {
         parent::boot();
@@ -26,13 +35,12 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      *
      * This gate determines who can access Horizon in non-local environments.
      */
+    #[Override]
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function (User $user) {
-            return in_array($user->username, [
-                'admin',
-                'ftinkere',
-            ]);
-        });
+        $this->gate->define('viewHorizon', fn(User $user): bool => in_array($user->username, [
+            'admin',
+            'ftinkere',
+        ]));
     }
 }

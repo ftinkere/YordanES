@@ -6,9 +6,11 @@ use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Services\UserService;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
+#[Title('Восстановление пароля')]
 class ResetPasswordPage extends Component
 {
     #[Locked]
@@ -20,18 +22,18 @@ class ResetPasswordPage extends Component
     #[Validate('required|min:8|same:password')]
     public string $password_repeat;
 
-    public function resetPassword(UserService $service)
+    public function resetPassword(): void
     {
         $this->validate();
 
         $user = User::getByUuid($this->uuid);
-        if (! $user || ! $service->resetPassword($user, $this->password, $this->token)) {
+        if (! $user?->resetPassword($this->password, $this->token)) {
             session()->flash('message', 'Ошибка восстановления пароля');
         }
         $this->redirect('/login');
     }
 
-    public function mount($uuid)
+    public function mount($uuid): void
     {
         $this->uuid = $uuid;
         $this->token = request()->query('token');

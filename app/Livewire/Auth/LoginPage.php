@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use App\Services\UserService;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
@@ -16,14 +17,17 @@ class LoginPage extends Component
     #[Validate('required')]
     public string $password;
 
-    public function login(UserService $service)
+    public function login(): void
     {
         $this->validate();
 
-        if ($service->login($this->username, $this->password)) {
+        $user = User::where(['username' => $this->username])->first();
+
+        if ($user?->login($this->password)) {
+            session()->regenerate();
             $this->redirect('/');
         } else {
-            $this->addError('password', 'Неправильынй логин или пароль');
+            $this->addError('password', 'Неправильный логин или пароль');
         }
     }
 

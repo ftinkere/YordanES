@@ -3,15 +3,20 @@
 namespace App\Livewire;
 
 use App\Aggregates\UserAggregate;
+use App\Aggregates\UserRepositoryAggregate;
+use App\Events\UserEmailChanged;
 use App\Models\User;
 use App\Services\FileService;
 use App\Services\UserService;
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+
+use function auth;
 
 class AccountSettingsPage extends Component
 {
@@ -26,11 +31,10 @@ class AccountSettingsPage extends Component
     #[Validate('email')]
     public string $email;
 
-    /** @var UploadedFile $avatar */
     #[Validate('file|image|max:10240')]
-    public $avatar;
+    public ?UploadedFile $avatar = null;
 
-    public function mount()
+    public function mount(): void
     {
         $user = auth()->user();
         if (! $user) {
@@ -44,43 +48,57 @@ class AccountSettingsPage extends Component
         $this->email = $user->email;
     }
 
-    #[On('apply-setting')]
-    public function changeAttribute(string $attribute)
+    public function updated($property): void
     {
-        $this->validate(attributes: [$attribute]);
+        try {
+            $this->validateOnly($property);
 
-        $userAggregate = UserAggregate::retrieve($this->user->uuid);
-        switch ($attribute) {
-            case 'username':
-                $userAggregate->changeUsername($this->username);
-                break;
-            case 'name':
-                $userAggregate->changeName($this->name);
-                break;
-            case 'email':
-                $userAggregate->changeEmail($this->email);
-                break;
+            $user = User::findOrFail($this->user->uuid);
+            switch ($property) {
+                case 'username':
+                    try {
+                        $user->changeUsername($this->username);
+                    } catch (Exception $e) {
+                        $this->addError('username', $e->getMessage());
+                    }
+                    break;
+                case 'name':
+                    $user->name = $this->name;
+                    break;
+                case 'email':
+                    $user->email = $this->email;
+                    break;
+            }
+            $user->save();
+        } finally {
+            $user = auth()->user();
+
+            $this->username = $user->username;
+            $this->name = $user->name;
+            $this->email = $user->email;
+            $this->user = auth()->user();
         }
-        $userAggregate->persist();
-        $this->user = auth()->user();
     }
 
     #[On('livewire-upload-finish')]
-    public function avatarUpload(FileService $service)
+    public function avatarUpload(FileService $service): void
     {
-        $this->validate(attributes: ['avatar']);
+        if (! $this->avatar) {
+            return;
+        }
+        $this->validateOnly('avatar');
         $path = $service->uploadAvatar($this->avatar, $this->user);
         if ($path) {
-            UserAggregate::retrieve($this->user->uuid)
-                ->setAvatar($path)
-                ->persist();
+            $user = User::findOrFail($this->user->uuid);
+            $user->avatar = $path;
+            $user->save();
         }
         $this->user = auth()->user();
     }
 
-    public function resendEmailConfirmation(UserService $service): void
+    public function resendEmailConfirmation(): void
     {
-        $service->sendConfirmationEmail($this->user);
+        event(new UserEmailChanged($this->user->uuid));
     }
 
     public function render()

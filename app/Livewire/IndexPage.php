@@ -12,7 +12,7 @@ class IndexPage extends Component
     #[Locked]
     public ?User $user;
 
-    public function mount()
+    public function mount(): void
     {
         $this->user = Auth::user();
     }

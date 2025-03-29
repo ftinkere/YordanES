@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reactors;
 
 use App\Aggregates\UserAggregate;
@@ -8,30 +10,31 @@ use App\Events\User\UserForgotPassword;
 use App\Events\User\UserRegistered;
 use App\Jobs\SendMail;
 use App\Mail\ForgotPasswordMail;
-use App\Mail\PasswordResettedMail;
 use App\Models\User;
 use App\Services\UserService;
 use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class UserReactor extends Reactor
 {
-    public function onUserForgotPassword(UserForgotPassword $event): void
+    public function onUserForgotPassword(UserForgotPassword $userForgotPassword): void
     {
 
-        $user = User::getByUuid($event->uuid);
-        if (! $user) {
+        $user = User::getByUuid($userForgotPassword->uuid);
+        if (!$user instanceof User) {
             return;
         }
-        $userAggregate = UserAggregate::retrieve($event->uuid);
+
+        $userAggregate = UserAggregate::retrieve($userForgotPassword->uuid);
 
         $token = $userAggregate
             ->createPasswordResetToken()
             ->persist()
             ->reset_password_token;
-        if (! $token) {
+        if ($token === '' || $token === '0') {
             abort(500, 'Ошибка создания токена');
         }
-        $link = "/reset-password/{$user->uuid}?token={$token}";
+
+        $link = sprintf('/reset-password/%s?token=%s', $user->uuid, $token);
 
         SendMail::dispatch($user->email, new ForgotPasswordMail(
             $user->name,
@@ -39,21 +42,23 @@ class UserReactor extends Reactor
         ));
     }
 
-    public function onUserRegistered(UserRegistered $event, UserService $service): void
+    public function onUserRegistered(UserRegistered $userRegistered, UserService $userService): void
     {
-        $user = User::getByUuid($event->uuid);
-        if (! $user) {
+        $user = User::getByUuid($userRegistered->uuid);
+        if (!$user instanceof User) {
             return;
         }
-        $service->sendConfirmationEmail($user);
+
+        $userService->sendConfirmationEmail($user);
     }
 
-    public function onUserEmailChanged(UserEmailChanged $event, UserService $service): void
+    public function onUserEmailChanged(UserEmailChanged $userEmailChanged, UserService $userService): void
     {
-        $user = User::getByUuid($event->uuid);
-        if (! $user) {
+        $user = User::getByUuid($userEmailChanged->uuid);
+        if (!$user instanceof User) {
             return;
         }
-        $service->sendConfirmationEmail($user);
+
+        $userService->sendConfirmationEmail($user);
     }
 }

@@ -1,6 +1,6 @@
+@php declare(strict_types=1) @endphp
 <div>
-    <x-card title="Вы"
-            class="border max-w-md mx-auto">
+    <flux:card class="border max-w-md mx-auto">
         <div class="flex flex-col ">
             @auth
                 <span>{{ $user->name }} (<span>{{ $user->username }}</span>)</span>
@@ -8,20 +8,16 @@
                 <span>
                     Почта: <span>{{ $user->email }}</span>
                     @if($user->email_verified_at)
-                        <x-icon name="check"
-                                class="h-4 inline text-green-600"/>
+                        <flux:icon.check class="h-4 inline text-positive-600"/>
                         <span>{{ $user->email_verified_at->format('Y-m-d H:i:s') }}</span>
                     @else
-                        <x-icon name="x-mark"
-                                class="h-4 inline text-red-600"/>
-                        <x-button
-                                id="resend-confirmation-btn"
-                                flat
+                        <flux:icon.x-mark class="h-4 inline text-negative-600"/>
+                        <x-light-button
                                 wire:click="resendEmailConfirmation()"
                                 x-data="{ show: true }"
                                 x-show="show"
                                 x-on:click="show = false"
-                        >Переотправить</x-button>
+                        >Переотправить</x-light-button>
                     @endif
                 </span>
 
@@ -31,5 +27,6 @@
                 <span>Не авторизованы(</span>
             @endguest
         </div>
-    </x-card>
+    </flux:card>
 </div>
+<?php 

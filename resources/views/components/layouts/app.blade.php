@@ -1,3 +1,8 @@
+@php declare(strict_types=1); @endphp
+@props([
+    'rightNavbar',
+])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -5,18 +10,40 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         @vite('resources/css/app.css')
 
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
+
+
         <title>{{ isset($title) ? $title . ' - Ëрдан' : 'Ëрдан' }}</title>
 
-        <wireui:scripts />
+        @fluxAppearance
     </head>
-    <body class="bg-neutral-50 dark:bg-neutral-900">
-        <div class="flex flex-col">
-            <livewire:components.navbar />
-            <livewire:components.message-bar />
+    <body class="bg-zinc-50 dark:bg-zinc-900 min-h-screen">
+        <div class="flex flex-col h-screen">
+            <x-header>
+                @if(isset($rightNavbar))
+                    <x-slot:right>
+                        {{ $rightNavbar }}
+                    </x-slot:right>
+                @endif
+            </x-header>
 
-            <div class="p-3 h-full">
-                {{ $slot }}
+
+            <div class="relative grow grid grid-cols-12 max-md:grid-rows-[min-content_1fr] gap-4">
+                @if (isset($sidebar))
+                    <div class="col-span-12 md:col-span-3 xl:col-span-2 bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
+                        {{ $sidebar }}
+                    </div>
+                @endif
+
+                <div @class(['p-3 container mx-auto h-full col-span-12', 'md:col-span-9 xl:col-span-10' => isset($sidebar)])>
+                    {{ $slot }}
+                </div>
             </div>
         </div>
+
+        @fluxScripts
+        @vite('resources/js/app.js')
+        <wireui:scripts />
     </body>
 </html>
