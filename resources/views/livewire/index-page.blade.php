@@ -1,8 +1,6 @@
 @php declare(strict_types=1) @endphp
 <div>
-    <flux:card title="Вы"
-               class="border max-w-md mx-auto"
-    >
+    <flux:card class="border max-w-md mx-auto">
         <div class="flex flex-col ">
             @auth
                 <span>{{ $user->name }} (<span>{{ $user->username }}</span>)</span>

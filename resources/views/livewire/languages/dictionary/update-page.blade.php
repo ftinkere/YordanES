@@ -4,14 +4,14 @@
 
 <x-slot name="rightNavbar">
     <x-light-button variant="negative"
-              :href='url()->previous() == url()->current() ? "/languages/$language->uuid/dictionary" : url()->previous("/languages/$language->uuid/dictionary")' wire:navigate
+                    href="/dictionary/$dictionaryArticle->uuid" wire:navigate
     >Отмена</x-light-button>
 </x-slot>
 
 <div>
-    <form wire:submit="createArticle"
+    <form wire:submit="updateArticle"
           x-data="{ selectedOrder: 0, selectedSuborder: 0,
-          lexemes: $wire.entangle('lexemes'),
+            lexemes: $wire.entangle('lexemes'),
             create() {
                 let newGroup = this.lexemes[this.lexemes.length - 1][this.lexemes[this.lexemes.length - 1].length - 1].group;
                 let newLexeme = { short: '', full: '', group: newGroup };
@@ -76,7 +76,7 @@
             <flux:input icon="pencil" label="Адаптация" wire:model="adaptation" />
 
             <flux:editor label="Основная словарная статья" wire:model="full"
-                 toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
+                         toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
             />
 
             <div class="flex flex-col gap-y-4 w-full">
@@ -91,10 +91,10 @@
                         <div class="flex flex-row gap-2">
                             <x-order-input x-model.number="lexemes[selectedOrder][selectedSuborder].group" romanize />
                             <x-order-input x-bind:class="{ 'newable': selectedOrder == lexemes.length - 1 }"
-                                    x-model.number="selectedOrder"
-                                    x-on:increment="incrementOrder"
-                                    x-on:decrement="decrementOrder"
-                                    incrementShow />
+                                           x-model.number="selectedOrder"
+                                           x-on:increment="incrementOrder"
+                                           x-on:decrement="decrementOrder"
+                                           incrementShow />
                             <x-order-input x-bind:class="{ 'newable': selectedSuborder == lexemes[selectedOrder].length - 1 }"
                                            x-model.number="selectedSuborder"
                                            x-on:increment="incrementSuborder"
@@ -117,10 +117,7 @@
                 </div>
             </div>
 
-             {{-- <flux:accent color="teal"> --}}
-             {{--     <flux:button variant="primary" class="w-full cursor-pointer" type="submit">Создать статью</flux:button> --}}
-             {{-- </flux:accent> --}}
-              <x-light-button variant="positive" class="mt-6" type="submit">Создать</x-light-button>
+            <x-light-button variant="positive" class="mt-6" type="submit">Обновить</x-light-button>
         </div>
     </form>
 </div>

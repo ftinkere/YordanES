@@ -29,14 +29,14 @@
             </x-header>
 
 
-            <div class="relative grow grid grid-cols-4 max-md:grid-rows-[min-content_1fr] gap-4">
+            <div class="relative grow grid grid-cols-12 max-md:grid-rows-[min-content_1fr] gap-4">
                 @if (isset($sidebar))
-                    <div class="col-span-4 md:col-span-1 bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
+                    <div class="col-span-12 md:col-span-3 xl:col-span-2 bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
                         {{ $sidebar }}
                     </div>
                 @endif
 
-                <div @class(['p-3 container mx-auto h-full col-span-4', 'md:col-span-3' => isset($sidebar)])>
+                <div @class(['p-3 container mx-auto h-full col-span-12', 'md:col-span-9 xl:col-span-10' => isset($sidebar)])>
                     {{ $slot }}
                 </div>
             </div>

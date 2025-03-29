@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LexemeBlock extends Model
 {
+    use HasUuids;
+
     protected $primaryKey = 'uuid';
-    protected $keyType = 'string';
-    public $incrementing = false;
 
     protected $fillable = [
-        'uuid',
         'lexeme_id',
         'name',
         'content',

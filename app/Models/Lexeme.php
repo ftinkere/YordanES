@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Mews\Purifier\Casts\CleanHtml;
 
 class Lexeme extends Model
 {
+    use HasUuids;
+
     protected $primaryKey = 'uuid';
-    protected $keyType = 'string';
-    public $incrementing = false;
 
     protected $fillable = [
-        'uuid',
         'language_uuid',
-        'vocabula_uuid',
+        'article_uuid',
         'group',
         'order',
         'suborder',
@@ -44,6 +45,8 @@ class Lexeme extends Model
     {
         return [
             'uuid' => 'string',
+            'short' => CleanHtml::class,
+            'full' => CleanHtml::class,
         ];
     }
 }

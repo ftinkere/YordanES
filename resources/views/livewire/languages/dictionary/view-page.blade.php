@@ -1,6 +1,15 @@
+@php declare(strict_types=1) @endphp
+
+@if (auth()->user()?->can('update', $article))
+    <x-slot name="rightNavbar">
+        <x-light-button variant="primary" wire:navigate href="/dictionary/{{ $article->uuid }}/edit"
+        >Изменить</x-light-button>
+    </x-slot>
+@endif
+
 <div class="grid grid-cols-1 gap-y-4">
     <div>
-        <p class="text-2xl text-zinc-100"><span class="font-bold">{{ $article->vocabula }}</span> /<span>{{ $article->transcription }}</span>/</p>
+        <p class="text-2xl text-zinc-100"><span class="font-bold">{{ $article->vocabula }}</span> @if($article->transcription) /<span>{{ $article->transcription }}</span>/ @endif </p>
         @unless($article->vocabula === $article->adaptation)
         <p class="text-xl">{{ $article->adaptation }}</p>
         @endunless

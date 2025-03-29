@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Languages\Dictionary;
 
-use App\Aggregates\LanguageAggregate;
 use App\Models\Language;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
@@ -16,8 +15,8 @@ class CreatePage extends Component
 
     #[Validate('required')]
     public string $vocabula;
-    public string $transcription;
-    public string $adaptation;
+    public ?string $transcription = null;
+    public ?string $adaptation = null;
 
     public string $article;
 
@@ -32,14 +31,14 @@ class CreatePage extends Component
     /**
      * @throws Throwable
      */
-    public function createArticle()
+    public function createArticle(): void
     {
         $this->validate();
 
-        $articleAggregate = Language::findOrFail($this->language->uuid)
-            ->createArticle($this->vocabula, $this->transcription ?? '', $this->adaptation ?? '', $this->article ?? '', $this->lexemes);
+        $article = Language::findOrFail($this->language->uuid)
+            ->createArticle($this->vocabula, $this->transcription, $this->adaptation, $this->article ?? '', $this->lexemes);
 
-        $this->redirect("/languages/{$this->language->uuid}/dictionary/{$articleAggregate->uuid}");
+        $this->redirect("/dictionary/{$article->uuid}");
     }
 
     public function render()

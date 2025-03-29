@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Aggregates\LanguageAggregate;
 use App\Aggregates\UserAggregate;
 use App\Aggregates\UserRepositoryAggregate;
-use App\Helpers\CommonHelper;
 use App\Models\DictionaryArticle;
 use App\Models\Language;
 use App\Models\Lexeme;
@@ -26,7 +25,6 @@ class DatabaseSeeder extends Seeder
     {
         if (! User::where('username', 'admin')->exists()) {
             $admin = new User;
-            $admin->uuid = CommonHelper::uuid();
             $admin->username = 'admin';
             $admin->name = 'Админ';
             $admin->email = 'admin@yordan.ru';
@@ -38,7 +36,6 @@ class DatabaseSeeder extends Seeder
         $language = Language::where('name', 'Админский')->first();
         if (! $language) {
             $language = new Language;
-            $language->uuid = CommonHelper::uuid();
             $language->creator_uuid = User::where('username', 'admin')->first()->uuid;
             $language->name = 'Админский';
             $language->autoname = 'Rootell';
@@ -51,7 +48,6 @@ class DatabaseSeeder extends Seeder
         try {
             for ($i = 0; $i < 100; $i++) {
                 $article = new DictionaryArticle;
-                $article->uuid = CommonHelper::uuid();
                 $article->language_uuid = $language->uuid;
                 $article->article = Str::random(200);
                 $article->vocabula = Str::random(8);
@@ -59,7 +55,6 @@ class DatabaseSeeder extends Seeder
 
                 for ($j = 0; $j < 10; $j++) {
                     $lexeme = new Lexeme;
-                    $lexeme->uuid = CommonHelper::uuid();
                     $lexeme->language_uuid = $language->uuid;
                     $lexeme->article_uuid = $article->uuid;
                     $lexeme->short = Str::random(20);

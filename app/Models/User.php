@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Support\Facades\Hash;
@@ -23,10 +24,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable;
     use Authorizable;
+    use HasUuids;
 
     protected $primaryKey = 'uuid';
-    protected $keyType = 'string';
-    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -60,6 +60,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected function casts(): array
     {
         return [
+            'uuid' => 'string',
             'email_verified_at' => 'datetime',
         ];
     }
@@ -120,7 +121,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
 
         $user = new self;
-        $user->uuid = CommonHelper::uuid();
         $user->username = $username;
         $user->name = $name;
         $user->email = $email;

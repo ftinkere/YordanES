@@ -19,7 +19,7 @@ class ArticlePolicy
         return null;
     }
 
-    public function view(User $user, DictionaryArticle $dictionaryArticle): bool
+    public function view(?User $user, DictionaryArticle $dictionaryArticle): bool
     {
         return $dictionaryArticle->language->is_published || $dictionaryArticle->is_published;
 

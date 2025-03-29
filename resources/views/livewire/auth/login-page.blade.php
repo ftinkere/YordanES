@@ -1,5 +1,4 @@
-<?php declare(strict_types=1); ?>
-
+@php declare(strict_types=1); @endphp
 
 <flux:card class="space-y-6 max-w-md mx-auto">
     <div>

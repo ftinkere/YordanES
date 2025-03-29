@@ -2,7 +2,7 @@
     $pagination = $language->searchDictionary($search)->paginate(10);
 @endphp
 
-@if (auth()->user()?->can('update', $language))
+@can('update', $language)
     <x-slot name="rightNavbar">
         <x-light-button variant="positive"
                   wire:navigate href="/languages/{{ $language->uuid }}/dictionary/create"

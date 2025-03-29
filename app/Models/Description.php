@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Mews\Purifier\Casts\CleanHtml;
 
 class Description extends Model
 {
+    use HasUuids;
+
     protected $primaryKey = 'uuid';
-    protected $keyType = 'string';
-    public $incrementing = false;
 
     protected $fillable = [
         'uuid',
@@ -29,6 +31,7 @@ class Description extends Model
     {
         return [
             'uuid' => 'string',
+            'description' => CleanHtml::class,
         ];
     }
 }

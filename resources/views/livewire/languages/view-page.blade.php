@@ -2,12 +2,14 @@
     use App\Helpers\CommonHelper;
 @endphp
 
-@if (auth()->user()?->can('update', $language))
+@can('update', $language)
     <x-slot name="rightNavbar">
-         <x-light-button href="{{ url()->current() . '/edit' }}" wire:navigate>Изменить</x-light-button>
-        {{-- <flux:badge color="teal" as="button" class="cursor-pointer px-4! py-2!">Изменить</flux:badge> --}}
+         {{-- <x-light-button href="{{ url()->current() . '/edit' }}" wire:navigate>Изменить</x-light-button> --}}
+         <flux:badge color="teal" as="button" class="cursor-pointer px-4! py-2!"
+                     href="{{ url()->current() . '/edit' }}" wire:navigate
+         >Изменить</flux:badge>
     </x-slot>
-@endif
+@endcan
 
 <div>
     {{-- Row --}}
@@ -23,7 +25,7 @@
 
             <div class="ps-3 flex flex-row gap-2 items-center rounded-full dark:hover:bg-zinc-700 cursor-pointer">
                 <span>{{ $language->author->name }}</span>
-                <x-avatar avatar="{{  $language->author->avatar }}" size="2rem" name="{{ $language->author->name }}" />
+                <flux:avatar :src="$language->author->avatar" initials="А" size="sm" circle />
             </div>
         </div>
     </div>

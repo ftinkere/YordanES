@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Traits\PrimaryUuid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Override;
@@ -16,9 +17,13 @@ use Override;
  */
 class PasswordResetToken extends Model
 {
+    use HasUuids;
+
     protected $primaryKey = 'uuid';
-    protected $keyType = 'string';
-    public $incrementing = false;
+
+    protected $casts = [
+        'uuid' => 'string',
+    ];
 
     #[Override]
     public function getKeyName()

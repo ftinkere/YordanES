@@ -11,6 +11,7 @@ use App\Livewire\IndexPage;
 use App\Livewire\Languages\CreatePage as LanguagesCreatePage;
 use App\Livewire\Languages\Dictionary\CreatePage as DictionaryCreatePage;
 use App\Livewire\Languages\Dictionary\IndexPage as DictionaryIndexPage;
+use App\Livewire\Languages\Dictionary\UpdatePage as DictionaryUpdatePage;
 use App\Livewire\Languages\Dictionary\ViewPage as DictionaryViewPage;
 use App\Livewire\Languages\IndexPage as LanguagesIndexPage;
 use App\Livewire\Languages\UpdatePage as LanguagesUpdatePage;
@@ -56,21 +57,21 @@ Route::get('/confirm-email/{uuid}', static function ($uuid) {
 
 Route::get('/settings', AccountSettingsPage::class);
 
-Route::prefix('/languages')->group(function (): void {
-    Route::get('/', LanguagesIndexPage::class);
-    Route::get('/create', LanguagesCreatePage::class)
+Route::prefix('/languages')->name('languages')->group(function (): void {
+    Route::get('/', LanguagesIndexPage::class)->name('.index');
+    Route::get('/create', LanguagesCreatePage::class)->name('.create')
         ->middleware('auth')
         ->middleware('can:create,App\Models\Language');
 
     Route::prefix('/{language}')
         ->middleware('can:view,language')
         ->group(function (): void {
-            Route::get('/', LanguagesViewPage::class);
-            Route::get('/edit', LanguagesUpdatePage::class)
+            Route::get('/', LanguagesViewPage::class)->name('.view');
+            Route::get('/edit', LanguagesUpdatePage::class)->name('.update')
                 ->middleware('can:update,language');
-            Route::prefix('/dictionary')->group(function (): void {
-                Route::get('/', DictionaryIndexPage::class);
-                Route::get('/create', DictionaryCreatePage::class)
+            Route::prefix('/dictionary')->name('.dictionary')->group(function (): void {
+                Route::get('/', DictionaryIndexPage::class)->name('.index');
+                Route::get('/create', DictionaryCreatePage::class)->name('.create')
                     ->middleware('can:update,language')
                     ->middleware('can:create,App\Models\DictionaryArticle');
             });
@@ -78,6 +79,9 @@ Route::prefix('/languages')->group(function (): void {
 
 });
 
-Route::prefix('/dictionary')->group(function () {
-    Route::get('/{article}', DictionaryViewPage::class);
-})->middleware('can:view,article');
+Route::prefix('/dictionary')->name('languages.dictionary')->group(function () {
+    Route::get('/{article}', DictionaryViewPage::class)->name('.view')
+        ->middleware('can:view,article');
+    Route::get('/{article}/edit', DictionaryUpdatePage::class)->name('.update')
+        ->middleware('can:update,article');
+});

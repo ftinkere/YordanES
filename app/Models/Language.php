@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Helpers\CommonHelper;
 use DB;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,10 +15,9 @@ use Throwable;
 class Language extends Model
 {
     use SoftDeletes;
+    use HasUuids;
 
     protected $primaryKey = 'uuid';
-    protected $keyType = 'string';
-    public $incrementing = false;
 
     protected $fillable = [
         'name',
@@ -69,7 +68,10 @@ class Language extends Model
 
     public function searchDictionary($search): HasMany
     {
-        $query = $this->hasMany(DictionaryArticle::class, 'language_uuid', 'uuid');
+        $query = $this->hasMany(DictionaryArticle::class, 'language_uuid', 'uuid')
+            ->orderBy('vocabula')
+            ->orderBy('adaptation')
+        ;
 
         if (! empty($search)) {
             $uuids = DB::table('articles_full_text_search')
@@ -89,7 +91,6 @@ class Language extends Model
     public static function create(User $user, string $name): self
     {
         $language = new self();
-        $language->uuid = CommonHelper::uuid();
         $language->name = $name;
         $language->creator_uuid = $user->uuid;
 
@@ -109,7 +110,6 @@ class Language extends Model
         $description = $this->description($key);
         if (! $description) {
             $description = new Description();
-            $description->uuid = CommonHelper::uuid();
             $description->language_uuid = $this->uuid;
             $description->title = $key;
         }
@@ -120,26 +120,23 @@ class Language extends Model
     /**
      * @throws Throwable
      */
-    public function createArticle(string $vocabula, string $transcription, string $adaptation, string $article, array $lexemes = []): DictionaryArticle
+    public function createArticle(string $vocabula, ?string $transcription, ?string $adaptation, string $article, array $lexemes = []): DictionaryArticle
     {
-        DB::beginTransaction();
-        try {
-            $article = new DictionaryArticle();
-            $article->uuid = CommonHelper::uuid();
-            $article->language_uuid = $this->uuid;
-            $article->vocabula = $vocabula;
-            $article->transcription = $transcription;
-            $article->adaptation = $adaptation;
-            $article->article = $article;
+        return DB::transaction(function () use ($vocabula, $transcription, $adaptation, $article, $lexemes) {
+            $dArticle = new DictionaryArticle();
+            $dArticle->language_uuid = $this->uuid;
+            $dArticle->vocabula = $vocabula;
+            $dArticle->transcription = $transcription;
+            $dArticle->adaptation = $adaptation;
+            $dArticle->article = $article;
 
-            $article->save();
+            $dArticle->save();
 
             foreach ($lexemes as $order => $lexemesOrder) {
                 foreach ($lexemesOrder as $suborder => $lexemeArray) {
                     $lexeme = new Lexeme();
-                    $lexeme->uuid = CommonHelper::uuid();
                     $lexeme->language_uuid = $this->uuid;
-                    $lexeme->article_uuid = $article->uuid;
+                    $lexeme->article_uuid = $dArticle->uuid;
                     $lexeme->group = $lexemeArray['group'];
                     $lexeme->order = $order;
                     $lexeme->suborder = $suborder;
@@ -152,12 +149,8 @@ class Language extends Model
 
             self::searchRefresh();
 
-            DB::commit();
-        } catch (Throwable $e) {
-            DB::rollBack();
-            throw $e;
-        }
-        return $article;
+            return $dArticle;
+        });
     }
 
     public static function searchRefresh(): void

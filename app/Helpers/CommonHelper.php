@@ -9,14 +9,9 @@ use DateTimeInterface;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
 use IntlDateFormatter;
-use Ramsey\Uuid\UuidFactoryInterface;
 
 class CommonHelper
 {
-    public static function uuid()
-    {
-        return app(UuidFactoryInterface::class)->uuid7();
-    }
 
     public static function randomStr($length = 60)
     {
