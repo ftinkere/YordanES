@@ -21,11 +21,11 @@ class SendEmailVerifiationNotification
         }
 
         // TODO: пока очень не очень, но сойдёт
-        $link = '/confirm-email/' . $user->uuid;
+        $link = '/confirm-email/' . $user->uuid . '?token=' . $user->uuid;
 
-        SendMail::dispatch($user->email, new EmailConfirmationMail(
+        new SendMail($user->email, new EmailConfirmationMail(
             $user->name,
             $link,
-        ));
+        ))->handle();
     }
 }
