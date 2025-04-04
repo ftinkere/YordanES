@@ -44,6 +44,6 @@
 
         @fluxScripts
         @vite('resources/js/app.js')
-        <wireui:scripts />
+        @filepondScripts
     </body>
 </html>

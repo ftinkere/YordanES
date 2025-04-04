@@ -167,7 +167,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function login(#[SensitiveParameter] ?string $password = null): self
     {
         if (auth()->user()?->isAdmin() || $this->checkPassword($password)) {
-            auth()->login($this);
+            auth()->login($this, true);
         } else {
             throw new InvalidArgumentException('Неправильный логин или пароль');
         }

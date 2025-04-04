@@ -25,13 +25,12 @@
 
             <div class="ps-3 flex flex-row gap-2 items-center rounded-full dark:hover:bg-zinc-700 cursor-pointer">
                 <span>{{ $language->author->name }}</span>
-                <flux:avatar :src="$language->author->avatar" initials="А" size="sm" circle />
+                <flux:avatar :src="$language->author->avatar" name="$user->name" size="sm" circle />
             </div>
         </div>
     </div>
 
     <article class="mx-auto prose prose-zinc dark:prose-invert">
-        {{-- TODO: Purify --}}
         {!! $language->description('about')?->description ?? '' !!}
     </article>
 </div>

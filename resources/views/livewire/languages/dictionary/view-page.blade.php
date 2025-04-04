@@ -15,6 +15,28 @@
         @endunless
     </div>
 
+    <div id="images" class="pswp-gallery flex flex-row gap-2" x-init="imagesInit()"
+         x-data="{
+            imagesInit: function () {
+                const lightbox = new PhotoSwipeLightbox({
+                    gallery: '#images',
+                    children: 'a',
+                    pswpModule: PhotoSwipe,
+                })
+                lightbox.init()
+            }
+        }"
+    >
+        @foreach($article->files as $file)
+            <a data-pswp-src="{{ $file->path }}"
+               data-pswp-height="{{ $file->height }}"
+               data-pswp-width="{{ $file->width }}"
+            >
+                <img src="{{ $file->path }}" alt="Изображение" width="{{ min(128, $file->width) }}" height="{{ min(128, $file->height) }}" />
+            </a>
+        @endforeach
+    </div>
+
     @if($article->article)
     <div class="break-words text-pretty">
         {!! $article->article !!}

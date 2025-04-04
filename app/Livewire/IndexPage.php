@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Events\UserEmailChanged;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Locked;
@@ -15,6 +16,11 @@ class IndexPage extends Component
     public function mount(): void
     {
         $this->user = Auth::user();
+    }
+
+    public function resendEmailConfirmation(): void
+    {
+        event(new UserEmailChanged($this->user->uuid));
     }
 
     public function render()

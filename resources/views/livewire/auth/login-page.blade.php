@@ -22,7 +22,7 @@
                     </flux:link>
                 </div>
 
-                <flux:input type="password" placeholder="Ваш пароль" wire:model="password" />
+                <flux:input type="password" placeholder="Ваш пароль" wire:model="password" viewable />
 
                 <flux:error name="password" />
             </flux:field>

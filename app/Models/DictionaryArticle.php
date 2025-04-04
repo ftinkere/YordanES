@@ -38,7 +38,7 @@ class DictionaryArticle extends Model
 
     public function lexemes()
     {
-        return$this->hasMany(Lexeme::class, 'article_uuid')
+        return $this->hasMany(Lexeme::class, 'article_uuid')
             ->orderBy('group')
             ->orderBy('order')
             ->orderBy('suborder')
@@ -50,5 +50,11 @@ class DictionaryArticle extends Model
         return $this->lexemes()
             ->get()
             ->groupBy('group');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class, 'parent_id')
+            ->where('parent_type', self::class);
     }
 }

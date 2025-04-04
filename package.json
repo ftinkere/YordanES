@@ -18,6 +18,9 @@
     "dependencies": {
         "@tailwindcss/typography": "^0.5.16",
         "@tailwindcss/vite": "^4.0.7",
-        "autoprefixer": "^10.4.20"
+        "autoprefixer": "^10.4.20",
+        "filepond": "^4.32.7",
+        "filepond-plugin-image-preview": "^4.6.12",
+        "photoswipe": "^5.4.4"
     }
 }

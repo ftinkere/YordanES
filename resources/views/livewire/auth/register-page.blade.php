@@ -24,13 +24,13 @@
 
             <flux:field>
                 <flux:label>Пароль</flux:label>
-                <flux:input type="password" placeholder="Ваш пароль" wire:model="password" />
+                <flux:input type="password" placeholder="Ваш пароль" wire:model="password" viewable />
                 <flux:error name="password" />
             </flux:field>
 
             <flux:field>
                 <flux:label>Повторение Пароля</flux:label>
-                <flux:input type="password" placeholder="Ваш пароль" wire:model="password_repeat" />
+                <flux:input type="password" placeholder="Ваш пароль" wire:model="password_repeat" viewable />
                 <flux:error name="password_repeat" />
             </flux:field>
         </div>

@@ -4,13 +4,15 @@
 
 <x-slot name="rightNavbar">
     <x-light-button variant="negative"
-                    href="/dictionary/$dictionaryArticle->uuid" wire:navigate
+                    href="/dictionary/{{ $dictionaryArticle->uuid }}" wire:navigate
     >Отмена</x-light-button>
 </x-slot>
 
 <div>
-    <form wire:submit="updateArticle"
-          x-data="{ selectedOrder: 0, selectedSuborder: 0,
+    <form wire:submit="updateArticle" x-ref="form"
+          x-data="{
+            selectedOrder: 0,
+            selectedSuborder: 0,
             lexemes: $wire.entangle('lexemes'),
             create() {
                 let newGroup = this.lexemes[this.lexemes.length - 1][this.lexemes[this.lexemes.length - 1].length - 1].group;
@@ -75,7 +77,22 @@
 
             <flux:input icon="pencil" label="Адаптация" wire:model="adaptation" />
 
-            <flux:editor label="Основная словарная статья" wire:model="full"
+            <div class="flex flex-row gap-2">
+                @foreach($dictionaryArticle->files as $file)
+                    <div class="relative" x-on:deleted="$el.remove()">
+                        <flux:icon.x-mark
+                            wire:click="deleteImage('{{ $file->uuid }}')"
+                            class="absolute right-0 top-0 rounded-full bg-zinc-800 border-zinc-900 hover:bg-rose-800 transition-colors"
+                        />
+
+                        <img src="{{ $file->path }}" alt="Изображение" width="{{ min(128, $file->width) }}" height="{{ min(128, $file->height) }}" />
+                    </div>
+                @endforeach
+            </div>
+
+            <x-filepond::upload wire:model="files" multiple accept="image/*" />
+
+            <flux:editor label="Основная словарная статья" wire:model="article"
                          toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
             />
 

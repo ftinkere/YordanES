@@ -13,7 +13,7 @@
                     @else
                         <flux:icon.x-mark class="h-4 inline text-negative-600"/>
                         <x-light-button
-                                wire:click="resendEmailConfirmation()"
+                                wire:click="resendEmailConfirmation"
                                 x-data="{ show: true }"
                                 x-show="show"
                                 x-on:click="show = false"
