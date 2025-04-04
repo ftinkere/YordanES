@@ -14,7 +14,8 @@ class SendEmailVerifiationNotification
 
     public function handle(UserEmailChanged|UserRegistered $event): void
     {
-        $user = User::getByUuid($event->uuid);
+        /** @var User $user */
+        $user = User::findOrFail($event->uuid);
         if (! $user instanceof User) {
             return;
         }
