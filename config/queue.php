@@ -88,7 +88,7 @@ return [
     */
 
     'batching' => [
-        'database' => 'mysql',
+        'database' => 'pgsql',
         'table' => 'job_batches',
     ],
 
@@ -107,7 +107,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database'),
-        'database' => 'mysql',
+        'database' => 'pgsql',
         'table' => 'failed_jobs',
     ],
 
