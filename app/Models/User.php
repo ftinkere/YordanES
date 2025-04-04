@@ -155,6 +155,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         if (auth()->user()?->isAdmin() || $token === $this->uuid) {
             $this->email_verified_at = Carbon::now();
+            $this->save();
             // TODO: поменять на свой токен
         } else {
             throw new InvalidArgumentException('Неправильный токен для подтверждения почты');
