@@ -21,7 +21,7 @@ class ArticlePolicy
 
     public function view(?User $user, DictionaryArticle $dictionaryArticle): bool
     {
-        return $dictionaryArticle->language->is_published || $dictionaryArticle->is_published;
+        return $dictionaryArticle->language->isAuthor($user) || $dictionaryArticle->language->is_published && $dictionaryArticle->is_published;
 
     }
 
