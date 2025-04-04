@@ -7,7 +7,7 @@ namespace App\Jobs;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Mail\Mailer;
+use Illuminate\Support\Facades\Mail;
 
 class SendMail implements ShouldQueue
 {
@@ -24,7 +24,7 @@ class SendMail implements ShouldQueue
             $this->email = 'ftinkere+yordanes_test@ya.ru';
         }
 
-        Mailer::to($this->email)
+        Mail::to($this->email)
             ->send($this->mailable);
     }
 }
