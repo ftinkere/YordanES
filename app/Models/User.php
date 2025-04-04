@@ -153,9 +153,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function verifyEmail(?string $token = null): self
     {
-        // TODO: поменять на свой токен
-        if (auth()->user()?->isAdmin() || ($token && $token === $this->uuid)) {
+        if (auth()->user()?->isAdmin() || $token === $this->uuid) {
             $this->email_verified_at = Carbon::now();
+            // TODO: поменять на свой токен
         } else {
             throw new InvalidArgumentException('Неправильный токен для подтверждения почты');
         }
