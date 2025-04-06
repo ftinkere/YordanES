@@ -32,7 +32,7 @@
                data-pswp-height="{{ $file->height }}"
                data-pswp-width="{{ $file->width }}"
             >
-                <img src="{{ $file->path }}" alt="Изображение" width="{{ min(128, $file->width) }}" height="{{ min(128, $file->height) }}" />
+                <img src="{{ $file->path }}" alt="Изображение" width="{{ min(128, $file->width) }}" height="{{ min(128, $file->height) }}" class="rounded-md" />
             </a>
         @endforeach
     </div>

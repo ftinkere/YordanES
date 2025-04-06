@@ -54,7 +54,7 @@
                            data-pswp-height="{{ $file->height }}"
                            data-pswp-width="{{ $file->width }}"
                         >
-                            <img src="{{ $file->path }}" alt="Изображение" style="height: 3em;" />
+                            <img src="{{ $file->path }}" alt="Изображение" style="height: 3em;" class="rounded-md" />
                         </a>
                     </div>
                 @endif
