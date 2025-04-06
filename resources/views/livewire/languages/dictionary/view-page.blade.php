@@ -9,7 +9,7 @@
 
 <div class="grid grid-cols-1 gap-y-4">
     <div>
-        <p class="text-2xl text-zinc-100"><span class="font-bold">{{ $article->vocabula }}</span> @if($article->transcription) /<span>{{ $article->transcription }}</span>/ @endif </p>
+        <p class="text-2xl dark:text-zinc-100"><span class="font-bold">{{ $article->vocabula }}</span> @if($article->transcription) /<span>{{ $article->transcription }}</span>/ @endif </p>
         @unless($article->vocabula === $article->adaptation)
         <p class="text-xl">{{ $article->adaptation }}</p>
         @endunless
