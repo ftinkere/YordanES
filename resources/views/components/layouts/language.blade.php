@@ -25,17 +25,26 @@
         </x-slot:rightNavbar>
     @endif
 
+    <x-slot:navlistAdd>
+        <flux:navlist.item icon="information-circle"
+                           href="/languages/{{ $language->uuid }}" wire:navigate
+                           :current="request()->routeIs('languages.view', 'languages.update')"
+        >О языке</flux:navlist.item>
+        <flux:navlist.item icon="queue-list"
+                           href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
+                           :current="request()->routeIs('languages.dictionary.*')"
+        >Словарь</flux:navlist.item>
+    </x-slot:navlistAdd>
+
     <x-slot name="sidebar">
-        <flux:navlist class="md:sticky top-4 z-10 mt-4 p-2">
-            <flux:navlist.item icon="information-circle"
-                               href="/languages/{{ $language->uuid }}" wire:navigate
-                               :current="request()->routeIs('languages.view', 'languages.update')"
-            >О языке</flux:navlist.item>
-            <flux:navlist.item icon="queue-list"
-                               href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
-                               :current="request()->routeIs('languages.dictionary.*')"
-            >Словарь</flux:navlist.item>
-        </flux:navlist>
+        <flux:navlist.item icon="information-circle"
+                           href="/languages/{{ $language->uuid }}" wire:navigate
+                           :current="request()->routeIs('languages.view', 'languages.update')"
+        >О языке</flux:navlist.item>
+        <flux:navlist.item icon="queue-list"
+                           href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
+                           :current="request()->routeIs('languages.dictionary.*')"
+        >Словарь</flux:navlist.item>
     </x-slot>
 
     <div class="flex flex-row max-md:flex-col items-start gap-4 h-full">

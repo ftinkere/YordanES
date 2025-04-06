@@ -51,3 +51,31 @@ window.romanize = romanize;
 document.addEventListener('scrollTop', function () {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+let touchStartX = 0;
+let touchEndX = 0;
+const sidebarToggle = document.getElementById('sidebar-toggle');
+
+document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleGesture();
+});
+
+function handleGesture() {
+    const swipeDistance = touchEndX - touchStartX;
+
+    if (swipeDistance > 70) {
+        // Свайп вправо с левого края экрана
+        sidebarToggle.click();
+    }
+
+    // Если нужно — добавь условие для свайпа обратно (закрытие сайдбара)
+    if (swipeDistance < -70) {
+        // Свайп влево
+        sidebarToggle.click();
+    }
+}

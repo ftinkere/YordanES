@@ -1,6 +1,7 @@
 @php declare(strict_types=1); @endphp
 @props([
     'rightNavbar',
+    'navlistAdd',
 ])
 
 <!DOCTYPE html>
@@ -21,20 +22,28 @@
     <body class="bg-zinc-50 dark:bg-zinc-900 min-h-screen">
         <div class="flex flex-col h-screen">
             <x-header>
-                @if(isset($rightNavbar))
+                @isset($rightNavbar)
                     <x-slot:right>
                         {{ $rightNavbar }}
                     </x-slot:right>
-                @endif
+                @endisset
+                @isset($sidebar)
+                    <x-slot:navlistAdd>
+                        <flux:separator />
+                        {{ $sidebar }}
+                    </x-slot:navlistAdd>
+                @endisset
             </x-header>
 
 
             <div class="relative grow grid grid-cols-12 max-md:grid-rows-[min-content_1fr] gap-4">
-                @if (isset($sidebar))
-                    <div class="col-span-12 md:col-span-3 xl:col-span-2 bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
-                        {{ $sidebar }}
+                @isset($sidebar)
+                    <div class="hidden md:block md:col-span-3 xl:col-span-2 bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
+                        <flux:navlist class="md:sticky top-4 z-10 mt-4 p-2">
+                            {{ $sidebar }}
+                        </flux:navlist>
                     </div>
-                @endif
+                @endisset
 
                 <div @class(['p-3 container mx-auto h-full col-span-12', 'md:col-span-9 xl:col-span-10' => isset($sidebar)])>
                     {{ $slot }}

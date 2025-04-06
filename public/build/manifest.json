@@ -1,0 +1,20 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-pH2HnrUY.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/fonts/Aquawax-Fx-Variable-trial.ttf": {
+    "file": "assets/Aquawax-Fx-Variable-trial-BTj72iHP.ttf",
+    "src": "resources/fonts/Aquawax-Fx-Variable-trial.ttf"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CbP30Esg.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-BEacTAil.css"
+    ]
+  }
+}
