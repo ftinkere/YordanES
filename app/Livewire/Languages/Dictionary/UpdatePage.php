@@ -28,6 +28,9 @@ class UpdatePage extends Component
 
     public string $article;
 
+    #[Validate('required|boolean')]
+    public bool $public = true;
+
     public array $lexemes;
 
     public array $files;
@@ -48,6 +51,8 @@ class UpdatePage extends Component
         $this->adaptation = $article->adaptation;
 
         $this->article = $article->article;
+
+        $this->public = $article->is_published;
 
         foreach ($article->lexemes as $lexeme) {
             $this->lexemes[$lexeme->order][$lexeme->suborder] = [
@@ -70,6 +75,7 @@ class UpdatePage extends Component
             'transcription' => $this->transcription,
             'adaptation' => $this->adaptation,
             'article' => $this->article,
+            'is_published' => $this->public
         ]);
 
         foreach ($this->files as $file) {
@@ -89,11 +95,16 @@ class UpdatePage extends Component
             foreach ($lexemesOrder as $suborder => $lexemeArray) {
                 if (isset($lexemeArray['uuid'])) {
                     $lexeme = Lexeme::findOrFail($lexemeArray['uuid']);
-                    $lexeme->update([
-                        'group' => $lexemeArray['group'],
-                        'short' => $lexemeArray['short'],
-                        'full' => $lexemeArray['full'],
-                    ]);
+
+                    if (empty($lexemeArray['short']) && empty($lexemeArray['full'])) {
+                        $lexeme->delete();
+                    } else {
+                        $lexeme->update([
+                            'group' => $lexemeArray['group'],
+                            'short' => $lexemeArray['short'],
+                            'full' => $lexemeArray['full'],
+                        ]);
+                    }
                 } else {
                     Lexeme::create([
                         'language_uuid' => $this->dictionaryArticle->language_uuid,

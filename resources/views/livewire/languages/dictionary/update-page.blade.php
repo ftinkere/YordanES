@@ -61,7 +61,7 @@
                 }
             },
           }">
-        <div class="flex flex-col gap-y-2 gap-x-4 max-w-xl mx-auto">
+        <div class="flex flex-col gap-y-4 gap-x-4 max-w-xl mx-auto">
             <div class="grid grid-cols-2 gap-y-2 gap-x-4">
                 <div>
                     <flux:input icon="language" label="Написание" wire:model="vocabula" />
@@ -95,6 +95,10 @@
             <flux:editor label="Основная словарная статья" wire:model="article"
                          toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
             />
+
+            <div class="col-span-2">
+                <flux:switch label="Публично доступно" wire:model="public" align="left" />
+            </div>
 
             <div class="flex flex-col gap-y-4 w-full">
                 <div class="rounded-xl bg-zinc-800/50 -mx-4 px-4 py-4">

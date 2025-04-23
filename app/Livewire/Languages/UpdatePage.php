@@ -20,6 +20,9 @@ class UpdatePage extends Component
     #[Validate('required|filled')]
     public ?string $autoname_transcription;
 
+    #[Validate('required|boolean')]
+    public bool $public;
+
     public string $about;
 
     public function mount(Language $language): void
@@ -30,21 +33,16 @@ class UpdatePage extends Component
         $this->autoname = $this->language->autoname;
         $this->autoname_transcription = $this->language->autoname_transcription;
         $this->about = $this->language->description('about')?->description ?? '';
+        $this->public = $this->language->is_published;
     }
 
     public function updateLanguage(): void
     {
         $language = Language::findOrFail($this->language->uuid);
-        if ($this->name !== $language->name) {
-            $language->name = $this->name;
-        }
-        if ($this->autoname !== $language->autoname || $this->autoname_transcription !== $language->autoname_transcription) {
-            $language->setAutoname($this->autoname, $this->autoname_transcription);
-        }
-
-        if ($this->language->description('about')?->description ?? '' !== $this->about) {
-            $language->setDescription('about', $this->about);
-        }
+        $language->name = $this->name;
+        $language->setAutoname($this->autoname, $this->autoname_transcription);
+        $language->setDescription('about', $this->about);
+        $language->is_published = $this->public;
 
         $language->save();
 

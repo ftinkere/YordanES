@@ -66,12 +66,16 @@ class Language extends Model
         return $this->hasMany(DictionaryArticle::class, 'language_uuid', 'uuid');
     }
 
-    public function searchDictionary($search): HasMany
+    public function searchDictionary($search, User|null $user = null): HasMany
     {
         $query = $this->hasMany(DictionaryArticle::class, 'language_uuid', 'uuid')
             ->orderBy('vocabula')
             ->orderBy('adaptation')
         ;
+
+        if (! $user || (! $user->isAdmin() && ! $this->isAuthor($user))) {
+            $query->where('is_published', true);
+        }
 
         if (! empty($search)) {
             $uuids = DB::table('articles_full_text_search')
@@ -120,15 +124,16 @@ class Language extends Model
     /**
      * @throws Throwable
      */
-    public function createArticle(string $vocabula, ?string $transcription, ?string $adaptation, string $article, array $lexemes = []): DictionaryArticle
+    public function createArticle(string $vocabula, ?string $transcription, ?string $adaptation, string $article, array $lexemes = [], bool $public = false): DictionaryArticle
     {
-        return DB::transaction(function () use ($vocabula, $transcription, $adaptation, $article, $lexemes) {
+        return DB::transaction(function () use ($public, $vocabula, $transcription, $adaptation, $article, $lexemes) {
             $dArticle = new DictionaryArticle();
             $dArticle->language_uuid = $this->uuid;
             $dArticle->vocabula = $vocabula;
             $dArticle->transcription = $transcription;
             $dArticle->adaptation = $adaptation;
             $dArticle->article = $article;
+            $dArticle->is_published = $public;
 
             $dArticle->save();
 

@@ -7,7 +7,7 @@
 </x-slot>
 
 <div>
-    <div class="mb-6 grid grid-cols-2 gap-x-2 gap-y-4 max-w-xl mx-auto">
+    <div class="mb-6 grid grid-cols-2 gap-x-2 gap-y-6 max-w-xl mx-auto">
         <div class="col-span-2">
             <flux:input icon="pencil" label="Название" wire:model="name" />
         </div>
@@ -17,6 +17,10 @@
                 <flux:button size="sm" variant="subtle" icon="arrow-path" class="-mr-1" x-on:click="x2i_input('autoname_transcription')" />
             </x-slot>
         </flux:input>
+
+        <div class="col-span-2">
+            <flux:switch label="Публично доступен" wire:model="public" align="left" />
+        </div>
 
         <x-light-button variant="positive" class="col-span-2" wire:click="updateLanguage">
             Сохранить

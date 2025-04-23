@@ -18,6 +18,9 @@ class CreatePage extends Component
     public ?string $transcription = null;
     public ?string $adaptation = null;
 
+    #[Validate('required|boolean')]
+    public bool $public = true;
+
     public string $article;
 
     public array $lexemes = [[ ['group' => 1, 'short' => '', 'full' => ''] ]]; // [*order* => [*suborder* => [lexeme] ] ]
@@ -36,7 +39,7 @@ class CreatePage extends Component
         $this->validate();
 
         $article = Language::findOrFail($this->language->uuid)
-            ->createArticle($this->vocabula, $this->transcription, $this->adaptation, $this->article ?? '', $this->lexemes);
+            ->createArticle($this->vocabula, $this->transcription, $this->adaptation, $this->article ?? '', $this->lexemes, $this->public);
 
         $this->redirect("/dictionary/{$article->uuid}");
     }

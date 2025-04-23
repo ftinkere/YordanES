@@ -41,6 +41,11 @@ class Lexeme extends Model
         return $this->hasMany(LexemeBlock::class, 'lexeme_uuid');
     }
 
+    public function firstLineFull(): false|string
+    {
+        return strtok($this->full, "\n");
+    }
+
     protected function casts(): array
     {
         return [

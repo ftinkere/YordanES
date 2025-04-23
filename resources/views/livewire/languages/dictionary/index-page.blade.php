@@ -1,5 +1,7 @@
 @php declare(strict_types=1);
-    use App\Models\DictionaryArticle;$pagination = $language->searchDictionary($search)->paginate(10);
+    use App\Models\DictionaryArticle;
+
+    $pagination = $language->searchDictionary($search, Auth::user())->paginate(10);
 @endphp
 
 @can('update', $language)
@@ -28,9 +30,15 @@
                            href="/dictionary/{{ $article->uuid }}" wire:navigate
                 >
                     <flux:heading size="lg">
-                        <span class="font-bold">{{ $article->vocabula }}</span> @if($article->transcription)
+                        <span class="font-bold">{{ $article->vocabula }}</span>
+                        @if($article->transcription)
                             /<span>{{ $article->transcription }}</span>/
                         @endif
+                        @unless($article->is_published)
+                            <flux:tooltip content="Не опубликовано">
+                                <flux:icon.eye variant="micro" class="inline text-negative-700 dark:text-negative-500" />
+                            </flux:tooltip>
+                        @endunless
                         @if ($article->vocabula !== $article->adaptation)
                             <flux:subheading>{{ $article->adaptation }}</flux:subheading>
                         @endif
