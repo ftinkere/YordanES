@@ -11,26 +11,25 @@
         decrement() { this.count > 0 ? this.count-- : ''; $dispatch('decrement') },
       }"
 >
+    @if ($incrementShow)
+        <flux:button icon="chevron-down" size="xs" class="rounded-e-none" x-on:click="decrement()" x-bind:class="{ disabled: count == 0 }" />
+    @else
+        <flux:button icon="chevron-down" size="xs" class="rounded-e-none" x-on:click="decrement()" x-bind:class="{ disabled: count == 1 }" />
+    @endif
+
     @if ($romanize)
         @if ($incrementShow)
-            <input class="x-input-lite row-span-2 col-span-2 w-16 text-center" disabled x-bind:value="romanize(count + 1)" />
+            <input class="x-input-lite row-span-2 col-span-2 w-16 text-center border-t" disabled x-bind:value="romanize(count + 1)" />
         @else
-            <input class="x-input-lite row-span-2 col-span-2 w-16 text-center" disabled x-bind:value="romanize(count)" />
+            <input class="x-input-lite row-span-2 col-span-2 w-16 text-center border-t" disabled x-bind:value="romanize(count)" />
         @endif
     @else
         @if ($incrementShow)
-            <input class="x-input-lite row-span-2 col-span-2 w-8 text-center" min="1" disabled x-bind:value="count + 1" />
+            <input class="x-input-lite row-span-2 col-span-2 w-8 text-center border-t" min="1" disabled x-bind:value="count + 1" />
         @else
-            <input class="x-input-lite row-span-2 col-span-2 w-8 text-center" min="1" disabled x-bind:value="count" />
+            <input class="x-input-lite row-span-2 col-span-2 w-8 text-center border-t" min="1" disabled x-bind:value="count" />
         @endif
     @endif
 
-    <div class="flex flex-col">
-        <flux:button icon="chevron-up" size="xs" x-on:click="increment()" class="h-4! newable-color rounded-b-none" />
-        @if ($incrementShow)
-            <flux:button icon="chevron-down" size="xs" class="h-4! rounded-t-none" x-on:click="decrement()" x-bind:class="{ disabled: count == 0 }" />
-        @else
-            <flux:button icon="chevron-down" size="xs" class="h-4! rounded-t-none" x-on:click="decrement()" x-bind:class="{ disabled: count == 1 }" />
-        @endif
-    </div>
+    <flux:button icon="chevron-up" size="xs" x-on:click="increment()" class="newable-color rounded-s-none" />
 </div>

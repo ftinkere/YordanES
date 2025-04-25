@@ -10,7 +10,7 @@
 <flux:header class="bg-zinc-300 dark:bg-zinc-800 shadow-lg flex flex-row items-center z-50">
     <flux:sidebar.toggle class="sm:hidden" icon="bars-2" inset="left" id="sidebar-toggle" />
 
-    <div class="rounded-lg hover:bg-zinc-800/5 dark:hover:bg-white/10">
+    <div class="max-sm:hidden rounded-lg hover:bg-zinc-800/5 dark:hover:bg-white/10">
         <flux:brand class="my-auto py-4 h-full! *:first:hidden ml-4" href="/" wire:navigate>
             <x-slot name="name">
                 <span class="yordan-font text-2xl text-primary-500">Ëрдан</span>
