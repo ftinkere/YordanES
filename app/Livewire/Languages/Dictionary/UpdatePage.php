@@ -105,7 +105,7 @@ class UpdatePage extends Component
                             'full' => $lexemeArray['full'],
                         ]);
                     }
-                } else {
+                } elseif (! empty($lexemeArray['short']) || ! empty($lexemeArray['full'])) {
                     Lexeme::create([
                         'language_uuid' => $this->dictionaryArticle->language_uuid,
                         'article_uuid' => $this->dictionaryArticle->uuid,

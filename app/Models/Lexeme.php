@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Mews\Purifier\Casts\CleanHtml;
 
 class Lexeme extends Model
@@ -39,6 +40,11 @@ class Lexeme extends Model
     public function blocks(): HasMany
     {
         return $this->hasMany(LexemeBlock::class, 'lexeme_uuid');
+    }
+
+    public function tags(): MorphMany
+    {
+        return $this->morphMany(Tag::class, 'taggable');
     }
 
     public function firstLineFull(): false|string

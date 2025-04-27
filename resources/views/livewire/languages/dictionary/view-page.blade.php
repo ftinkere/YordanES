@@ -1,4 +1,6 @@
-@php declare(strict_types=1) @endphp
+@php declare(strict_types=1);
+    use App\Models\Tag;
+@endphp
 
 @if (auth()->user()?->can('update', $article))
     <x-slot name="rightNavbar">
@@ -63,7 +65,16 @@
                 @foreach($lexemes as $lexeme)
                     <div class="row-span-2 font-mono"><span>{{ $lexeme->order + 1}}</span>.<span>{{ $lexeme->suborder + 1 }}</span></div>
 
-                    <span class="break-words text-pretty">{!! $lexeme->short !!}</span>
+                    <div class="grid grid-cols-1">
+                        <span class="break-words text-pretty">{!! $lexeme->short !!}</span>
+                        <div class="flex flex-row">
+                            @foreach($lexeme->tags as $tag)
+                                @php /** @var Tag $tag */ @endphp
+                                <flux:badge sizae="sm" :color="$tag->color ?? 'amber'">{{ $tag->name }}</flux:badge>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <div class="break-words text-pretty">
                         {!! $lexeme->full !!}
                     </div>

@@ -7,8 +7,8 @@
 <div class="flex flex-row items-center h-8" {{ $attributes }} x-modelable="count"
      x-data="{
         count: Number($el.getAttribute('x-model')) || 0,
-        increment() { this.count++; $dispatch('increment') },
-        decrement() { this.count > 0 ? this.count-- : ''; $dispatch('decrement') },
+        increment() { $dispatch('increment') },
+        decrement() { $dispatch('decrement') },
       }"
 >
     @if ($incrementShow)

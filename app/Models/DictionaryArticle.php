@@ -39,6 +39,7 @@ class DictionaryArticle extends Model
     public function lexemes()
     {
         return $this->hasMany(Lexeme::class, 'article_uuid')
+            ->with('tags')
             ->orderBy('group')
             ->orderBy('order')
             ->orderBy('suborder')
