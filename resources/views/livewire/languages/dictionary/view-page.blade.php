@@ -67,7 +67,7 @@
 
                     <div class="grid grid-cols-1">
                         <span class="break-words text-pretty">{!! $lexeme->short !!}</span>
-                        <div class="flex flex-row">
+                        <div class="flex flex-row gap-1">
                             @foreach($lexeme->tags as $tag)
                                 @php /** @var Tag $tag */ @endphp
                                 <flux:badge sizae="sm" :color="$tag->color ?? 'amber'">{{ $tag->name }}</flux:badge>

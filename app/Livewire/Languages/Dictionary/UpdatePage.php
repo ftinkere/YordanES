@@ -5,7 +5,9 @@ namespace App\Livewire\Languages\Dictionary;
 use App\Models\DictionaryArticle;
 use App\Models\File;
 use App\Models\Lexeme;
+use App\Models\Tag;
 use App\Services\FileService;
+use Arr;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
@@ -35,6 +37,9 @@ class UpdatePage extends Component
 
     public array $files;
 
+    public string $tag;
+    public string $lexeme;
+
     protected function rules(): array
     {
         return [
@@ -60,6 +65,7 @@ class UpdatePage extends Component
                 'group' => $lexeme->group,
                 'short' => $lexeme->short,
                 'full' => $lexeme->full,
+                'tags' => $lexeme->tags->toArray(),
             ];
         }
     }
@@ -75,7 +81,7 @@ class UpdatePage extends Component
             'transcription' => $this->transcription,
             'adaptation' => $this->adaptation,
             'article' => $this->article,
-            'is_published' => $this->public
+            'is_published' => $this->public,
         ]);
 
         foreach ($this->files as $file) {
@@ -106,7 +112,7 @@ class UpdatePage extends Component
                         ]);
                     }
                 } elseif (! empty($lexemeArray['short']) || ! empty($lexemeArray['full'])) {
-                    Lexeme::create([
+                    $lexeme = Lexeme::create([
                         'language_uuid' => $this->dictionaryArticle->language_uuid,
                         'article_uuid' => $this->dictionaryArticle->uuid,
                         'group' => $lexemeArray['group'],
@@ -115,6 +121,23 @@ class UpdatePage extends Component
                         'short' => $lexemeArray['short'],
                         'full' => $lexemeArray['full'],
                     ]);
+                }
+
+                foreach ($lexeme->tags as $tag) {
+                    if (! in_array($tag->uuid, Arr::pluck($lexemeArray['tags'], 'uuid'))) {
+                        $tag->delete();
+                    }
+                }
+                foreach ($lexemeArray['tags'] as $tagArr) {
+                    $tag = Tag::find($tagArr['uuid'] ?? null);
+                    if (! $tag) {
+                        $tag = Tag::create([
+                            'name' => $tagArr['name'],
+                            'color' => 'auto',
+                            'taggable_id' => $lexeme->uuid,
+                            'taggable_type' => Lexeme::class,
+                        ]);
+                    }
                 }
             }
         }

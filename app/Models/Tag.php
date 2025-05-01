@@ -2,22 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Tag extends Model
 {
-    public $colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
+    use HasUuids;
+
+    protected $primaryKey = 'uuid';
+
+    const array colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
 
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
-            if (! in_array($model->color, $this->colors)) {
+            if (! in_array($model->color, self::colors)) {
                 $colorSeed = $model->name;
                 $hash = crc32((string) $colorSeed);
-                $model->color = $this->colors[$hash % count($this->colors)];
+                $model->color = self::colors[$hash % count(self::colors)];
             }
         });
     }

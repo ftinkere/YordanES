@@ -265,4 +265,80 @@
     .filepond--drop-label:where(.dark, .dark *) {
         color: var(--color-zinc-200) !important;
     }
+
+    .tag {
+        @apply inline-flex items-center font-medium whitespace-nowrap text-xs py-1 rounded-md px-2;
+
+        &[data-color=""] {
+            @apply text-zinc-700 [&_button]:text-zinc-700 dark:text-zinc-200 dark:[&_button]:text-zinc-200 bg-zinc-400/15 dark:bg-zinc-400/40 [&:is(button)]:hover:bg-zinc-400/25 dark:[button]:hover:bg-zinc-400/50;
+        }
+
+        &[data-color="red"] {
+            @apply text-red-700 [&_button]:text-red-700 dark:text-red-200 dark:[&_button]:text-red-200 bg-red-400/20 dark:bg-red-400/40 [&:is(button)]:hover:bg-red-400/30 dark:[button]:hover:bg-red-400/50;
+        }
+
+        &[data-color="orange"] {
+            @apply text-orange-700 [&_button]:text-orange-700 dark:text-orange-200 dark:[&_button]:text-orange-200 bg-orange-400/20 dark:bg-orange-400/40 [&:is(button)]:hover:bg-orange-400/30 dark:[button]:hover:bg-orange-400/50;
+        }
+
+        &[data-color="amber"] {
+            @apply text-amber-700 [&_button]:text-amber-700 dark:text-amber-200 dark:[&_button]:text-amber-200 bg-amber-400/25 dark:bg-amber-400/40 [&:is(button)]:hover:bg-amber-400/40 dark:[button]:hover:bg-amber-400/50;
+        }
+
+        &[data-color="yellow"] {
+            @apply text-yellow-800 [&_button]:text-yellow-800 dark:text-yellow-200 dark:[&_button]:text-yellow-200 bg-yellow-400/25 dark:bg-yellow-400/40 [&:is(button)]:hover:bg-yellow-400/40 dark:[button]:hover:bg-yellow-400/50;
+        }
+
+        &[data-color="lime"] {
+            @apply text-lime-800 [&_button]:text-lime-800 dark:text-lime-200 dark:[&_button]:text-lime-200 bg-lime-400/25 dark:bg-lime-400/40 [&:is(button)]:hover:bg-lime-400/35 dark:[button]:hover:bg-lime-400/50;
+        }
+
+        &[data-color="green"] {
+            @apply text-green-800 [&_button]:text-green-800 dark:text-green-200 dark:[&_button]:text-green-200 bg-green-400/20 dark:bg-green-400/40 [&:is(button)]:hover:bg-green-400/30 dark:[button]:hover:bg-green-400/50;
+        }
+
+        &[data-color="emerald"] {
+            @apply text-emerald-800 [&_button]:text-emerald-800 dark:text-emerald-200 dark:[&_button]:text-emerald-200 bg-emerald-400/20 dark:bg-emerald-400/40 [&:is(button)]:hover:bg-emerald-400/30 dark:[button]:hover:bg-emerald-400/50;
+        }
+
+        &[data-color="teal"] {
+            @apply text-teal-800 [&_button]:text-teal-800 dark:text-teal-200 dark:[&_button]:text-teal-200 bg-teal-400/20 dark:bg-teal-400/40 [&:is(button)]:hover:bg-teal-400/30 dark:[button]:hover:bg-teal-400/50;
+        }
+
+        &[data-color="cyan"] {
+            @apply text-cyan-800 [&_button]:text-cyan-800 dark:text-cyan-200 dark:[&_button]:text-cyan-200 bg-cyan-400/20 dark:bg-cyan-400/40 [&:is(button)]:hover:bg-cyan-400/30 dark:[button]:hover:bg-cyan-400/50;
+        }
+
+        &[data-color="sky"] {
+            @apply text-sky-800 [&_button]:text-sky-800 dark:text-sky-200 dark:[&_button]:text-sky-200 bg-sky-400/20 dark:bg-sky-400/40 [&:is(button)]:hover:bg-sky-400/30 dark:[button]:hover:bg-sky-400/50;
+        }
+
+        &[data-color="blue"] {
+            @apply text-blue-800 [&_button]:text-blue-800 dark:text-blue-200 dark:[&_button]:text-blue-200 bg-blue-400/20 dark:bg-blue-400/40 [&:is(button)]:hover:bg-blue-400/30 dark:[button]:hover:bg-blue-400/50;
+        }
+
+        &[data-color="indigo"] {
+            @apply text-indigo-700 [&_button]:text-indigo-700 dark:text-indigo-200 dark:[&_button]:text-indigo-200 bg-indigo-400/20 dark:bg-indigo-400/40 [&:is(button)]:hover:bg-indigo-400/30 dark:[button]:hover:bg-indigo-400/50;
+        }
+
+        &[data-color="violet"] {
+            @apply text-violet-700 [&_button]:text-violet-700 dark:text-violet-200 dark:[&_button]:text-violet-200 bg-violet-400/20 dark:bg-violet-400/40 [&:is(button)]:hover:bg-violet-400/30 dark:[button]:hover:bg-violet-400/50;
+        }
+
+        &[data-color="purple"] {
+            @apply text-purple-700 [&_button]:text-purple-700 dark:text-purple-200 dark:[&_button]:text-purple-200 bg-purple-400/20 dark:bg-purple-400/40 [&:is(button)]:hover:bg-purple-400/30 dark:[button]:hover:bg-purple-400/50;
+        }
+
+        &[data-color="fuchsia"] {
+            @apply text-fuchsia-700 [&_button]:text-fuchsia-700 dark:text-fuchsia-200 dark:[&_button]:text-fuchsia-200 bg-fuchsia-400/20 dark:bg-fuchsia-400/40 [&:is(button)]:hover:bg-fuchsia-400/30 dark:[button]:hover:bg-fuchsia-400/50;
+        }
+
+        &[data-color="pink"] {
+            @apply text-pink-700 [&_button]:text-pink-700 dark:text-pink-200 dark:[&_button]:text-pink-200 bg-pink-400/20 dark:bg-pink-400/40 [&:is(button)]:hover:bg-pink-400/30 dark:[button]:hover:bg-pink-400/50;
+        }
+
+        &[data-color="rose"] {
+            @apply text-rose-700 [&_button]:text-rose-700 dark:text-rose-200 dark:[&_button]:text-rose-200 bg-rose-400/20 dark:bg-rose-400/40 [&:is(button)]:hover:bg-rose-400/30 dark:[button]:hover:bg-rose-400/50;
+        }
+    }
 }

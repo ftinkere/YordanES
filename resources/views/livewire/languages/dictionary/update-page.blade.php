@@ -132,17 +132,23 @@
                         <div></div>
 
                         <div class="flex flex-row gap-2">
-                            <x-order-input x-model.number="lexemes[selectedOrder][selectedSuborder].group" romanize />
+                            <x-order-input x-model.number="lexemes[selectedOrder][selectedSuborder].group"
+                                           romanize
+                                           x-on:increment="lexemes[selectedOrder][selectedSuborder].group++"
+                                           x-on:decrement="lexemes[selectedOrder][selectedSuborder].group--"
+                            />
                             <x-order-input x-bind:class="{ 'newable': getOrderKeys().pop() == selectedOrder }"
                                            x-model.number="selectedOrder"
                                            x-on:increment="incrementOrder"
                                            x-on:decrement="decrementOrder"
-                                           incrementShow />
+                                           incrementShow
+                            />
                             <x-order-input x-bind:class="{ 'newable': getSuborderKeys(selectedOrder).pop() == selectedSuborder }"
                                            x-model.number="selectedSuborder"
                                            x-on:increment="incrementSuborder"
                                            x-on:decrement="decrementSuborder"
-                                           incrementShow />
+                                           incrementShow
+                            />
                         </div>
                     </div>
 
@@ -152,7 +158,9 @@
                                  toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
                                  class="**:data-[slot=content]:min-h-[3rem]!"
                     />
-                    <br />
+                    <x-tag-list-editable class="my-2" tags="lexemes[selectedOrder][selectedSuborder].tags"
+                        delete-action="deleteTag"
+                    />
                     <flux:editor label="Полная статья лексемы"
                                  x-model="lexemes[selectedOrder][selectedSuborder].full"
                                  toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
