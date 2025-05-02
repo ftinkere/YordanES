@@ -83,6 +83,12 @@
 
                             @if(! empty($lexeme->full))
                                 <flux:accordion.content>
+                                    <div class="flex flex-row gap-1">
+                                        @foreach($lexeme->tags as $tag)
+                                            @php /** @var Tag $tag */ @endphp
+                                            <flux:badge sizae="sm" :color="$tag->color ?? 'amber'">{{ $tag->name }}</flux:badge>
+                                        @endforeach
+                                    </div>
                                     <div class="ps-2 break-words text-pretty">
                                         {!! $lexeme->full !!}
                                     </div>
