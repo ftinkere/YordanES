@@ -2,6 +2,8 @@
 @props([
      'variant' => 'positive',
      'solid' => false,
+     'size' => null,
+     'icon' => null,
 ])
 
 @php
@@ -16,7 +18,7 @@
     }
 @endphp
 
-<flux:badge variant="{{ $solid ? 'solid' : null }}" color="{{ $color }}" as="button"
+<flux:badge variant="{{ $solid ? 'solid' : null }}" color="{{ $color }}" as="button" :size="$size" :icon="$icon"
             {{ $attributes->class('cursor-pointer px-4! py-2! justify-center!') }}
 >{{ $slot }}</flux:badge>
 

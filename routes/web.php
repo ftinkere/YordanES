@@ -13,11 +13,10 @@ use App\Livewire\Languages\Dictionary\CreatePage as DictionaryCreatePage;
 use App\Livewire\Languages\Dictionary\IndexPage as DictionaryIndexPage;
 use App\Livewire\Languages\Dictionary\UpdatePage as DictionaryUpdatePage;
 use App\Livewire\Languages\Dictionary\ViewPage as DictionaryViewPage;
+use App\Livewire\Languages\GrammaticConstructorPage;
 use App\Livewire\Languages\IndexPage as LanguagesIndexPage;
 use App\Livewire\Languages\UpdatePage as LanguagesUpdatePage;
 use App\Livewire\Languages\ViewPage as LanguagesViewPage;
-use App\Models\DictionaryArticle;
-use App\Models\Language;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -77,11 +76,7 @@ Route::prefix('/languages')->name('languages')->group(function (): void {
                     ->middleware('can:update,language')
                     ->middleware('can:create,App\Models\DictionaryArticle');
             });
-
-            Route::get('/publish', function (Language $language) {
-                $language->is_published = true;
-                $language->save();
-            });
+            Route::get('/grammatic', GrammaticConstructorPage::class)->name('.grammatic');
         });
 
 });
@@ -91,8 +86,4 @@ Route::prefix('/dictionary')->name('languages.dictionary')->group(function () {
         ->middleware('can:view,article');
     Route::get('/{article}/edit', DictionaryUpdatePage::class)->name('.update')
         ->middleware('can:update,article');
-    Route::get('/{article}/publish', function (DictionaryArticle $article) {
-        $article->is_published = true;
-        $article->save();
-    });
 });

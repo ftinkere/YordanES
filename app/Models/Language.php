@@ -92,6 +92,12 @@ class Language extends Model
         return $query;
     }
 
+    public function partOfSpeeches(): HasMany
+    {
+        return $this->hasMany(GrammaticPartOfSpeech::class, 'language_id')
+            ->orderBy('order');
+    }
+
     public static function create(User $user, string $name): self
     {
         $language = new self();

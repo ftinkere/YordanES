@@ -5,36 +5,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class GrammaticValue extends Model
+class GrammaticSet extends Model
 {
     use HasUuids;
     protected $primaryKey = 'uuid';
 
+    protected $table = 'grammatic_set';
+
     protected $fillable = [
         'uuid',
-        'name',
-        'code',
-        'description',
-        'language_id',
-        'category_id',
+        'parent_type',
+        'parent_id',
+        'group',
+        'value_id',
         'order',
     ];
 
-    public function language(): BelongsTo
+    public function parent(): MorphTo
     {
-        return $this->belongsTo(Language::class);
+        return $this->morphTo();
     }
 
-    public function category(): BelongsTo
+    public function value(): BelongsTo
     {
-        return $this->belongsTo(GrammaticCategory::class, 'category_id');
+        return $this->belongsTo(GrammaticValue::class, 'value_id');
     }
 
     protected function casts(): array
     {
         return [
             'uuid' => 'string',
+            'parent_id' => 'string',
         ];
     }
 }

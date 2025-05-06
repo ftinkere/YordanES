@@ -6,6 +6,7 @@ import 'filepond/dist/filepond.min.css'
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import PhotoSwipe from "photoswipe";
 import 'photoswipe/dist/photoswipe.css';
+import { Sortable } from "@shopify/draggable";
 
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -16,3 +17,5 @@ FilePond.registerPlugin(FilePondPluginImagePreview)
 
 window.PhotoSwipeLightbox = PhotoSwipeLightbox;
 window.PhotoSwipe = PhotoSwipe;
+
+window.Sortable = Sortable;

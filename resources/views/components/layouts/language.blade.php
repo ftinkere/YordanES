@@ -25,7 +25,7 @@
         </x-slot:rightNavbar>
     @endif
 
-    <x-slot:navlistAdd>
+    <x-slot:sidebar>
         <flux:navlist.item icon="information-circle"
                            href="/languages/{{ $language->uuid }}" wire:navigate
                            :current="request()->routeIs('languages.view', 'languages.update')"
@@ -34,18 +34,11 @@
                            href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
                            :current="request()->routeIs('languages.dictionary.*')"
         >Словарь</flux:navlist.item>
-    </x-slot:navlistAdd>
-
-    <x-slot name="sidebar">
-        <flux:navlist.item icon="information-circle"
-                           href="/languages/{{ $language->uuid }}" wire:navigate
-                           :current="request()->routeIs('languages.view', 'languages.update')"
-        >О языке</flux:navlist.item>
-        <flux:navlist.item icon="queue-list"
-                           href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
-                           :current="request()->routeIs('languages.dictionary.*')"
-        >Словарь</flux:navlist.item>
-    </x-slot>
+        <flux:navlist.item icon="cog-8-tooth"
+                           href="/languages/{{ $language->uuid }}/grammatic" wire:navigate
+                           :current="request()->routeIs('languages.grammatic')"
+        ><span class="whitespace-normal!">Конструктор грамматики</span></flux:navlist.item>
+    </x-slot:sidebar>
 
     <div class="flex flex-row max-md:flex-col items-start gap-4 h-full">
         <div class="flex flex-col gap-2 text-black dark:text-zinc-300 w-full">
