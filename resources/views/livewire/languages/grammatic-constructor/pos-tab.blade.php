@@ -1,6 +1,5 @@
 @php use App\Models\GrammaticPartOfSpeech; @endphp
 <div class="flex flex-col gap-4">
-    <flux:heading size="lg">Части речи</flux:heading>
     <flux:modal.trigger name="add-pos">
         <x-light-button color="positive">
             <flux:icon.plus variant="mini" />
@@ -13,21 +12,21 @@
             initSortable() {
                 const sortable = new Sortable(document.querySelectorAll('.sortable'), {
                     'draggable': '.sortable-draggable',
-                    'handle': '.sortable-handle',
+                    'handle': '.sortable-handle'
                 })
                 sortable.on('sortable:sorted', (event) => {
-                    $wire.reorder(event.data.dragEvent.source.dataset.uuid, event.oldIndex, event.newIndex);
+                    $wire.reorderPartOfSpeech(event.data.dragEvent.source.dataset.uuid, event.oldIndex, event.newIndex);
                 })
             }
         }"
         x-init="initSortable()"
     >
         @foreach($language->partOfSpeeches as $pos)
-            <flux:card class="sortable-draggable" data-uuid="{{ $pos->uuid }}">
+            <flux:card class="sortable-draggable" data-uuid="{{ $pos->uuid }}" wire:key="{{ $pos->uuid }}">
                 <div class="flex flex-row gap-2 items-stretch">
                     <div class="sortable-handle w-8 self-stretch bg-zinc-500/80 dark:bg-zinc-700/80 rounded-sm cursor-grab">
                     </div>
-                    <div>
+                    <div class="grow">
                         <flux:heading>
                             <div class="flex flex-row items-center justify-between">
                                 <span>{{ $pos->name }} &lt;{{ $pos->code }}&gt;</span>

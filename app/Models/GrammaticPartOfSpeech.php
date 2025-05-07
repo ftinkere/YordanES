@@ -25,6 +25,12 @@ class GrammaticPartOfSpeech extends Model
         return $this->belongsTo(Language::class);
     }
 
+    public function categories()
+    {
+        return $this->hasMany(GrammaticCategory::class, 'pos_id')
+            ->orderBy('order');
+    }
+
     public static function defaults()
     {
         return self::where('language_id', null)

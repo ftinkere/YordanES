@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Languages;
+namespace App\Livewire\Languages\GrammaticConstructor;
 
 use App\Models\GrammaticPartOfSpeech;
 use App\Models\Language;
@@ -10,7 +10,7 @@ use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-class GrammaticConstructorPage extends Component
+class PosTab extends Component
 {
     #[Locked]
     public Language $language;
@@ -22,12 +22,10 @@ class GrammaticConstructorPage extends Component
 
     public string $posDescription;
 
-    public function mount(Language $language) {
-        $this->language = $language;
-    }
-
 
     public function addPartOfSpeech() {
+        $this->validate();
+
         if (GrammaticPartOfSpeech::where('language_id', $this->language->uuid)
             ->where('name', mb_trim($this->posName))
             ->exists()
@@ -80,7 +78,7 @@ class GrammaticConstructorPage extends Component
     }
 
     #[Renderless]
-    public function reorder($uuid, $oldIndex, $newIndex)
+    public function reorderPartOfSpeech($uuid, $oldIndex, $newIndex)
     {
         $pos = GrammaticPartOfSpeech::findOrFail($uuid);
         if ($pos->language_id !== $this->language->uuid) {
@@ -96,7 +94,7 @@ class GrammaticConstructorPage extends Component
 
     public function render()
     {
-        return view('livewire.languages.grammatic-constructor-page')
+        return view('livewire.languages.grammatic-constructor.pos-tab')
             ->layout('components.layouts.language', ['language' => $this->language]);
     }
 }

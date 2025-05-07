@@ -41,7 +41,8 @@ class GrammaticCategory extends Model
 
     public function values(): HasMany
     {
-        return $this->hasMany(GrammaticValue::class);
+        return $this->hasMany(GrammaticValue::class, 'category_id')
+            ->orderBy('order');
     }
 
     protected function casts(): array

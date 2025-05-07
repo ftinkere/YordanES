@@ -13,7 +13,7 @@ use App\Livewire\Languages\Dictionary\CreatePage as DictionaryCreatePage;
 use App\Livewire\Languages\Dictionary\IndexPage as DictionaryIndexPage;
 use App\Livewire\Languages\Dictionary\UpdatePage as DictionaryUpdatePage;
 use App\Livewire\Languages\Dictionary\ViewPage as DictionaryViewPage;
-use App\Livewire\Languages\GrammaticConstructorPage;
+use App\Livewire\Languages\GrammaticConstructor\UpdatePage as GrammaticConstructorUpdatePage;
 use App\Livewire\Languages\IndexPage as LanguagesIndexPage;
 use App\Livewire\Languages\UpdatePage as LanguagesUpdatePage;
 use App\Livewire\Languages\ViewPage as LanguagesViewPage;
@@ -76,7 +76,7 @@ Route::prefix('/languages')->name('languages')->group(function (): void {
                     ->middleware('can:update,language')
                     ->middleware('can:create,App\Models\DictionaryArticle');
             });
-            Route::get('/grammatic', GrammaticConstructorPage::class)->name('.grammatic');
+            Route::get('/grammatic', GrammaticConstructorUpdatePage::class)->name('.grammatic');
         });
 
 });
