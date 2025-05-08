@@ -49,7 +49,8 @@
         @endforeach
     </div>
 
-    <flux:modal name="add-pos" class="w-2xl">
+    <flux:modal name="add-pos" class="w-full max-w-2xl max-h-[90dvh]
+        overflow-y-auto">
         <div class="space-y-6">
             <flux:heading size="lg">
                 <span>Добавить Часть речи</span>
@@ -73,7 +74,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="edit-pos" class="w-2xl">
+    <flux:modal name="edit-pos" class="w-full max-w-2xl">
         <div class="space-y-6">
             <flux:heading size="lg">
                 <span>Изменить Часть речи</span>
@@ -92,7 +93,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal name="add-pos-template" class="w-2xl">
+    <flux:modal name="add-pos-template" class="w-full max-w-2xl">
         <div class="space-y-6">
             <flux:heading size="lg">Выбрать шаблон</flux:heading>
             <div class="flex flex-col gap-2">

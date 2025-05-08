@@ -61,7 +61,7 @@
         @endif
     </div>
 
-    <flux:modal name="add-value" class="w-2xl">
+    <flux:modal name="add-value" class="w-full max-w-2xl">
         <div class="space-y-6">
             <flux:heading size="lg">
                 <span>Добавить категорию</span>
