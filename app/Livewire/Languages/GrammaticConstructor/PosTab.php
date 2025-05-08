@@ -58,6 +58,8 @@ class PosTab extends Component
         $this->posCode = '';
         $this->posDescription = '';
         Flux::modal('add-pos')->close();
+
+        $this->dispatch('pos-changed');
     }
 
     public function startEdit($uuid)
@@ -92,6 +94,8 @@ class PosTab extends Component
         $this->posDescription = '';
 
         Flux::modal('edit-pos')->close();
+
+        $this->dispatch('pos-changed');
     }
 
     public function setPartOfSpeechTemplate($uuid) {
@@ -110,6 +114,8 @@ class PosTab extends Component
         }
 
         $pos->delete();
+
+        $this->dispatch('pos-changed');
     }
 
     #[Renderless]
@@ -125,6 +131,8 @@ class PosTab extends Component
             $posOther->update(['order' => $oldIndex]);
         }
         $pos->update(['order' => $newIndex]);
+
+        $this->dispatch('pos-changed');
     }
 
     public function render()

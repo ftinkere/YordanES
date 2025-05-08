@@ -7,6 +7,7 @@ use App\Models\GrammaticValue;
 use App\Models\Language;
 use Flux\Flux;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
@@ -25,6 +26,9 @@ class ValuesTab extends Component
 
     #[Session]
     public ?string $categoryUuid;
+
+    #[On('category-changed')]
+    public function refresh() {}
     #[Locked]
     public ?GrammaticCategory $category {
         get {

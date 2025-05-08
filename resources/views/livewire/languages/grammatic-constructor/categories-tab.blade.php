@@ -17,10 +17,10 @@
             </x-light-button>
         </flux:modal.trigger>
 
-        <div class="sortable flex flex-col gap-4"
+        <div id="sortable-category" class="sortable flex flex-col gap-4"
              x-data="{
                 initSortable() {
-                    const sortable = new Sortable(document.querySelectorAll('.sortable'), {
+                    const sortable = new Sortable(document.getElementById('sortable-category'), {
                         'draggable': '.sortable-draggable',
                         'handle': '.sortable-handle',
                     })

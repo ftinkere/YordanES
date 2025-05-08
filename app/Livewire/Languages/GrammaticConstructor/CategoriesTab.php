@@ -7,6 +7,7 @@ use App\Models\GrammaticPartOfSpeech;
 use App\Models\Language;
 use Flux\Flux;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
@@ -25,6 +26,9 @@ class CategoriesTab extends Component
     #[Validate('required|min:1')]
     public string $categoryCode;
     public string $categoryDescription;
+
+    #[On('pos-changed')]
+    public function refresh() {}
 
     #[Locked]
     public ?GrammaticPartOfSpeech $partOfSpeech {
@@ -70,6 +74,8 @@ class CategoriesTab extends Component
         $this->categoryCode = '';
         $this->categoryDescription = '';
         Flux::modal('add-category')->close();
+
+        $this->dispatch('category-changed');
     }
 
     public function deleteCategory($uuid)
@@ -80,6 +86,8 @@ class CategoriesTab extends Component
         }
 
         $category->delete();
+
+        $this->dispatch('category-changed');
     }
 
     #[Renderless]
@@ -96,6 +104,8 @@ class CategoriesTab extends Component
             $categoryOther->update(['order' => $oldIndex]);
         }
         $category->update(['order' => $newIndex]);
+
+        $this->dispatch('category-changed');
     }
 
     public function render()
