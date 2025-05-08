@@ -21,6 +21,7 @@ class IndexPage extends Component
             }
             return $query->get();
         }
+        set ($value) { }
     }
 
     #[Session]
