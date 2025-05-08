@@ -10,22 +10,21 @@ use Livewire\Component;
 class IndexPage extends Component
 {
     #[Locked]
-    public $languages;
+    public $languages {
+        get {
+            $query = Language::limit(10)
+                ->orderBy('created_at', 'desc');
+            if ($this->my) {
+                $query->where('creator_uuid', auth()->id());
+            } else {
+                $query->where('is_published', true);
+            }
+            return $query->get();
+        }
+    }
 
     #[Session]
     public bool $my = false;
-
-    public function mount(): void
-    {
-        $query = Language::limit(10)
-            ->orderBy('created_at', 'desc');
-        if ($this->my) {
-            $query->where('creator_uuid', auth()->id());
-        } else {
-            $query->where('is_published', true);
-        }
-        $this->languages = $query->get();
-    }
 
     public function render()
     {
