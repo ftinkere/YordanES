@@ -11,7 +11,7 @@
 <div class="grid grid-cols-1 px-32 gap-2 items-start">
 
     <div>
-        <flux:switch wire:model="my" label="Только свои" align="left" />
+        <flux:switch wire:model.live="my" label="Только свои" align="left" />
     </div>
 
     @foreach($languages as $language)
