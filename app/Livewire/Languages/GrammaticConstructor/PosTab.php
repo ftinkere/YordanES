@@ -21,6 +21,7 @@ class PosTab extends Component
     public string $posCode;
 
     public string $posDescription;
+    public string $posUuid;
 
 
     public function addPartOfSpeech() {
@@ -57,6 +58,40 @@ class PosTab extends Component
         $this->posCode = '';
         $this->posDescription = '';
         Flux::modal('add-pos')->close();
+    }
+
+    public function startEdit($uuid)
+    {
+        $pos = GrammaticPartOfSpeech::find($uuid);
+        if ($pos?->language_id != $this->language->uuid) {
+            return ;
+        }
+
+        $this->posUuid = $uuid;
+        $this->posName = $pos->name;
+        $this->posCode = $pos->code;
+        $this->posDescription = $pos->description;
+        Flux::modal('edit-pos')->show();
+    }
+
+    public function editPartOfSpeech()
+    {
+        $pos = GrammaticPartOfSpeech::find($this->posUuid);
+        if ($pos?->language_id != $this->language->uuid) {
+            return ;
+        }
+        $this->validate();
+
+        $pos->name = mb_trim($this->posName);
+        $pos->code = mb_trim($this->posCode);
+        $pos->description = $this->posDescription ?? null;
+        $pos->save();
+
+        $this->posName = '';
+        $this->posCode = '';
+        $this->posDescription = '';
+
+        Flux::modal('edit-pos')->close();
     }
 
     public function setPartOfSpeechTemplate($uuid) {

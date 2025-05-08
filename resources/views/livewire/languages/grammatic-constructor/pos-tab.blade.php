@@ -29,7 +29,12 @@
                     <div class="grow">
                         <flux:heading>
                             <div class="flex flex-row items-center justify-between">
-                                <span>{{ $pos->name }} &lt;{{ $pos->code }}&gt;</span>
+                                <div class="flex flex-row items-center gap-4">
+                                    <x-light-button variant="warning" size="sm" wire:click="startEdit('{{ $pos->uuid }}')">
+                                        <flux:icon.pencil variant="micro" />
+                                    </x-light-button>
+                                    <flux:heading size="lg">{{ $pos->name }} &lt;{{ $pos->code }}&gt;</flux:heading>
+                                </div>
                                 <x-light-button variant="negative" size="sm" wire:click="deletePartOfSpeech('{{ $pos->uuid }}')" wire:confirm="Вы уверены?">
                                     <flux:icon.trash variant="micro" />
                                 </x-light-button>
@@ -65,6 +70,25 @@
             />
 
             <x-light-button variant="positive" wire:click="addPartOfSpeech">Добавить</x-light-button>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="edit-pos" class="w-2xl">
+        <div class="space-y-6">
+            <flux:heading size="lg">
+                <span>Изменить Часть речи</span>
+            </flux:heading>
+
+            <flux:input label="Название" wire:model="posName" />
+            <flux:input label="Код" wire:model="posCode" />
+
+            <flux:editor wire:model="posDescription"
+                    label="Описание части речи"
+                    toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
+                    class="**:data-[slot=content]:min-h-[3rem]!"
+            />
+
+            <x-light-button variant="positive" wire:click="editPartOfSpeech">Изменить</x-light-button>
         </div>
     </flux:modal>
 
