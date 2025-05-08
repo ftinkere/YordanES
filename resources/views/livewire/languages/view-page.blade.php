@@ -25,7 +25,7 @@
 
             <div class="ps-3 flex flex-row gap-2 items-center rounded-full dark:hover:bg-zinc-700 cursor-pointer">
                 <span>{{ $language->author->name }}</span>
-                <flux:avatar :src="$language->author->avatar" :name="$user->name" size="sm" circle />
+                <flux:avatar :src="$language->author->avatar" :name="$language->author->name" size="sm" circle />
             </div>
         </div>
     </div>
