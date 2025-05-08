@@ -4,6 +4,7 @@ namespace App\Livewire\Languages;
 
 use App\Models\Language;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Session;
 use Livewire\Component;
 
 class IndexPage extends Component
@@ -11,12 +12,19 @@ class IndexPage extends Component
     #[Locked]
     public $languages;
 
+    #[Session]
+    public bool $my = false;
+
     public function mount(): void
     {
-        $this->languages = Language::limit(10)
-            ->where('is_published', true)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Language::limit(10)
+            ->orderBy('created_at', 'desc');
+        if ($this->my) {
+            $query->where('creator_uuid', auth()->id());
+        } else {
+            $query->where('is_published', true);
+        }
+        $this->languages = $query->get();
     }
 
     public function render()

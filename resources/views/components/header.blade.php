@@ -37,7 +37,7 @@
 
                 <flux:menu>
                     <div class="mb-4 pt-2 flex flex-col items-center text-black dark:text-zinc-400">
-                        <flux:avatar circle :src="$user->avatar" name="$user->name" size="lg" class="[:where(&)]:size-42! [:where(&)]:text-5xl!" />
+                        <flux:avatar circle :src="$user->avatar" :name="$user->name" size="lg" class="[:where(&)]:size-42! [:where(&)]:text-5xl!" />
                     </div>
                     <flux:menu.separator/>
 
