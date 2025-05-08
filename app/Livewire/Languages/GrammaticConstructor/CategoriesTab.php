@@ -8,6 +8,7 @@ use App\Models\Language;
 use Flux\Flux;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Renderless;
+use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -16,7 +17,8 @@ class CategoriesTab extends Component
     #[Locked]
     public Language $language;
 
-    public string $posUuid;
+    #[Session]
+    public ?string $posUuid;
 
     #[Validate('required|min:3')]
     public string $categoryName;

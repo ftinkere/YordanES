@@ -8,6 +8,7 @@ use App\Models\Language;
 use Flux\Flux;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Renderless;
+use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -22,7 +23,8 @@ class ValuesTab extends Component
     public string $valueCode;
     public string $valueDescription;
 
-    public string $categoryUuid;
+    #[Session]
+    public ?string $categoryUuid;
     #[Locked]
     public ?GrammaticCategory $category {
         get {
