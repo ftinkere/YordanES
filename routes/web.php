@@ -76,7 +76,8 @@ Route::prefix('/languages')->name('languages')->group(function (): void {
                     ->middleware('can:update,language')
                     ->middleware('can:create,App\Models\DictionaryArticle');
             });
-            Route::get('/grammatic', GrammaticConstructorUpdatePage::class)->name('.grammatic');
+            Route::get('/grammatic', GrammaticConstructorUpdatePage::class)->name('.grammatic')
+                ->middleware('can:update,language');
         });
 
 });

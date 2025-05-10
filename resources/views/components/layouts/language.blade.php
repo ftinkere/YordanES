@@ -34,10 +34,12 @@
                            href="/languages/{{ $language->uuid }}/dictionary" wire:navigate
                            :current="request()->routeIs('languages.dictionary.*')"
         >Словарь</flux:navlist.item>
-        <flux:navlist.item icon="cog-8-tooth"
-                           href="/languages/{{ $language->uuid }}/grammatic" wire:navigate
-                           :current="request()->routeIs('languages.grammatic')"
-        ><span class="whitespace-normal!">Конструктор грамматики</span></flux:navlist.item>
+        @can('update', $language)
+            <flux:navlist.item icon="cog-8-tooth"
+                               href="/languages/{{ $language->uuid }}/grammatic" wire:navigate
+                               :current="request()->routeIs('languages.grammatic')"
+            ><span class="whitespace-normal!">Конструктор грамматики</span></flux:navlist.item>
+        @endcan
     </x-slot:sidebar>
 
     <div class="flex flex-row max-md:flex-col items-start gap-4 h-full">
