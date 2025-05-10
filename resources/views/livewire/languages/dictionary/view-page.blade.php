@@ -1,17 +1,21 @@
 @php declare(strict_types=1);
-    use App\Models\Tag;
+    use App\Models\Lexeme;use App\Models\Tag;
 @endphp
 
 @if (auth()->user()?->can('update', $article))
     <x-slot name="rightNavbar">
         <x-light-button variant="primary" wire:navigate href="/dictionary/{{ $article->uuid }}/edit"
-        >Изменить</x-light-button>
+        >Изменить
+        </x-light-button>
     </x-slot>
 @endif
 
 <div class="grid grid-cols-1 gap-y-4">
     <div>
-        <p class="text-2xl dark:text-zinc-100"><span class="font-bold">{{ $article->vocabula }}</span> @if($article->transcription) /<span>{{ $article->transcription }}</span>/ @endif </p>
+        <p class="text-2xl dark:text-zinc-100">
+            <span class="font-bold">{{ $article->vocabula }}</span> @if($article->transcription)
+                /<span>{{ $article->transcription }}</span>/
+            @endif </p>
         @unless($article->vocabula === $article->adaptation)
             <p class="text-xl">{{ $article->adaptation }}</p>
         @endunless
@@ -37,7 +41,7 @@
                data-pswp-height="{{ $file->height }}"
                data-pswp-width="{{ $file->width }}"
             >
-                <img src="{{ $file->path }}" alt="Изображение" width="{{ min(128, $file->width) }}" height="{{ min(128, $file->height) }}" class="rounded-md" />
+                <img src="{{ $file->path }}" alt="Изображение" width="{{ min(128, $file->width) }}" height="{{ min(128, $file->height) }}" class="rounded-md"/>
             </a>
         @endforeach
     </div>
@@ -52,7 +56,8 @@
         <div class="grid grid-cols-1 gap-y-1">
             @foreach($article->lexemes as $lexeme)
                 <div class="pl-4 flex flex-row gap-2 break-all">
-                    <div class="font-mono whitespace-nowrap"><span>{{ $lexeme->order + 1}}</span>.<span>{{ $lexeme->suborder + 1 }}</span></div>
+                    <div class="font-mono whitespace-nowrap">
+                        <span>{{ $lexeme->order + 1}}</span>.<span>{{ $lexeme->suborder + 1 }}</span></div>
                     <span class="break-words text-pretty">{!! $lexeme->short ?: $lexeme->firstLineFull() !!}</span>
                 </div>
             @endforeach
@@ -60,13 +65,36 @@
         <div class="grid grid-cols-[auto_minmax(0,100%)] mt-4 gap-x-4 gap-y-1">
             @foreach($article->lexemesGrouped() as $group => $lexemes)
                 <h5 class="mt-4 font-bold font-serif justify-self-center" x-text="romanize({{ $group }})"></h5>
-                <flux:separator />
+                <flux:separator/>
 
                 @foreach($lexemes as $lexeme)
-                    <div class="row-span-2 font-mono"><span>{{ $lexeme->order + 1}}</span>.<span>{{ $lexeme->suborder + 1 }}</span></div>
+                    @php /** @var Lexeme $lexeme */ @endphp
+                    <div class="row-span-2 font-mono">
+                        <span>{{ $lexeme->order + 1}}</span>.<span>{{ $lexeme->suborder + 1 }}</span></div>
 
-                    <div class="grid grid-cols-1">
+                    <div class="grid grid-cols-1 gap-1">
                         <span class="break-words text-pretty">{!! $lexeme->short !!}</span>
+                        <div class="flex flex-row gap-2">
+                            @if($lexeme->partOfSpeech)
+                                <flux:badge sizae="sm" color="zinc">
+                                    {{ $lexeme->partOfSpeech->name }} &lt;{{ $lexeme->partOfSpeech->code }}&gt;
+                                </flux:badge>
+                            @endif
+                            @if($lexeme->gramSet->where('is_changeable', false)->count() > 0)
+                                (
+                                @foreach($lexeme->gramSet->where('is_changeable', false) as $set)
+                                    {{ $set->value->code }}
+                                @endforeach
+                                )
+                            @endif
+                            @if($lexeme->gramSet->where('is_changeable', true)->count() > 0)
+                                [
+                                @foreach($lexeme->gramSet->where('is_changeable', true) as $set)
+                                    {{ $set->value->code }}
+                                @endforeach
+                                ]
+                            @endif
+                        </div>
                         <div class="flex flex-row gap-1">
                             @foreach($lexeme->tags as $tag)
                                 @php /** @var Tag $tag */ @endphp

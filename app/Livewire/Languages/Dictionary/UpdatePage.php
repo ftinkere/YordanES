@@ -4,6 +4,8 @@ namespace App\Livewire\Languages\Dictionary;
 
 use App\Models\DictionaryArticle;
 use App\Models\File;
+use App\Models\GrammaticPosSet;
+use App\Models\GrammaticSet;
 use App\Models\Lexeme;
 use App\Models\Tag;
 use App\Services\FileService;
@@ -66,6 +68,29 @@ class UpdatePage extends Component
                 'short' => $lexeme->short,
                 'full' => $lexeme->full,
                 'tags' => $lexeme->tags->toArray(),
+                'pos_uuid' => $lexeme->partOfSpeech?->uuid,
+                'gramset' => $lexeme->gramSet()->pluck('value_id'),
+                'gramset_variable' => $lexeme->gramSet()->where('is_changeable', true)->pluck('value_id'),
+                'gramset_show' => $lexeme->gramSet()
+                    ->leftJoin('grammatic_values', 'grammatic_set.value_id', '=', 'grammatic_values.uuid')
+                    ->leftJoin('grammatic_categories', 'grammatic_values.category_id', '=', 'grammatic_categories.uuid')
+                    ->orderBy('grammatic_categories.order')
+                    ->orderBy('grammatic_values.order')
+                    ->with('value.category')
+                    ->get()
+                    ->map(function ($set) {
+                    return [
+                        'is_changeable' => $set->is_changeable,
+                        'value' => [
+                            'name' => $set->value->name,
+                            'code' => $set->value->code,
+                        ],
+                        'category' => [
+                            'name' => $set->value->category->name,
+                            'code' => $set->value->category->code,
+                        ],
+                    ];
+                }),
             ];
         }
     }
@@ -139,10 +164,44 @@ class UpdatePage extends Component
                         ]);
                     }
                 }
+
+                if ($lexemeArray['pos_uuid']) {
+                    if ($lexeme->partOfSpeech && $lexemeArray['pos_uuid'] != $lexeme->partOfSpeech->uuid) {
+                        GrammaticPosSet::where('parent_id', $lexeme->uuid)
+                            ->where('parent_type', Lexeme::class)
+                            ->delete();
+                    }
+                    if (! $lexeme->partOfSpeech || $lexeme['pos_uuid'] != $lexeme->partOfSpeech->uuid) {
+                        $posSet = new GrammaticPosSet;
+                        $posSet->parent_id = $lexeme->uuid;
+                        $posSet->parent_type = Lexeme::class;
+                        $posSet->pos_id = $lexemeArray['pos_uuid'];
+                        $posSet->save();
+                    }
+                }
+
+                $set = $lexeme->gramSet;
+                foreach ($set as $setValue) {
+                    if (! $lexemeArray['gramset']->contains($setValue->value_id)) {
+                        $setValue->delete();
+                    }
+                }
+                foreach ($lexemeArray['gramset'] as $value) {
+                    if (! $set->where('value_id', $value)->first()) {
+                        $setValue = new GrammaticSet;
+                        $setValue->parent_id = $lexeme->uuid;
+                        $setValue->parent_type = Lexeme::class;
+                        $setValue->value_id = $value;
+                        $setValue->is_changeable = $lexemeArray['gramset_variable']->contains($value);
+                        $setValue->save();
+                    } else {
+                        $setValue = $set->where('value_id', $value)->first();
+                        $setValue->is_changeable = $lexemeArray['gramset_variable']->contains($value);
+                        $setValue->save();
+                    }
+                }
             }
         }
-
-
 
         return redirect()->route('languages.dictionary.view', ['language' => $this->dictionaryArticle->language, 'article' => $this->dictionaryArticle]);
     }

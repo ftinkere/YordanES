@@ -1,5 +1,6 @@
 @php declare(strict_types=1);
 
+use App\Models\GrammaticPartOfSpeech;
 @endphp
 
 <x-slot name="rightNavbar">
@@ -8,9 +9,7 @@
     >Отмена</x-light-button>
 </x-slot>
 
-<div>
-    <form wire:submit="updateArticle" x-ref="form"
-          x-data="() => ({
+<div x-data="() => ({
             // --- исходные state ---
             selectedOrder:    {{ array_key_last($lexemes) }},
             selectedSuborder: {{ array_key_last(last($lexemes)) }},
@@ -82,7 +81,8 @@
               };
             },
           })"
-    >
+>
+    <form wire:submit="updateArticle" x-ref="form">
         <div class="flex flex-col gap-y-4 gap-x-4 max-w-xl mx-auto">
             <div class="grid grid-cols-2 gap-y-2 gap-x-4">
                 <div>
@@ -123,7 +123,7 @@
             </div>
 
             <div class="flex flex-col gap-y-4 w-full">
-                <div class="rounded-xl bg-zinc-800/50 -mx-4 px-4 py-4">
+                <div class="rounded-xl bg-zinc-800/50 -mx-4 px-4 py-4 flex flex-col gap-2">
                     <flux:label class="text-xl">
                         <span>Лексема <span class="font-serif" x-text="romanize(lexemes[selectedOrder][selectedSuborder].group)"></span> <span class="font-serif" x-text="(selectedOrder + 1) + '.' + (selectedSuborder + 1)"></span></span>
                     </flux:label>
@@ -161,6 +161,26 @@
                     <x-tag-list-editable class="my-2" tags="lexemes[selectedOrder][selectedSuborder].tags"
                         delete-action="deleteTag"
                     />
+
+                    <flux:select variant="listbox"
+                                 x-model="lexemes[selectedOrder][selectedSuborder].pos_uuid"
+                                 placeholder="Часть речи"
+                                 clearable
+                                 searchable
+                    >
+                        @foreach($dictionaryArticle->language->partOfSpeeches as $pos)
+                            <flux:select.option value="{{ $pos->uuid }}">
+                                {{ $pos->name }} &lt;{{ $pos->code }}&gt;
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+
+                    <x-light-button variant="info"
+                        x-on:click="$flux.modal('gramset-' + lexemes[selectedOrder][selectedSuborder].pos_uuid).show()"
+                    >Грамматика</x-light-button>
+
+                    <x-gram-set class="my-2" gramset="lexemes[selectedOrder][selectedSuborder].gramset_show" />
+
                     <flux:editor label="Полная статья лексемы"
                                  x-model="lexemes[selectedOrder][selectedSuborder].full"
                                  toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
@@ -171,4 +191,36 @@
             <x-light-button variant="positive" class="mt-6" type="submit">Обновить</x-light-button>
         </div>
     </form>
+
+    @foreach($dictionaryArticle->language->partOfSpeeches as $pos)
+        <flux:modal name="gramset-{{ $pos->uuid }}" class="w-full max-w-2xl">
+            <flux:heading size="lg">{{ $pos->name }} &lt;{{ $pos->code }}&gt;</flux:heading>
+
+            <div>
+                <div class="mt-2 grid auto-cols-auto auto-rows-auto gap-2">
+                    @foreach($pos->categories as $cat)
+                        <flux:card class="flex flex-col gap-2">
+                            <flux:heading size="lg">{{ $cat->name }} &lt;{{ $cat->code }}&gt;</flux:heading>
+                            @foreach($cat->values as $val)
+                                <div class="flex flex-col gap-2">
+                                    <flux:checkbox x-model="lexemes[selectedOrder][selectedSuborder].gramset"
+                                                   value="{{ $val->uuid }}"
+                                                   label="{{ $val->name }} &lt;{{ $val->code }}&gt;"
+                                    />
+                                    <div x-show="lexemes[selectedOrder][selectedSuborder].gramset.includes('{{ $val->uuid }}')">
+                                        <flux:switch x-model="lexemes[selectedOrder][selectedSuborder].gramset_variable"
+                                                     value="{{ $val->uuid }}"
+                                                     label="Изменяемое?"
+                                                     align="left"
+                                                     class="ms-4"
+                                        />
+                                    </div>
+                                </div>
+                            @endforeach
+                        </flux:card>
+                    @endforeach
+                </div>
+            </div>
+        </flux:modal>
+    @endforeach
 </div>

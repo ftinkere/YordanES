@@ -79,12 +79,10 @@ return new class extends Migration
             $table->uuid('value_id')->index();
             $table->foreign('value_id')->references('uuid')->on('grammatic_values');
 
-            $table->integer('order')->default(0);
+            $table->boolean('is_changeable')->default(false);
 
             $table->timestamps();
         });
-
-
     }
 
     /**

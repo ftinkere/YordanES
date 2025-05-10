@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Mews\Purifier\Casts\CleanHtml;
 
@@ -45,6 +46,29 @@ class Lexeme extends Model
     public function tags(): MorphMany
     {
         return $this->morphMany(Tag::class, 'taggable');
+    }
+
+    public function partOfSpeech(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            GrammaticPartOfSpeech::class,
+            GrammaticPosSet::class,
+            'parent_id',
+            'uuid',
+            'uuid',
+            'pos_id'
+        )->where('grammatic_pos_set.parent_type', self::class);
+    }
+
+    public function posSet()
+    {
+        return $this->hasOne(GrammaticPosSet::class, 'parent_id', 'uuid')
+            ->where('parent_type', self::class);
+    }
+
+    public function gramSet()
+    {
+        return $this->morphMany(GrammaticSet::class, 'parent');
     }
 
     public function firstLineFull(): false|string

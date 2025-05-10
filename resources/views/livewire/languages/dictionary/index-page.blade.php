@@ -77,18 +77,43 @@
                                     <div class="font-mono">
                                         <span>{{ $lexeme->order + 1}}</span>.<span>{{ $lexeme->suborder + 1 }}</span>
                                     </div>
-                                    <span class="break-words text-pretty">{!! $lexeme->short !!}</span>
+                                    <div class="grid grid-cols-1 gap-1">
+                                        <span class="break-words text-pretty">{!! $lexeme->short !!}</span>
+                                        <div class="flex flex-row gap-2">
+                                            @if($lexeme->partOfSpeech)
+                                                <span>&lt;{{ $lexeme->partOfSpeech->code }}&gt;</span>
+                                            @endif
+                                            @if($lexeme->gramSet->where('is_changeable', false)->count() > 0)
+                                                <span>
+                                                    (
+                                                    @foreach($lexeme->gramSet->where('is_changeable', false) as $set)
+                                                        {{ $set->value->code }}
+                                                    @endforeach
+                                                )
+                                                </span>
+                                            @endif
+                                            @if($lexeme->gramSet->where('is_changeable', true)->count() > 0)
+                                                <span>
+                                                    [
+                                                    @foreach($lexeme->gramSet->where('is_changeable', true) as $set)
+                                                        {{ $set->value->code }}
+                                                    @endforeach
+                                                    ]
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="flex flex-row gap-1">
+                                            @foreach($lexeme->tags as $tag)
+                                                @php /** @var Tag $tag */ @endphp
+                                                <flux:badge sizae="sm" :color="$tag->color ?? 'amber'">{{ $tag->name }}</flux:badge>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                             </flux:accordion.heading>
 
                             @if(! empty($lexeme->full))
                                 <flux:accordion.content>
-                                    <div class="flex flex-row gap-1">
-                                        @foreach($lexeme->tags as $tag)
-                                            @php /** @var Tag $tag */ @endphp
-                                            <flux:badge sizae="sm" :color="$tag->color ?? 'amber'">{{ $tag->name }}</flux:badge>
-                                        @endforeach
-                                    </div>
                                     <div class="ps-2 break-words text-pretty">
                                         {!! $lexeme->full !!}
                                     </div>
