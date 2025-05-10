@@ -38,7 +38,7 @@ use App\Models\GrammaticPartOfSpeech;
                 let last  = this.getSuborderKeys(below ?? above).pop();
                 let group = ref[last].group;
                 // создаём новый order с единственным suborder=0
-                this.lexemes[idx] = { 0: { short: '', full: '', group } };
+                this.lexemes[idx] = { 0: { short: '', full: '', group, pos_uuid: null, tags: [], gramset: [], gramset_variable: [] } };
               }
             },
             ensureSuborderExists(order, sub) {
@@ -49,7 +49,7 @@ use App\Models\GrammaticPartOfSpeech;
                 let below = subs.filter(n => n < sub).pop();
                 let above = subs.find(n => n > sub);
                 let ref   = bucket[below ?? above];
-                bucket[sub] = { short: '', full: '', group: ref.group };
+                bucket[sub] = { short: '', full: '', group: ref.group, pos_uuid: null, tags: [], gramset: [], gramset_variable: [] };
               }
             },
 
@@ -114,9 +114,9 @@ use App\Models\GrammaticPartOfSpeech;
 
             <x-filepond::upload wire:model="files" multiple accept="image/*" />
 
-            <flux:editor label="Основная словарная статья" wire:model="article"
-                         toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i"
-            />
+            {{-- <flux:editor label="Основная словарная статья" wire:model="article" --}}
+            {{--              toolbar="heading | bold italic strike underline | bullet ordered blockquote | subscript superscript | link | align ~ x2i" --}}
+            {{-- /> --}}
 
             <div class="col-span-2">
                 <flux:switch label="Публично доступно" wire:model="public" align="left" />

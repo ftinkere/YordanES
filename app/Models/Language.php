@@ -155,6 +155,32 @@ class Language extends Model
                     $lexeme->full = $lexemeArray['full'];
 
                     $lexeme->save();
+
+                    foreach ($lexemeArray['tags'] as $tagArr) {
+                        Tag::create([
+                            'name' => $tagArr['name'],
+                            'color' => 'auto',
+                            'taggable_id' => $lexeme->uuid,
+                            'taggable_type' => Lexeme::class,
+                        ]);
+                    }
+
+                    if ($lexemeArray['pos_uuid']) {
+                        $posSet = new GrammaticPosSet;
+                        $posSet->parent_id = $lexeme->uuid;
+                        $posSet->parent_type = Lexeme::class;
+                        $posSet->pos_id = $lexemeArray['pos_uuid'];
+                        $posSet->save();
+                    }
+
+                    foreach ($lexemeArray['gramset'] as $value) {
+                        $setValue = new GrammaticSet;
+                        $setValue->parent_id = $lexeme->uuid;
+                        $setValue->parent_type = Lexeme::class;
+                        $setValue->value_id = $value;
+                        $setValue->is_changeable = in_array($value, $lexemeArray['gramset_variable']);
+                        $setValue->save();
+                    }
                 }
             }
 

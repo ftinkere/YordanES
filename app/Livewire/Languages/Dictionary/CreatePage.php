@@ -23,7 +23,7 @@ class CreatePage extends Component
 
     public string $article;
 
-    public array $lexemes = [[ ['group' => 1, 'short' => '', 'full' => ''] ]]; // [*order* => [*suborder* => [lexeme] ] ]
+    public array $lexemes = [[ ['group' => 1, 'short' => '', 'full' => '', 'pos_uuid' => null, 'tags' => [], 'gramset' => [], 'gramset_variable' => [] ] ]]; // [*order* => [*suborder* => [lexeme] ] ]
 
 
     public function mount(Language $language): void
@@ -40,6 +40,8 @@ class CreatePage extends Component
 
         $article = Language::findOrFail($this->language->uuid)
             ->createArticle($this->vocabula, $this->transcription, $this->adaptation, $this->article ?? '', $this->lexemes, $this->public);
+
+
 
         $this->redirect("/dictionary/{$article->uuid}");
     }

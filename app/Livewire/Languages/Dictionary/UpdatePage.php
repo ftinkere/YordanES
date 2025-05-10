@@ -69,8 +69,8 @@ class UpdatePage extends Component
                 'full' => $lexeme->full,
                 'tags' => $lexeme->tags->toArray(),
                 'pos_uuid' => $lexeme->partOfSpeech?->uuid,
-                'gramset' => $lexeme->gramSet()->pluck('value_id'),
-                'gramset_variable' => $lexeme->gramSet()->where('is_changeable', true)->pluck('value_id'),
+                'gramset' => $lexeme->gramSet()->pluck('value_id')->toArray(),
+                'gramset_variable' => $lexeme->gramSet()->where('is_changeable', true)->pluck('value_id')->toArray(),
                 'gramset_show' => $lexeme->gramSet()
                     ->leftJoin('grammatic_values', 'grammatic_set.value_id', '=', 'grammatic_values.uuid')
                     ->leftJoin('grammatic_categories', 'grammatic_values.category_id', '=', 'grammatic_categories.uuid')
@@ -182,7 +182,7 @@ class UpdatePage extends Component
 
                 $set = $lexeme->gramSet;
                 foreach ($set as $setValue) {
-                    if (! $lexemeArray['gramset']->contains($setValue->value_id)) {
+                    if (! in_array($setValue->value_id, $lexemeArray['gramset'])) {
                         $setValue->delete();
                     }
                 }
@@ -192,11 +192,11 @@ class UpdatePage extends Component
                         $setValue->parent_id = $lexeme->uuid;
                         $setValue->parent_type = Lexeme::class;
                         $setValue->value_id = $value;
-                        $setValue->is_changeable = $lexemeArray['gramset_variable']->contains($value);
+                        $setValue->is_changeable = in_array($value, $lexemeArray['gramset_variable']);
                         $setValue->save();
                     } else {
                         $setValue = $set->where('value_id', $value)->first();
-                        $setValue->is_changeable = $lexemeArray['gramset_variable']->contains($value);
+                        $setValue->is_changeable = in_array($value, $lexemeArray['gramset_variable']);
                         $setValue->save();
                     }
                 }
