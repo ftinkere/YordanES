@@ -8,55 +8,78 @@
     >Отмена</x-light-button>
 </x-slot>
 
-<div x-data="{ selectedOrder: 0, selectedSuborder: 0,
-          lexemes: $wire.entangle('lexemes'),
-            create() {
-                let newGroup = this.lexemes[this.lexemes.length - 1][this.lexemes[this.lexemes.length - 1].length - 1].group;
-                let newLexeme = { short: '', full: '', group: newGroup, pos_uuid: null, tags: [], gramset: [], gramset_variable: [] };
+<div x-data="() => ({
+            // --- исходные state ---
+            selectedOrder:    {{ array_key_last($lexemes) }},
+            selectedSuborder: {{ array_key_last(last($lexemes)) }},
+            lexemes:          $wire.entangle('lexemes'),
 
-                this.lexemes.push([newLexeme]);
-                this.selectedSuborder = 0;
+            // --- вспомогалки для работы с либой (array|object, sparse) ---
+            getOrderKeys() {
+              return Object.keys(this.lexemes)
+                .map(n => Number(n))
+                .filter(n => !isNaN(n))
+                .sort((a, b) => a - b);
             },
-            createSub() {
-                let newGroup = this.lexemes[this.selectedOrder][this.lexemes[this.selectedOrder].length - 1].group;
-                let newLexeme = { short: '', full: '', group: newGroup, pos_uuid: null, tags: [], gramset: [], gramset_variable: [] };
+            getSuborderKeys(order) {
+              let bucket = this.lexemes[order] || {};
+              return Object.keys(bucket)
+                .map(n => Number(n))
+                .filter(n => !isNaN(n))
+                .sort((a, b) => a - b);
+            },
+            ensureOrderExists(idx) {
+              if (!(idx in this.lexemes)) {
+                let keys  = this.getOrderKeys();
+                let below = keys.filter(n => n < idx).pop();
+                let above = keys.find(n => n > idx);
+                let ref   = this.lexemes[below ?? above];
+                let last  = this.getSuborderKeys(below ?? above).pop();
+                let group = ref[last].group;
+                // создаём новый order с единственным suborder=0
+                this.lexemes[idx] = { 0: { short: '', full: '', group, pos_uuid: null, tags: [], gramset: [], gramset_variable: [] } };
+              }
+            },
+            ensureSuborderExists(order, sub) {
+              this.ensureOrderExists(order);
+              let bucket = this.lexemes[order];
+              if (!(sub in bucket)) {
+                let subs  = this.getSuborderKeys(order);
+                let below = subs.filter(n => n < sub).pop();
+                let above = subs.find(n => n > sub);
+                let ref   = bucket[below ?? above];
+                bucket[sub] = { short: '', full: '', group: ref.group, pos_uuid: null, tags: [], gramset: [], gramset_variable: [] };
+              }
+            },
 
-                this.lexemes[this.selectedOrder].push(newLexeme);
-            },
+            // --- публичный интерфейс — только инк/дек и индексы! ---
             incrementOrder() {
-                if (this.selectedOrder == this.lexemes.length - 1) {
-                    this.create();
-                }
-            },
-            incrementSuborder() {
-                if (this.selectedSuborder == this.lexemes[this.selectedOrder].length - 1) {
-                    this.createSub();
-                }
+              let subs  = this.getSuborderKeys(this.selectedOrder + 1);
+              this.selectedSuborder = subs.length ? subs.pop() : 0
+              this.ensureOrderExists(this.selectedOrder + 1)
+              this.ensureSuborderExists(this.selectedOrder + 1, this.selectedSuborder);
+              this.selectedOrder++
             },
             decrementOrder() {
-                if (this.selectedOrder == this.lexemes.length - 1) {
-                    let ord = this.lexemes[this.selectedOrder];
-                    let isDelete = true;
-                    ord.forEach(function (value) {
-                        if (value.short != '' || value.full != '') {
-                            isDelete = false;
-                        }
-                    })
-                    if (isDelete) {
-                        this.lexemes.pop();
-                    }
-                }
-                this.selectedSuborder = this.lexemes[this.selectedOrder].length - 1;
+              if (this.selectedOrder > 0) {
+                let subs  = this.getSuborderKeys(this.selectedOrder - 1);
+                this.selectedSuborder = subs.length ? subs.pop() : 0
+                this.ensureOrderExists(this.selectedOrder - 1)
+                this.ensureSuborderExists(this.selectedOrder - 1, this.selectedSuborder);
+                this.selectedOrder--
+              };
+            },
+            incrementSuborder() {
+              this.ensureSuborderExists(this.selectedOrder, this.selectedSuborder + 1);
+              this.selectedSuborder++
             },
             decrementSuborder() {
-                if (this.selectedSuborder == this.lexemes[this.selectedOrder].length - 1) {
-                    if (this.lexemes[this.selectedOrder][this.selectedSuborder].short == '' &&
-                        this.lexemes[this.selectedOrder][this.selectedSuborder].full == '') {
-                        this.lexemes[this.selectedOrder].pop();
-                    }
-                }
+              if (this.selectedSuborder > 0) {
+                this.ensureSuborderExists(this.selectedOrder, this.selectedSuborder - 1);
+                this.selectedSuborder--
+              };
             },
-          }"
+          })"
 >
     <form wire:submit="createArticle">
         <div class="flex flex-col gap-y-4 gap-x-4 max-w-xl mx-auto">
@@ -93,17 +116,23 @@
                         <div></div>
 
                         <div class="flex flex-row gap-2">
-                            <x-order-input x-model.number="lexemes[selectedOrder][selectedSuborder].group" romanize />
-                            <x-order-input x-bind:class="{ 'newable': selectedOrder == lexemes.length - 1 }"
-                                    x-model.number="selectedOrder"
-                                    x-on:increment="incrementOrder"
-                                    x-on:decrement="decrementOrder"
-                                    incrementShow />
-                            <x-order-input x-bind:class="{ 'newable': selectedSuborder == lexemes[selectedOrder].length - 1 }"
+                            <x-order-input x-model.number="lexemes[selectedOrder][selectedSuborder].group"
+                                           romanize
+                                           x-on:increment="lexemes[selectedOrder][selectedSuborder].group++"
+                                           x-on:decrement="lexemes[selectedOrder][selectedSuborder].group--"
+                            />
+                            <x-order-input x-bind:class="{ 'newable': getOrderKeys().pop() == selectedOrder }"
+                                           x-model.number="selectedOrder"
+                                           x-on:increment="incrementOrder"
+                                           x-on:decrement="decrementOrder"
+                                           incrementShow
+                            />
+                            <x-order-input x-bind:class="{ 'newable': getSuborderKeys(selectedOrder).pop() == selectedSuborder }"
                                            x-model.number="selectedSuborder"
                                            x-on:increment="incrementSuborder"
                                            x-on:decrement="decrementSuborder"
-                                           incrementShow />
+                                           incrementShow
+                            />
                         </div>
                     </div>
 
