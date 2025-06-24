@@ -88,3 +88,7 @@ Route::prefix('/dictionary')->name('languages.dictionary')->group(function () {
     Route::get('/{article}/edit', DictionaryUpdatePage::class)->name('.update')
         ->middleware('can:update,article');
 });
+
+Route::get('/except', function () {
+    throw new Exception('test');
+});
