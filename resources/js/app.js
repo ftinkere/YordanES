@@ -68,13 +68,13 @@ document.addEventListener('touchend', (e) => {
 function handleGesture() {
     const swipeDistance = touchEndX - touchStartX;
 
-    if (swipeDistance > 70) {
-        // Свайп вправо с левого края экрана
+    if (swipeDistance > 100) {
+        // Свайп вправо
         sidebarToggle.click();
     }
 
     // Если нужно — добавь условие для свайпа обратно (закрытие сайдбара)
-    if (swipeDistance < -70) {
+    if (swipeDistance < -100) {
         // Свайп влево
         sidebarToggle.click();
     }

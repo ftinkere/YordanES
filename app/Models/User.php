@@ -127,6 +127,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $user->password_hash = Hash::make($password);
         $user->remember_token = CommonHelper::randomStr();
 
+        $user->email_verified_at = Carbon::now(); // TODO: change
+
         // Send email with verification link
 
         return $user;

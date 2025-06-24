@@ -2,14 +2,14 @@
 
 <flux:card class="space-y-6 max-w-md mx-auto">
     <div>
-        <flux:heading size="lg">Войти</flux:heading>
+        <flux:heading size="lg">Войти в <span class="yordan-font text-primary-500">Ëрдан</span></flux:heading>
         <flux:subheading>Добро пожаловать!</flux:subheading>
     </div>
 
     <form class="space-y-6" wire:submit="login">
         <div class="space-y-6">
             <flux:field>
-                <flux:input label="Никнейм" placeholder="Ваш никнейм" wire:model="username" />
+                    <flux:input label="Имя пользователя" placeholder="username" wire:model="username" />
                 <flux:error name="username" />
             </flux:field>
 
@@ -22,7 +22,7 @@
                     </flux:link>
                 </div>
 
-                <flux:input type="password" placeholder="Ваш пароль" wire:model="password" viewable />
+                <flux:input type="password" placeholder="* * *" wire:model="password" viewable />
 
                 <flux:error name="password" />
             </flux:field>

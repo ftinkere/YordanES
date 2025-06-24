@@ -19,3 +19,4 @@ window.PhotoSwipeLightbox = PhotoSwipeLightbox;
 window.PhotoSwipe = PhotoSwipe;
 
 window.Sortable = Sortable;
+

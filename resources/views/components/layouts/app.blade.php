@@ -19,36 +19,50 @@
 
         @fluxAppearance
     </head>
-    <body class="bg-zinc-50 dark:bg-zinc-900 min-h-screen">
-        <div class="flex flex-col h-screen">
-            <x-header>
-                @isset($rightNavbar)
-                    <x-slot:right>
-                        {{ $rightNavbar }}
-                    </x-slot:right>
-                @endisset
-                @isset($sidebar)
-                    <x-slot:navlistAdd>
-                        <flux:separator />
-                        {{ $sidebar }}
-                    </x-slot:navlistAdd>
-                @endisset
-            </x-header>
+    <body class="bg-zinc-50 dark:bg-zinc-900 min-h-[100dvh]" x-init="$flux.appearance = 'system'">
 
-
-            <div class="relative grow grid grid-cols-12 max-md:grid-rows-[min-content_1fr] gap-4">
-                @isset($sidebar)
-                    <div class="hidden md:block md:col-span-3 xl:col-span-2 bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
-                        <flux:navlist class="md:sticky top-4 z-10 mt-4 p-2">
-                            {{ $sidebar }}
-                        </flux:navlist>
+        <div class="flex flex-row">
+            @isset($sidebar)
+                <div class="max-sm:hidden bg-zinc-200 dark:bg-zinc-800 drop-shadow-lg">
+                    <div class="rounded-lg hover:bg-zinc-800/5 dark:hover:bg-white/10">
+                        <flux:brand class="my-auto py-4 h-full! *:first:hidden ml-4 justify-center" href="/" wire:navigate>
+                            <x-slot name="name">
+                                <span class="yordan-font text-2xl text-primary-500">Ëрдан</span>
+                            </x-slot>
+                        </flux:brand>
                     </div>
-                @endisset
 
-                <div @class(['p-3 container mx-auto h-full col-span-12', 'md:col-span-9 xl:col-span-10' => isset($sidebar)])>
-                    {{ $slot }}
+                    <flux:navlist class="h-[100dvh] min-w-[200px] md:sticky top-4 z-10 mt-4 p-2">
+                        {{ $sidebar }}
+                    </flux:navlist>
+                </div>
+            @endisset
+
+            <div class="flex flex-col w-full grow">
+                <x-header :title="!isset($sidebar)">
+                    @isset($rightNavbar)
+                        <x-slot:right>
+                            {{ $rightNavbar }}
+                        </x-slot:right>
+                    @endisset
+                    @isset($sidebar)
+                        <x-slot:navlistAdd>
+                            <flux:separator />
+                            {{ $sidebar }}
+                        </x-slot:navlistAdd>
+                    @endisset
+                </x-header>
+
+
+                <div class="flex flex-row">
+
+
+                    <div class="p-4 max-w-4xl mx-auto h-full w-full">
+                        {{ $slot }}
+                    </div>
                 </div>
             </div>
+
         </div>
 
         @fluxScripts
